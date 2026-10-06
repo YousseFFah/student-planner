@@ -6,6 +6,7 @@ import errorHandling from "./src/middleware/errorHandling.js";
 
 import { router as courseRouter } from "./src/modules/courses/course.routes.js";
 import { router as assessmentRouter } from "./src/modules/assessment/assessment.routes.js";
+import { router as taskRouter } from "./src/modules/task/task.routes.js";
 
 dotenv.config({ path: "../.env" });
 
@@ -17,6 +18,7 @@ app.use(express.json());
 
 app.use("/courses", courseRouter);
 app.use("/assessments", assessmentRouter);
+app.use("/tasks", taskRouter);
 
 app.use(errorHandling);
 
