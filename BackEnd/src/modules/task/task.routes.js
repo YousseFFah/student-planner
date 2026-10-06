@@ -1,4 +1,6 @@
 import express from "express";
+import authMiddleware from "../../middleware/authMiddleware.js";
+
 import {
   createTask,
   deleteTask,
@@ -9,14 +11,14 @@ import {
 
 const router = express.Router();
 
-router.post("/", createTask);
+router.post("/", authMiddleware, createTask);
 
-router.get("/", getTasks);
+router.get("/", authMiddleware, getTasks);
 
-router.get("/:id", getTask);
+router.get("/:id", authMiddleware, getTask);
 
-router.patch("/:id", updateTask);
+router.patch("/:id", authMiddleware, updateTask);
 
-router.delete("/:id", deleteTask);
+router.delete("/:id", authMiddleware,deleteTask);
 
 export { router };

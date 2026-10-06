@@ -6,7 +6,12 @@ import AppError from "../../utilities/appError.js";
 const createAssessment = async (req, res, next) => {
   const { title, type, totalMarks, deadline, course } = req.body;
 
-  const existingCourse = await Course.findById(course);
+  const userId = req.user.userId;
+
+  const existingCourse = await Course.findOne({
+    _id: course,
+    user: req.user.userId,
+  });
 
   if (!existingCourse) {
     return next(new AppError("Course not found", 404));
@@ -17,7 +22,8 @@ const createAssessment = async (req, res, next) => {
     type,
     totalMarks,
     deadline,
-    course
+    course,
+    user: userId,
   });
 
   res.status(201).json({
@@ -28,9 +34,10 @@ const createAssessment = async (req, res, next) => {
 
 // get one assessment
 const getAssessment = async (req, res, next) => {
-  const existingAssessment = await Assessment.findById(
-    req.params.id
-  ).populate("course");
+  const existingAssessment = await Assessment.findOne({
+    _id: req.params.id,
+    user: req.user.userId,
+  }).populate("course");
 
   if (!existingAssessment) {
     return next(new AppError("Assessment not found", 404));
@@ -44,7 +51,9 @@ const getAssessment = async (req, res, next) => {
 
 // get all assessment
 const getAssessments = async (req, res) => {
-  const assessments = await Assessment.find().populate("course");
+  const assessments = await Assessment.find({
+    user: req.user.userId,
+  }).populate("course");
 
   res.status(200).json({
     message: "Assessments fetched successfully",
@@ -54,20 +63,16 @@ const getAssessments = async (req, res) => {
 
 // update assessment
 const updateAssessment = async (req, res, next) => {
-  const existingAssessment = await Assessment.findById(req.params.id);
+  const existingAssessment = await Assessment.findOne({
+    _id: req.params.id,
+    user: req.user.userId,
+  });
 
   if (!existingAssessment) {
     return next(new AppError("Assessment not found", 404));
   }
 
-  const {
-    title,
-    type,
-    totalMarks,
-    obtainedMarks,
-    deadline,
-    status,
-  } = req.body;
+  const { title, type, totalMarks, obtainedMarks, deadline, status } = req.body;
 
   if (title !== undefined) {
     existingAssessment.title = title;
@@ -105,23 +110,29 @@ const updateAssessment = async (req, res, next) => {
 
 // delete assessment
 const deleteAssessment = async (req, res, next) => {
-  const existingAssessment = await Assessment.findById(req.params.id);
+  const existingAssessment = await Assessment.findOne({
+    _id: req.params.id,
+    user: req.user.userId,
+  });
 
   if (!existingAssessment) {
     return next(new AppError("Assessment not found", 404));
   }
 
-  await Assessment.findByIdAndDelete(req.params.id);
+  await Assessment.findOneAndDelete({
+    _id: req.params.id,
+    user: req.user.userId,
+  });
 
   res.status(200).json({
     message: "Assessment deleted successfully",
   });
 };
 
-export{
-    createAssessment,
-    getAssessments,
-    getAssessment,
-    updateAssessment,
-    deleteAssessment
-}
+export {
+  createAssessment,
+  getAssessments,
+  getAssessment,
+  updateAssessment,
+  deleteAssessment,
+};

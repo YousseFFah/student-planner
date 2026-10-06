@@ -1,12 +1,16 @@
 import { Task } from "../../../db/models/task.model.js";
 import { Course } from "../../../db/models/course.model.js";
+
 import AppError from "../../utilities/appError.js";
 
 // add new task
 const createTask = async (req, res, next) => {
   const { title, type, description, deadline, course } = req.body;
 
-  const existingCourse = await Course.findById(course);
+  const existingCourse = await Course.findOne({
+    _id: course,
+    user: req.user.userId,
+  });
 
   if (!existingCourse) {
     return next(new AppError("Course not found", 404));
@@ -17,7 +21,8 @@ const createTask = async (req, res, next) => {
     type,
     description,
     deadline,
-    course
+    course,
+    user: req.user.userId,
   });
 
   res.status(201).json({
@@ -26,11 +31,12 @@ const createTask = async (req, res, next) => {
   });
 };
 
-// get one Task
+// get one task
 const getTask = async (req, res, next) => {
-  const existingTask = await Task.findById(
-    req.params.id
-  ).populate("course");
+  const existingTask = await Task.findOne({
+    _id: req.params.id,
+    user: req.user.userId,
+  }).populate("course");
 
   if (!existingTask) {
     return next(new AppError("Task not found", 404));
@@ -44,7 +50,9 @@ const getTask = async (req, res, next) => {
 
 // get all tasks
 const getTasks = async (req, res) => {
-  const tasks = await Task.find().populate("course");
+  const tasks = await Task.find({
+    user: req.user.userId,
+  }).populate("course");
 
   res.status(200).json({
     message: "Tasks fetched successfully",
@@ -54,7 +62,10 @@ const getTasks = async (req, res) => {
 
 // update task
 const updateTask = async (req, res, next) => {
-  const existingTask = await Task.findById(req.params.id);
+  const existingTask = await Task.findOne({
+    _id: req.params.id,
+    user: req.user.userId,
+  });
 
   if (!existingTask) {
     return next(new AppError("Task not found", 404));
@@ -89,7 +100,6 @@ const updateTask = async (req, res, next) => {
   }
 
   await existingTask.save();
-
   await existingTask.populate("course");
 
   res.status(200).json({
@@ -100,23 +110,29 @@ const updateTask = async (req, res, next) => {
 
 // delete task
 const deleteTask = async (req, res, next) => {
-  const existingTask = await Task.findById(req.params.id);
+  const existingTask = await Task.findOne({
+    _id: req.params.id,
+    user: req.user.userId,
+  });
 
   if (!existingTask) {
     return next(new AppError("Task not found", 404));
   }
 
-  await Task.findByIdAndDelete(req.params.id);
+  await Task.findOneAndDelete({
+    _id: req.params.id,
+    user: req.user.userId,
+  });
 
   res.status(200).json({
     message: "Task deleted successfully",
   });
 };
 
-export{
-    createTask,
-    getTask,
-    getTasks,
-    updateTask,
-    deleteTask
-}
+export {
+  createTask,
+  getTask,
+  getTasks,
+  updateTask,
+  deleteTask,
+};

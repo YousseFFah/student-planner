@@ -5,6 +5,8 @@ import AppError from "../../utilities/appError.js";
 const createCourse = async (req, res, next) => {
   const { name, code, instructor, creditHours } = req.body;
 
+  const userId = req.user.userId;
+
   const existingCourse = await Course.findOne({ code });
 
   if (existingCourse) {
@@ -16,6 +18,7 @@ const createCourse = async (req, res, next) => {
     code,
     instructor,
     creditHours,
+    user: userId,
   });
 
   res.status(201).json({
@@ -28,6 +31,7 @@ const createCourse = async (req, res, next) => {
 const getCourse = async (req, res, next) => {
   const existingCourse = await Course.findOne({
     code: req.params.code,
+    user: req.user.userId,
   });
 
   if (!existingCourse) {
@@ -42,7 +46,9 @@ const getCourse = async (req, res, next) => {
 
 // get all courses
 const getCourses = async (req, res) => {
-  let courses = await Course.find();
+  const courses = await Course.find({
+    user: req.user.userId,
+  });
   res.status(200).json({
     message: "Courses fetched successfully",
     courses,
@@ -53,6 +59,7 @@ const getCourses = async (req, res) => {
 const updateCourse = async (req, res, next) => {
   const existingCourse = await Course.findOne({
     code: req.params.code,
+    user: req.user.userId,
   });
 
   if (!existingCourse) {
@@ -85,13 +92,17 @@ const updateCourse = async (req, res, next) => {
 const deleteCourse = async (req, res, next) => {
   const existingCourse = await Course.findOne({
     code: req.params.code,
+    user: req.user.userId,
   });
 
   if (!existingCourse) {
     return next(new AppError("Course not found", 404));
   }
 
-  await Course.findOneAndDelete({ code: req.params.code });
+  await Course.findOneAndDelete({
+    code: req.params.code,
+    user: req.user.userId,
+  });
 
   res.status(200).json({
     message: "Course deleted successfully",

@@ -1,16 +1,23 @@
 import express from "express";
-import { createAssessment, getAssessments, getAssessment, updateAssessment, deleteAssessment } from "./assessment.controller.js";
+import {
+  createAssessment,
+  getAssessments,
+  getAssessment,
+  updateAssessment,
+  deleteAssessment,
+} from "./assessment.controller.js";
+import authMiddleware from "../../middleware/authMiddleware.js";
 
 const router = express.Router();
 
-router.post("/", createAssessment);
+router.post("/", authMiddleware, createAssessment);
 
-router.get("/", getAssessments);
+router.get("/", authMiddleware, getAssessments);
 
-router.get("/:id", getAssessment);
+router.get("/:id", authMiddleware, getAssessment);
 
-router.patch("/:id", updateAssessment);
+router.patch("/:id", authMiddleware, updateAssessment);
 
-router.delete("/:id", deleteAssessment);
+router.delete("/:id", authMiddleware, deleteAssessment);
 
 export { router };

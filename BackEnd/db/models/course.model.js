@@ -25,10 +25,16 @@ const courseSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
+
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 export const Course = mongoose.model("Course", courseSchema);
