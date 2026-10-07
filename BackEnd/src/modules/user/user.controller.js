@@ -5,7 +5,7 @@ import crypto from "crypto";
 import sendEmail from "../../utilities/sendEmail.js";
 import jwt from "jsonwebtoken";
 
-// user register
+// User register
 const register = async (req, res, next) => {
   const { name, email, password } = req.body;
 
@@ -19,7 +19,9 @@ const register = async (req, res, next) => {
 
   const verificationToken = crypto.randomBytes(32).toString("hex");
 
-  const verificationTokenExpires = new Date(Date.now() + 24 * 60 * 60 * 1000);
+  const verificationTokenExpires = new Date(
+    Date.now() + 24 * 60 * 60 * 1000
+  );
 
   const newUser = await User.create({
     name,
@@ -29,16 +31,32 @@ const register = async (req, res, next) => {
     verificationTokenExpires,
   });
 
-  const verificationUrl = `http://localhost:3000/users/verify-email/${verificationToken}`;
+  const verificationUrl = `http://127.0.0.1:5500/frontend/verify-email.html?token=${verificationToken}`;
 
   await sendEmail(
     email,
     "Verify your Student Planner account",
     `
-    <h2>Welcome to Student Planner!</h2>
-    <p>Please click the link below to verify your email:</p>
-    <a href="${verificationUrl}">Verify Email</a>
-  `,
+      <h2>Welcome to Student Planner!</h2>
+
+      <p>
+        Thanks for creating your Student Planner account.
+      </p>
+
+      <p>
+        Please click the button below to verify your email address.
+      </p>
+
+      <p>
+        <a href="${verificationUrl}">
+          Verify Email
+        </a>
+      </p>
+
+      <p>
+        This verification link will expire in 24 hours.
+      </p>
+    `
   );
 
   res.status(201).json({
@@ -52,7 +70,7 @@ const register = async (req, res, next) => {
   });
 };
 
-// email verification
+// Email verification
 const verifyEmail = async (req, res, next) => {
   const { token } = req.params;
 
@@ -64,7 +82,10 @@ const verifyEmail = async (req, res, next) => {
     return next(new AppError("Invalid verification token", 400));
   }
 
-  if (existingUser.verificationTokenExpires < new Date()) {
+  if (
+    !existingUser.verificationTokenExpires ||
+    existingUser.verificationTokenExpires < new Date()
+  ) {
     return next(new AppError("Verification token expired", 400));
   }
 
@@ -79,7 +100,7 @@ const verifyEmail = async (req, res, next) => {
   });
 };
 
-// user login
+// User login
 const login = async (req, res, next) => {
   const { email, password } = req.body;
 
@@ -123,7 +144,7 @@ const login = async (req, res, next) => {
   });
 };
 
-// current user
+// Current user
 const getCurrentUser = async (req, res, next) => {
   const user = await User.findById(req.user.userId).select(
     "-password -verificationToken -verificationTokenExpires"
@@ -139,4 +160,9 @@ const getCurrentUser = async (req, res, next) => {
   });
 };
 
-export { register, verifyEmail, login, getCurrentUser};
+export {
+  register,
+  verifyEmail,
+  login,
+  getCurrentUser,
+};

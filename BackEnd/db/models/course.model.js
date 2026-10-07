@@ -12,7 +12,6 @@ const courseSchema = new mongoose.Schema(
       type: String,
       required: true,
       trim: true,
-      unique: true,
     },
 
     instructor: {
@@ -34,7 +33,12 @@ const courseSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-  },
+  }
+);
+
+courseSchema.index(
+  { code: 1, user: 1 },
+  { unique: true }
 );
 
 export const Course = mongoose.model("Course", courseSchema);

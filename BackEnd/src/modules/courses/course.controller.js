@@ -1,13 +1,16 @@
 import { Course } from "../../../db/models/course.model.js";
 import AppError from "../../utilities/appError.js";
 
-// add new course
+// Add new course
 const createCourse = async (req, res, next) => {
   const { name, code, instructor, creditHours } = req.body;
 
   const userId = req.user.userId;
 
-  const existingCourse = await Course.findOne({ code });
+  const existingCourse = await Course.findOne({
+    code,
+    user: userId,
+  });
 
   if (existingCourse) {
     return next(new AppError("Course already exists", 400));
@@ -27,7 +30,7 @@ const createCourse = async (req, res, next) => {
   });
 };
 
-// get one course
+// Get one course
 const getCourse = async (req, res, next) => {
   const existingCourse = await Course.findOne({
     code: req.params.code,
@@ -44,11 +47,12 @@ const getCourse = async (req, res, next) => {
   });
 };
 
-// get all courses
+// Get all courses
 const getCourses = async (req, res) => {
   const courses = await Course.find({
     user: req.user.userId,
   });
+
   res.status(200).json({
     message: "Courses fetched successfully",
     courses,
@@ -88,7 +92,7 @@ const updateCourse = async (req, res, next) => {
   });
 };
 
-// delete course
+// Delete course
 const deleteCourse = async (req, res, next) => {
   const existingCourse = await Course.findOne({
     code: req.params.code,
@@ -109,4 +113,10 @@ const deleteCourse = async (req, res, next) => {
   });
 };
 
-export { createCourse, getCourse, getCourses, updateCourse, deleteCourse };
+export {
+  createCourse,
+  getCourse,
+  getCourses,
+  updateCourse,
+  deleteCourse,
+};

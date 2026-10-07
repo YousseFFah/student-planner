@@ -1,0 +1,77 @@
+.verification-card {
+  text-align: center;
+}
+
+.verification-icon {
+  width: 72px;
+  height: 72px;
+  margin: 0 auto 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--blue-light);
+  color: var(--blue);
+  font-size: 30px;
+  font-weight: 800;
+}
+
+.verification-card.success .verification-icon {
+  background: var(--green-light);
+  color: var(--green);
+}
+
+.verification-card.error .verification-icon {
+  background: var(--red-light);
+  color: var(--red);
+}
+
+.verification-card .auth-heading {
+  margin-bottom: 0;
+}
+
+.verification-card .auth-heading h1 {
+  font-size: 25px;
+}
+
+.verification-actions {
+  display: flex;
+  justify-content: center;
+  margin-top: 26px;
+}
+
+.verification-button {
+  min-width: 150px;
+  text-align: center;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.verification-loading {
+  animation: verificationPulse 1.4s ease-in-out infinite;
+}
+
+@keyframes verificationPulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.55;
+  }
+}
+
+@media (max-width: 520px) {
+  .verification-icon {
+    width: 64px;
+    height: 64px;
+    font-size: 26px;
+  }
+
+  .verification-card .auth-heading h1 {
+    font-size: 22px;
+  }
+}

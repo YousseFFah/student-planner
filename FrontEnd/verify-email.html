@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Student Planner - Verify Email</title>
+
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/auth.css">
+  <link rel="stylesheet" href="css/verify-email.css">
+</head>
+
+<body class="auth-page">
+
+  <main class="auth-container">
+
+    <section class="auth-card verification-card">
+
+      <div class="verification-icon" id="verificationIcon">
+        ✓
+      </div>
+
+      <div class="auth-heading">
+        <span class="eyebrow" id="verificationEyebrow">
+          Email verification
+        </span>
+
+        <h1 id="verificationTitle">
+          Verifying your email...
+        </h1>
+
+        <p id="verificationMessage">
+          Please wait while we verify your email address.
+        </p>
+      </div>
+
+      <div
+        id="verificationActions"
+        class="verification-actions hidden"
+      >
+        <a
+          href="login.html"
+          class="primary-btn verification-button"
+        >
+          Go to Login
+        </a>
+      </div>
+
+    </section>
+
+  </main>
+
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/verify-email.js"></script>
+
+</body>
+</html>

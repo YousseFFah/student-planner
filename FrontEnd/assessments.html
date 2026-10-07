@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Student Planner - Assessments</title>
+
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/assessments.css">
+</head>
+
+<body>
+
+  <div class="app">
+
+    <aside class="sidebar">
+
+      <div class="brand">
+        <div class="brand-mark">SP</div>
+
+        <div class="brand-text">
+          <strong>Student Planner</strong>
+          <span>Stay on track</span>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+
+        <a href="index.html" class="nav-item">
+          <span class="nav-icon">⌂</span>
+          <span>Dashboard</span>
+        </a>
+
+        <a href="courses.html" class="nav-item">
+          <span class="nav-icon">▣</span>
+          <span>Courses</span>
+        </a>
+
+        <a href="tasks.html" class="nav-item">
+          <span class="nav-icon">✓</span>
+          <span>Tasks</span>
+        </a>
+
+        <a href="assessments.html" class="nav-item active">
+          <span class="nav-icon">◫</span>
+          <span>Assessments</span>
+        </a>
+
+        <a href="progress.html" class="nav-item">
+          <span class="nav-icon">↗</span>
+          <span>Progress</span>
+        </a>
+
+      </nav>
+
+      <div class="sidebar-user">
+
+        <div class="user-avatar">U</div>
+
+        <div class="sidebar-user-info">
+          <strong class="user-name">Student</strong>
+          <span>Student account</span>
+        </div>
+
+        <button
+          class="logout-btn"
+          type="button"
+        >
+          Logout
+        </button>
+
+      </div>
+
+    </aside>
+
+    <main class="main-content">
+
+      <header class="topbar">
+
+        <div class="topbar-copy">
+
+          <span class="eyebrow">
+            Track your grades
+          </span>
+
+          <h1>Assessments</h1>
+
+          <p>
+            Keep track of exams, assignments, labs, and other graded work.
+          </p>
+
+        </div>
+
+        <div class="topbar-actions">
+
+          <button
+            id="addAssessmentBtn"
+            class="primary-btn"
+            type="button"
+          >
+            + Add Assessment
+          </button>
+
+        </div>
+
+      </header>
+
+      <section class="assessment-toolbar">
+
+        <div class="assessment-summary">
+
+          <span class="summary-label">
+            Your assessments
+          </span>
+
+          <strong id="assessmentCount">
+            0 Assessments
+          </strong>
+
+        </div>
+
+        <div class="assessment-filters">
+
+          <button
+            class="filter-btn active"
+            type="button"
+            data-filter="All"
+          >
+            All
+          </button>
+
+          <button
+            class="filter-btn"
+            type="button"
+            data-filter="Pending"
+          >
+            Pending
+          </button>
+
+          <button
+            class="filter-btn"
+            type="button"
+            data-filter="In Progress"
+          >
+            In Progress
+          </button>
+
+          <button
+            class="filter-btn"
+            type="button"
+            data-filter="Completed"
+          >
+            Completed
+          </button>
+
+        </div>
+
+      </section>
+
+      <section class="assessments-section">
+
+        <div
+          id="assessmentsList"
+          class="assessments-list"
+        >
+          <div class="assessments-loading">
+            Loading assessments...
+          </div>
+        </div>
+
+      </section>
+
+    </main>
+
+  </div>
+
+  <!-- Add / Edit Assessment Modal -->
+
+  <div
+    id="assessmentModal"
+    class="modal-overlay hidden"
+    aria-hidden="true"
+  >
+
+    <div class="modal assessment-modal">
+
+      <div class="modal-header">
+
+        <div>
+
+          <span class="modal-label">
+            Assessment details
+          </span>
+
+          <h2 id="modalTitle">
+            Add Assessment
+          </h2>
+
+        </div>
+
+        <button
+          id="closeModalBtn"
+          class="modal-close"
+          type="button"
+          aria-label="Close"
+        >
+          ×
+        </button>
+
+      </div>
+
+      <form id="assessmentForm">
+
+        <div class="form-group">
+
+          <label for="assessmentTitle">
+            Assessment Title
+          </label>
+
+          <input
+            id="assessmentTitle"
+            type="text"
+            placeholder="e.g. Operating Systems Midterm"
+            maxlength="150"
+            required
+          >
+
+        </div>
+
+        <div class="form-row">
+
+          <div class="form-group">
+
+            <label for="assessmentType">
+              Type
+            </label>
+
+            <select
+              id="assessmentType"
+              required
+            >
+              <option value="">
+                Select type
+              </option>
+
+              <option value="Quiz">
+                Quiz
+              </option>
+
+              <option value="Assignment">
+                Assignment
+              </option>
+
+              <option value="Lab">
+                Lab
+              </option>
+
+              <option value="Midterm">
+                Midterm
+              </option>
+
+              <option value="Final">
+                Final
+              </option>
+
+              <option value="Project">
+                Project
+              </option>
+
+              <option value="Other">
+                Other
+              </option>
+            </select>
+
+          </div>
+
+          <div class="form-group">
+
+            <label for="assessmentCourse">
+              Course
+            </label>
+
+            <select
+              id="assessmentCourse"
+              required
+            >
+              <option value="">
+                Select course
+              </option>
+            </select>
+
+          </div>
+
+        </div>
+
+        <div class="form-row">
+
+          <div class="form-group">
+
+            <label for="totalMarks">
+              Total Marks
+            </label>
+
+            <input
+              id="totalMarks"
+              type="number"
+              min="0"
+              step="0.01"
+              placeholder="e.g. 20"
+              required
+            >
+
+          </div>
+
+          <div class="form-group">
+
+            <label for="obtainedMarks">
+              Obtained Marks
+            </label>
+
+            <input
+              id="obtainedMarks"
+              type="number"
+              min="0"
+              step="0.01"
+              placeholder="e.g. 18"
+              value="0"
+              required
+            >
+
+          </div>
+
+        </div>
+
+        <div class="form-row">
+
+          <div class="form-group">
+
+            <label for="assessmentDeadline">
+              Deadline
+            </label>
+
+            <input
+              id="assessmentDeadline"
+              type="datetime-local"
+              required
+            >
+
+          </div>
+
+          <div class="form-group">
+
+            <label for="assessmentStatus">
+              Status
+            </label>
+
+            <select
+              id="assessmentStatus"
+              required
+            >
+              <option value="Pending">
+                Pending
+              </option>
+
+              <option value="In Progress">
+                In Progress
+              </option>
+
+              <option value="Completed">
+                Completed
+              </option>
+            </select>
+
+          </div>
+
+        </div>
+
+        <p
+          id="assessmentFormError"
+          class="form-error"
+        ></p>
+
+        <div class="form-actions">
+
+          <button
+            id="cancelAssessmentBtn"
+            class="secondary-btn"
+            type="button"
+          >
+            Cancel
+          </button>
+
+          <button
+            id="saveAssessmentBtn"
+            class="primary-btn"
+            type="submit"
+          >
+            Save Assessment
+          </button>
+
+        </div>
+
+      </form>
+
+    </div>
+
+  </div>
+
+  <!-- Delete Modal -->
+
+  <div
+    id="deleteModal"
+    class="modal-overlay hidden"
+    aria-hidden="true"
+  >
+
+    <div class="modal delete-modal">
+
+      <div class="delete-icon">
+        !
+      </div>
+
+      <h2>
+        Delete Assessment?
+      </h2>
+
+      <p>
+        This assessment will be permanently removed from your planner.
+      </p>
+
+      <p
+        id="deleteAssessmentName"
+        class="delete-assessment-name"
+      ></p>
+
+      <div class="form-actions">
+
+        <button
+          id="cancelDeleteBtn"
+          class="secondary-btn"
+          type="button"
+        >
+          Cancel
+        </button>
+
+        <button
+          id="confirmDeleteBtn"
+          class="danger-btn"
+          type="button"
+        >
+          Delete Assessment
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/assessments.js"></script>
+
+  <script>
+    auth.initializeAuth();
+  </script>
+
+</body>
+</html>

@@ -24,11 +24,13 @@ const getProgress = async (req, res) => {
         course: assessment.course,
         totalMarks: 0,
         obtainedMarks: 0,
+        completedAssessments: 0,
       };
     }
 
     courseProgress[courseId].totalMarks += assessment.totalMarks;
     courseProgress[courseId].obtainedMarks += assessment.obtainedMarks;
+    courseProgress[courseId].completedAssessments += 1;
   });
 
   const overallPercentage =
@@ -38,6 +40,7 @@ const getProgress = async (req, res) => {
     course: course.course,
     totalMarks: course.totalMarks,
     obtainedMarks: course.obtainedMarks,
+    completedAssessments: course.completedAssessments,
     percentage:
       course.totalMarks > 0
         ? (course.obtainedMarks / course.totalMarks) * 100
@@ -49,7 +52,8 @@ const getProgress = async (req, res) => {
     progress: {
       totalMarks,
       obtainedMarks,
-      percentage: overallPercentage,
+      completedAssessments: assessments.length,
+      overallPercentage,
       courses,
     },
   });

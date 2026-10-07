@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Student Planner - Register</title>
+
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/auth.css">
+</head>
+
+<body class="auth-page">
+
+  <main class="auth-container">
+
+    <section class="auth-card register-card">
+
+      <div class="auth-brand">
+        <div class="brand-mark">SP</div>
+
+        <div>
+          <strong>Student Planner</strong>
+          <span>Stay on track</span>
+        </div>
+      </div>
+
+      <div class="auth-heading">
+        <span class="eyebrow">Get started</span>
+
+        <h1>Create your account</h1>
+
+        <p>
+          Start organizing your university life in one place.
+        </p>
+      </div>
+
+      <form id="registerForm" class="auth-form">
+
+        <div class="form-group">
+          <label for="registerName">Full Name</label>
+
+          <input
+            id="registerName"
+            type="text"
+            placeholder="Enter your name"
+            autocomplete="name"
+            maxlength="100"
+            required
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="registerEmail">Email</label>
+
+          <input
+            id="registerEmail"
+            type="email"
+            placeholder="Enter your email"
+            autocomplete="email"
+            required
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="registerPassword">Password</label>
+
+          <div class="password-field">
+            <input
+              id="registerPassword"
+              type="password"
+              placeholder="Create a password"
+              autocomplete="new-password"
+              minlength="6"
+              required
+            >
+
+            <button
+              id="toggleRegisterPassword"
+              class="password-toggle"
+              type="button"
+              aria-label="Show password"
+            >
+              Show
+            </button>
+          </div>
+
+          <span class="input-hint">
+            Use at least 6 characters.
+          </span>
+        </div>
+
+        <div class="form-group">
+          <label for="confirmPassword">Confirm Password</label>
+
+          <div class="password-field">
+            <input
+              id="confirmPassword"
+              type="password"
+              placeholder="Confirm your password"
+              autocomplete="new-password"
+              minlength="6"
+              required
+            >
+
+            <button
+              id="toggleConfirmPassword"
+              class="password-toggle"
+              type="button"
+              aria-label="Show password"
+            >
+              Show
+            </button>
+          </div>
+        </div>
+
+        <div
+          id="registerError"
+          class="auth-message error-message"
+          role="alert"
+        ></div>
+
+        <div
+          id="registerSuccess"
+          class="auth-message success-message"
+          role="status"
+        ></div>
+
+        <button
+          id="registerButton"
+          class="primary-btn auth-submit"
+          type="submit"
+        >
+          Create Account
+        </button>
+
+      </form>
+
+      <div class="auth-footer">
+        <span>Already have an account?</span>
+
+        <a href="login.html">
+          Sign in
+        </a>
+      </div>
+
+    </section>
+
+  </main>
+
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/auth-pages.js"></script>
+
+</body>
+</html>

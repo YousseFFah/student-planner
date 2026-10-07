@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Student Planner - Progress</title>
+
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/progress.css">
+</head>
+
+<body>
+  <div class="app">
+
+    <aside class="sidebar">
+
+      <div class="brand">
+        <div class="brand-mark">SP</div>
+
+        <div class="brand-text">
+          <strong>Student Planner</strong>
+          <span>Stay on track</span>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+
+        <a href="index.html" class="nav-item">
+          <span class="nav-icon">⌂</span>
+          <span>Dashboard</span>
+        </a>
+
+        <a href="courses.html" class="nav-item">
+          <span class="nav-icon">▣</span>
+          <span>Courses</span>
+        </a>
+
+        <a href="tasks.html" class="nav-item">
+          <span class="nav-icon">✓</span>
+          <span>Tasks</span>
+        </a>
+
+        <a href="assessments.html" class="nav-item">
+          <span class="nav-icon">◫</span>
+          <span>Assessments</span>
+        </a>
+
+        <a href="progress.html" class="nav-item active">
+          <span class="nav-icon">↗</span>
+          <span>Progress</span>
+        </a>
+
+      </nav>
+
+      <div class="sidebar-user">
+
+        <div class="user-avatar">U</div>
+
+        <div class="sidebar-user-info">
+          <strong class="user-name">Student</strong>
+          <span>Student account</span>
+        </div>
+
+        <button
+          class="logout-btn"
+          type="button"
+        >
+          Logout
+        </button>
+
+      </div>
+
+    </aside>
+
+    <main class="main-content">
+
+      <header class="topbar">
+
+        <div class="topbar-copy">
+          <span class="eyebrow">Track your performance</span>
+
+          <h1>Progress</h1>
+
+          <p>
+            See how you're performing across your completed assessments.
+          </p>
+        </div>
+
+      </header>
+
+      <section class="progress-overview">
+
+        <div class="progress-score-card">
+
+          <div class="progress-card-heading">
+            <span>Overall Performance</span>
+            <span class="progress-card-icon">%</span>
+          </div>
+
+          <div class="overall-score">
+            <strong id="overallPercentage">0%</strong>
+
+            <span id="overallLabel">
+              No completed assessments yet
+            </span>
+          </div>
+
+          <div class="overall-progress-track">
+            <div
+              id="overallProgressBar"
+              class="overall-progress-fill"
+            ></div>
+          </div>
+
+          <div class="score-details">
+
+            <div>
+              <span>Obtained</span>
+              <strong id="obtainedMarks">0</strong>
+            </div>
+
+            <div>
+              <span>Total</span>
+              <strong id="totalMarks">0</strong>
+            </div>
+
+          </div>
+
+        </div>
+
+        <div class="progress-stat-card">
+
+          <div class="progress-stat-icon blue">
+            ✓
+          </div>
+
+          <div class="progress-stat-content">
+            <span>Completed Assessments</span>
+
+            <strong id="completedAssessments">
+              0
+            </strong>
+
+            <small>
+              Included in your overall score
+            </small>
+          </div>
+
+        </div>
+
+        <div class="progress-stat-card">
+
+          <div class="progress-stat-icon green">
+            ↗
+          </div>
+
+          <div class="progress-stat-content">
+            <span>Courses Tracked</span>
+
+            <strong id="coursesTracked">
+              0
+            </strong>
+
+            <small>
+              With completed assessments
+            </small>
+          </div>
+
+        </div>
+
+      </section>
+
+      <section class="course-progress-section">
+
+        <div class="section-heading">
+
+          <div>
+            <span class="section-label">
+              Course breakdown
+            </span>
+
+            <h2>
+              Progress by Course
+            </h2>
+          </div>
+
+        </div>
+
+        <div
+          id="courseProgressList"
+          class="course-progress-list"
+        >
+
+          <div class="progress-loading">
+            Loading progress...
+          </div>
+
+        </div>
+
+      </section>
+
+      <section
+        id="progressEmpty"
+        class="progress-empty hidden"
+      >
+
+        <div class="empty-icon">
+          ↗
+        </div>
+
+        <h2>
+          No progress to show yet
+        </h2>
+
+        <p>
+          Complete an assessment and add your obtained marks to start tracking your academic progress.
+        </p>
+
+        <a
+          href="assessments.html"
+          class="primary-btn"
+        >
+          Go to Assessments
+        </a>
+
+      </section>
+
+    </main>
+
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/progress.js"></script>
+
+  <script>
+    auth.initializeAuth();
+  </script>
+
+</body>
+</html>
