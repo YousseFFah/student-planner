@@ -136,7 +136,9 @@ const renderAssessments = (assessments) => {
 
             <p class="dashboard-item-course">
               ${escapeHtml(
-                `${getCourseName(assessment)} · ${assessment.type || "Assessment"}`
+                `${getCourseName(assessment)} · ${
+                  assessment.type || "Assessment"
+                }`,
               )}
             </p>
           </div>
@@ -151,17 +153,30 @@ const renderAssessments = (assessments) => {
 };
 
 const updateStats = (dashboard) => {
-  document.getElementById("totalCourses").textContent =
-    dashboard.totalCourses ?? 0;
+  const totalCourses = dashboard.totalCourses ?? 0;
 
-  document.getElementById("totalAssessments").textContent =
-    dashboard.totalAssessments ?? 0;
+  const totalAssessments = dashboard.totalAssessments ?? 0;
+  const completedAssessments = dashboard.completedAssessments ?? 0;
 
-  document.getElementById("completedTasks").textContent =
-    dashboard.completedTasks ?? 0;
+  const completedTasks = dashboard.completedTasks ?? 0;
 
-  document.getElementById("pendingTasks").textContent =
-    dashboard.pendingTasks ?? 0;
+  const pendingTasks = dashboard.pendingTasks ?? 0;
+
+  const pendingAssessments = Math.max(
+    totalAssessments - completedAssessments,
+    0,
+  );
+
+  const completedWork = completedTasks + completedAssessments;
+
+  document.getElementById("totalCourses").textContent = totalCourses;
+
+  document.getElementById("pendingTasks").textContent = pendingTasks;
+
+  document.getElementById("pendingAssessments").textContent =
+    pendingAssessments;
+
+  document.getElementById("completedWork").textContent = completedWork;
 };
 
 const updateFocus = (dashboard) => {
@@ -178,8 +193,10 @@ const updateFocus = (dashboard) => {
 
   if (tasks.length === 0 && assessments.length === 0) {
     title.textContent = "You're all caught up!";
+
     text.textContent =
       "There are no upcoming tasks or assessments. Keep up the good work.";
+
     return;
   }
 
@@ -188,15 +205,19 @@ const updateFocus = (dashboard) => {
 
   if (!nextTask && nextAssessment) {
     title.textContent = `Your next assessment is "${nextAssessment.title}".`;
-    text.textContent = `It is due on ${formatDate(
-      nextAssessment.deadline
-    )}.`;
+
+    text.textContent =
+      `It is due on ${formatDate(nextAssessment.deadline)}.`;
+
     return;
   }
 
   if (nextTask && !nextAssessment) {
     title.textContent = `Your next task is "${nextTask.title}".`;
-    text.textContent = `It is due on ${formatDate(nextTask.deadline)}.`;
+
+    text.textContent =
+      `It is due on ${formatDate(nextTask.deadline)}.`;
+
     return;
   }
 
@@ -205,20 +226,24 @@ const updateFocus = (dashboard) => {
 
   if (taskDate <= assessmentDate) {
     title.textContent = `Focus on "${nextTask.title}" first.`;
-    text.textContent = `Your next task is due on ${formatDate(
-      nextTask.deadline
-    )}.`;
+
+    text.textContent =
+      `Your next task is due on ${formatDate(nextTask.deadline)}.`;
   } else {
     title.textContent = `Focus on "${nextAssessment.title}" first.`;
-    text.textContent = `Your next assessment is due on ${formatDate(
-      nextAssessment.deadline
-    )}.`;
+
+    text.textContent =
+      `Your next assessment is due on ${formatDate(
+        nextAssessment.deadline,
+      )}.`;
   }
 };
 
 const escapeHtml = (value) => {
   const div = document.createElement("div");
+
   div.textContent = value ?? "";
+
   return div.innerHTML;
 };
 
@@ -229,6 +254,7 @@ const loadDashboard = async () => {
     updateStats(dashboard);
 
     renderTasks(dashboard.upcomingTasks || []);
+
     renderAssessments(dashboard.upcomingAssessments || []);
 
     updateFocus(dashboard);
