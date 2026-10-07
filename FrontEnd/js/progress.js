@@ -126,7 +126,7 @@ const updateOverview = (data) => {
     );
 
   percentageElement.textContent =
-    `${overallPercentage}%`;
+    `${overallPercentage.toFixed(2)}%`;
 
   totalMarksElement.textContent =
     formatMarks(totalMarks);
@@ -277,7 +277,7 @@ const renderCourseProgress = (data) => {
               </div>
 
               <strong class="course-progress-percentage">
-                ${course.percentage}%
+                ${course.percentage.toFixed(2)}%
               </strong>
 
             </div>

@@ -382,7 +382,7 @@ const renderAssessments = () => {
             </div>
 
             <div class="assessment-percentage">
-              ${percentage}%
+              ${percentage.toFixed(2)}%
             </div>
 
             <div
