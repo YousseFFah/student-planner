@@ -6,7 +6,9 @@ let currentFilter = "All";
 
 const escapeHtml = (value) => {
   const div = document.createElement("div");
+
   div.textContent = value ?? "";
+
   return div.innerHTML;
 };
 
@@ -174,6 +176,7 @@ const populateCourses = () => {
       document.createElement("option");
 
     option.value = id;
+
     option.textContent =
       `${course.name} (${course.code})`;
 
@@ -252,15 +255,23 @@ const renderTasks = () => {
           task.status
         );
 
+      const description =
+        typeof task.description === "string"
+          ? task.description.trim()
+          : "";
+
       return `
         <article
           class="task-item ${statusClass}"
           data-task-id="${escapeHtml(id)}"
         >
+
           <div class="task-status-dot ${statusClass}"></div>
 
           <div class="task-main">
+
             <div class="task-title-row">
+
               <p class="task-title">
                 ${escapeHtml(task.title)}
               </p>
@@ -268,9 +279,11 @@ const renderTasks = () => {
               <span class="task-type">
                 ${escapeHtml(task.type)}
               </span>
+
             </div>
 
             <div class="task-meta">
+
               <span>
                 ${escapeHtml(
                   getCourseName(task)
@@ -284,7 +297,19 @@ const renderTasks = () => {
               <span>
                 ${escapeHtml(task.status)}
               </span>
+
             </div>
+
+            ${
+              description
+                ? `
+                  <p class="task-description">
+                    ${escapeHtml(description)}
+                  </p>
+                `
+                : ""
+            }
+
           </div>
 
           <div class="task-deadline ${deadlineState}">
@@ -294,6 +319,7 @@ const renderTasks = () => {
           </div>
 
           <div class="task-actions">
+
             <button
               type="button"
               class="task-action-btn edit"
@@ -311,7 +337,9 @@ const renderTasks = () => {
             >
               Delete
             </button>
+
           </div>
+
         </article>
       `;
     })
@@ -337,10 +365,11 @@ const openTaskModal = (task = null) => {
   const statusInput =
     document.getElementById("taskStatus");
 
+  const statusGroup =
+    document.getElementById("taskStatusGroup");
+
   const descriptionInput =
-    document.getElementById(
-      "taskDescription"
-    );
+    document.getElementById("taskDescription");
 
   const modalTitle =
     document.getElementById("modalTitle");
@@ -358,6 +387,7 @@ const openTaskModal = (task = null) => {
     !courseInput ||
     !deadlineInput ||
     !statusInput ||
+    !statusGroup ||
     !descriptionInput ||
     !modalTitle ||
     !saveButton ||
@@ -382,12 +412,50 @@ const openTaskModal = (task = null) => {
   errorBox.textContent = "";
   errorBox.classList.remove("visible");
 
-  if (task) {
+  /*
+   * ADD TASK
+   */
+  if (!task) {
+    editingTaskId = null;
+
+    modalTitle.textContent =
+      "Add Task";
+
+    saveButton.textContent =
+      "Save Task";
+
+    /*
+     * New tasks are always Pending.
+     * User doesn't need to choose status.
+     */
+    statusGroup.classList.add("hidden");
+
+    /*
+     * Required because the field is hidden
+     * and shouldn't participate in validation.
+     */
+    statusInput.required = false;
+    statusInput.value = "Pending";
+  }
+
+  /*
+   * EDIT TASK
+   */
+  else {
     editingTaskId = getItemId(task);
 
-    modalTitle.textContent = "Edit Task";
+    modalTitle.textContent =
+      "Edit Task";
+
     saveButton.textContent =
       "Save Changes";
+
+    /*
+     * Show status only while editing.
+     */
+    statusGroup.classList.remove("hidden");
+
+    statusInput.required = true;
 
     titleInput.value =
       task.title || "";
@@ -409,11 +477,12 @@ const openTaskModal = (task = null) => {
         new Date(task.deadline);
 
       if (!Number.isNaN(date.getTime())) {
-        const localDate = new Date(
-          date.getTime() -
-            date.getTimezoneOffset() *
-              60000
-        );
+        const localDate =
+          new Date(
+            date.getTime() -
+              date.getTimezoneOffset() *
+                60000
+          );
 
         deadlineInput.value =
           localDate
@@ -421,17 +490,10 @@ const openTaskModal = (task = null) => {
             .slice(0, 16);
       }
     }
-  } else {
-    editingTaskId = null;
-
-    modalTitle.textContent =
-      "Add Task";
-
-    saveButton.textContent =
-      "Save Task";
   }
 
   modal.classList.remove("hidden");
+
   modal.setAttribute(
     "aria-hidden",
     "false"
@@ -451,6 +513,7 @@ const closeTaskModal = () => {
   }
 
   modal.classList.add("hidden");
+
   modal.setAttribute(
     "aria-hidden",
     "true"
@@ -481,10 +544,15 @@ const getFormData = () => {
       "taskDeadline"
     ).value;
 
-  const status =
+  const statusInput =
     document.getElementById(
       "taskStatus"
-    ).value;
+    );
+
+  const status =
+    statusInput
+      ? statusInput.value
+      : "Pending";
 
   const description =
     document
@@ -536,7 +604,15 @@ const getFormData = () => {
     type,
     course,
     deadline: date.toISOString(),
-    status,
+
+    /*
+     * New task = Pending automatically.
+     * Edit task = use selected status.
+     */
+    status: editingTaskId
+      ? status
+      : "Pending",
+
     description,
   };
 };
@@ -566,6 +642,7 @@ const saveTask = async (event) => {
       getFormData();
 
     errorBox.textContent = "";
+
     errorBox.classList.remove(
       "visible"
     );
@@ -595,6 +672,7 @@ const saveTask = async (event) => {
     closeTaskModal();
 
     await loadData();
+
   } catch (error) {
     console.error(
       "Save task error:",
@@ -608,6 +686,7 @@ const saveTask = async (event) => {
     errorBox.classList.add(
       "visible"
     );
+
   } finally {
     saveButton.disabled = false;
 
@@ -743,6 +822,7 @@ const confirmDeleteTask = async () => {
 
   try {
     button.disabled = true;
+
     button.textContent =
       "Deleting...";
 
@@ -753,6 +833,7 @@ const confirmDeleteTask = async () => {
     closeDeleteModal();
 
     await loadData();
+
   } catch (error) {
     console.error(
       "Delete task error:",
@@ -763,8 +844,10 @@ const confirmDeleteTask = async () => {
       error.message ||
         "Unable to delete task."
     );
+
   } finally {
     button.disabled = false;
+
     button.textContent =
       originalText;
   }
@@ -802,7 +885,9 @@ const loadData = async () => {
       loadedTasks;
 
     populateCourses();
+
     renderTasks();
+
   } catch (error) {
     console.error(
       "Tasks loading error:",
@@ -811,6 +896,7 @@ const loadData = async () => {
 
     tasksList.innerHTML = `
       <div class="tasks-empty">
+
         <strong>
           Unable to load tasks
         </strong>
@@ -820,6 +906,7 @@ const loadData = async () => {
             error.message
           )}
         </span>
+
       </div>
     `;
   }
@@ -841,7 +928,11 @@ const initializeTasks = () => {
       "deleteModal"
     );
 
-  if (!taskForm || !taskModal || !deleteModal) {
+  if (
+    !taskForm ||
+    !taskModal ||
+    !deleteModal
+  ) {
     console.error(
       "Task page elements are missing."
     );
@@ -854,15 +945,10 @@ const initializeTasks = () => {
     saveTask
   );
 
-  /*
-   * Global event delegation.
-   * This keeps Add, Edit and Delete
-   * working even when task elements
-   * are re-rendered dynamically.
-   */
   document.addEventListener(
     "click",
     (event) => {
+
       const addButton =
         event.target.closest(
           "#addTaskBtn"
@@ -870,7 +956,9 @@ const initializeTasks = () => {
 
       if (addButton) {
         event.preventDefault();
+
         openTaskModal();
+
         return;
       }
 
@@ -917,7 +1005,9 @@ const initializeTasks = () => {
 
       if (closeButton) {
         event.preventDefault();
+
         closeTaskModal();
+
         return;
       }
 
@@ -928,7 +1018,9 @@ const initializeTasks = () => {
 
       if (cancelTaskButton) {
         event.preventDefault();
+
         closeTaskModal();
+
         return;
       }
 
@@ -939,7 +1031,9 @@ const initializeTasks = () => {
 
       if (cancelDeleteButton) {
         event.preventDefault();
+
         closeDeleteModal();
+
         return;
       }
 
@@ -950,7 +1044,9 @@ const initializeTasks = () => {
 
       if (confirmDeleteButton) {
         event.preventDefault();
+
         confirmDeleteTask();
+
         return;
       }
 

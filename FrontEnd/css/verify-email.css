@@ -1,3 +1,7 @@
+/* =========================
+   EMAIL VERIFICATION
+========================= */
+
 .verification-card {
   text-align: center;
 }
@@ -5,25 +9,37 @@
 .verification-icon {
   width: 72px;
   height: 72px;
+
   margin: 0 auto 24px;
+
   display: flex;
   align-items: center;
   justify-content: center;
+
   border-radius: 50%;
-  background: var(--blue-light);
-  color: var(--blue);
+
+  background: rgba(79, 134, 255, 0.10);
+  border: 1px solid rgba(79, 134, 255, 0.18);
+
+  color: #6e9fff;
+
   font-size: 30px;
   font-weight: 800;
+
+  box-shadow:
+    0 10px 30px rgba(49, 87, 223, 0.12);
 }
 
 .verification-card.success .verification-icon {
-  background: var(--green-light);
-  color: var(--green);
+  background: rgba(43, 179, 111, 0.10);
+  border-color: rgba(43, 179, 111, 0.20);
+  color: #62d99d;
 }
 
 .verification-card.error .verification-icon {
-  background: var(--red-light);
-  color: var(--red);
+  background: rgba(239, 91, 91, 0.10);
+  border-color: rgba(239, 91, 91, 0.20);
+  color: #ff8585;
 }
 
 .verification-card .auth-heading {
@@ -43,6 +59,7 @@
 .verification-button {
   min-width: 150px;
   text-align: center;
+  text-decoration: none;
 }
 
 .hidden {

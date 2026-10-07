@@ -10,12 +10,13 @@
   <link rel="stylesheet" href="css/dashboard.css" />
 </head>
 
-<body>
+<body class="dashboard-page">
   <div class="app">
 
     <aside class="sidebar">
       <div class="brand">
         <div class="brand-mark">SP</div>
+
         <div class="brand-text">
           <strong>Student Planner</strong>
           <span>Stay on track</span>
@@ -57,17 +58,32 @@
           <span>Student account</span>
         </div>
 
-        <button class="logout-btn" type="button">Logout</button>
+        <button class="logout-btn" type="button">
+          Logout
+        </button>
       </div>
     </aside>
 
     <main class="main-content">
 
+      <!-- =========================
+           TOPBAR
+      ========================== -->
+
       <header class="topbar">
+
         <div class="topbar-copy">
-          <span class="eyebrow">Overview</span>
-          <h1>Dashboard</h1>
-          <p>Here’s what you need to focus on today.</p>
+          <span class="eyebrow">STUDENT PLANNER</span>
+
+          <h1>
+            Good morning,
+            <span class="welcome-name user-name">Student</span>
+            <span class="wave">👋</span>
+          </h1>
+
+          <p>
+            Small steps every day lead to big results.
+          </p>
         </div>
 
         <div class="topbar-actions">
@@ -75,108 +91,278 @@
             + Add Task
           </a>
         </div>
+
       </header>
+
+
+      <!-- =========================
+           HERO
+      ========================== -->
+
+      <section class="dashboard-hero">
+
+        <div class="hero-copy">
+          <span class="hero-badge">
+            This Week
+          </span>
+
+          <h2>
+            You're
+            <span>closer</span>
+            than you think.
+          </h2>
+
+          <p>
+            Plan. Study. Achieve.
+          </p>
+        </div>
+
+        <div class="hero-decoration">
+          <div class="hero-sun"></div>
+          <div class="hero-mountain mountain-one"></div>
+          <div class="hero-mountain mountain-two"></div>
+          <div class="hero-laptop"></div>
+        </div>
+
+      </section>
+
+
+      <!-- =========================
+           STATS
+      ========================== -->
 
       <section class="stats-grid">
 
         <article class="stat-card">
-          <div class="stat-icon blue">▣</div>
-
-          <div>
-            <span class="stat-label">Courses</span>
-            <strong id="totalCourses">0</strong>
+          <div class="stat-icon blue">
+            ▣
           </div>
+
+          <div class="stat-content">
+            <span class="stat-label">
+              Courses
+            </span>
+
+            <strong id="totalCourses">
+              0
+            </strong>
+
+            <small>
+              Active courses
+            </small>
+          </div>
+
+          <span class="stat-arrow">
+            →
+          </span>
         </article>
 
-        <article class="stat-card">
-          <div class="stat-icon purple">◫</div>
 
-          <div>
-            <span class="stat-label">Assessments</span>
-            <strong id="totalAssessments">0</strong>
+        <article class="stat-card">
+          <div class="stat-icon purple">
+            ✓
           </div>
+
+          <div class="stat-content">
+            <span class="stat-label">
+              Tasks
+            </span>
+
+            <strong id="completedTasks">
+              0
+            </strong>
+
+            <small>
+              Completed
+            </small>
+          </div>
+
+          <span class="stat-arrow">
+            →
+          </span>
         </article>
 
-        <article class="stat-card">
-          <div class="stat-icon green">✓</div>
 
-          <div>
-            <span class="stat-label">Completed Tasks</span>
-            <strong id="completedTasks">0</strong>
+        <article class="stat-card">
+          <div class="stat-icon green">
+            ◫
           </div>
+
+          <div class="stat-content">
+            <span class="stat-label">
+              Assessments
+            </span>
+
+            <strong id="totalAssessments">
+              0
+            </strong>
+
+            <small>
+              Upcoming work
+            </small>
+          </div>
+
+          <span class="stat-arrow">
+            →
+          </span>
         </article>
 
-        <article class="stat-card">
-          <div class="stat-icon orange">!</div>
 
-          <div>
-            <span class="stat-label">Pending Tasks</span>
-            <strong id="pendingTasks">0</strong>
+        <article class="stat-card">
+          <div class="stat-icon orange">
+            !
           </div>
+
+          <div class="stat-content">
+            <span class="stat-label">
+              Pending
+            </span>
+
+            <strong id="pendingTasks">
+              0
+            </strong>
+
+            <small>
+              Tasks remaining
+            </small>
+          </div>
+
+          <span class="stat-arrow">
+            →
+          </span>
         </article>
 
       </section>
 
+
+      <!-- =========================
+           MAIN DASHBOARD
+      ========================== -->
+
       <section class="dashboard-grid">
 
+        <!-- UPCOMING TASKS -->
+
         <div class="panel upcoming-panel">
+
           <div class="panel-heading">
+
             <div>
-              <span class="section-label">Next up</span>
-              <h2>Upcoming Tasks</h2>
+              <span class="section-label">
+                Next up
+              </span>
+
+              <h2>
+                Upcoming Tasks
+              </h2>
             </div>
 
-            <a href="tasks.html" class="panel-link">View all</a>
+            <a
+              href="tasks.html"
+              class="panel-link"
+            >
+              View all →
+            </a>
+
           </div>
 
-          <div id="upcomingTasks" class="dashboard-list">
+          <div
+            id="upcomingTasks"
+            class="dashboard-list"
+          >
             <div class="loading-state">
               Loading tasks...
             </div>
           </div>
+
         </div>
 
+
+        <!-- UPCOMING ASSESSMENTS -->
+
         <div class="panel upcoming-panel">
+
           <div class="panel-heading">
+
             <div>
-              <span class="section-label">Deadlines</span>
-              <h2>Upcoming Assessments</h2>
+              <span class="section-label">
+                Deadlines
+              </span>
+
+              <h2>
+                Upcoming Assessments
+              </h2>
             </div>
 
-            <a href="assessments.html" class="panel-link">View all</a>
+            <a
+              href="assessments.html"
+              class="panel-link"
+            >
+              View all →
+            </a>
+
           </div>
 
-          <div id="upcomingAssessments" class="dashboard-list">
+          <div
+            id="upcomingAssessments"
+            class="dashboard-list"
+          >
             <div class="loading-state">
               Loading assessments...
             </div>
           </div>
+
         </div>
 
       </section>
 
+
+      <!-- =========================
+           FOCUS
+      ========================== -->
+
       <section class="panel focus-panel">
+
         <div class="panel-heading">
+
           <div>
-            <span class="section-label">Your workload</span>
-            <h2>What do I need to do now?</h2>
+            <span class="section-label">
+              Your workload
+            </span>
+
+            <h2>
+              What do I need to do now?
+            </h2>
           </div>
+
         </div>
 
-        <div class="focus-content">
-          <div class="focus-icon">✓</div>
 
-          <div>
-            <h3 id="focusTitle">Loading your priorities...</h3>
+        <div class="focus-content">
+
+          <div class="focus-icon">
+            ✓
+          </div>
+
+          <div class="focus-copy">
+
+            <h3 id="focusTitle">
+              Loading your priorities...
+            </h3>
+
             <p id="focusText">
               We are checking your upcoming work.
             </p>
+
           </div>
+
         </div>
+
       </section>
 
     </main>
   </div>
+
 
   <script src="js/api.js"></script>
   <script src="js/auth.js"></script>
@@ -185,5 +371,6 @@
   <script>
     auth.initializeAuth();
   </script>
+
 </body>
 </html>

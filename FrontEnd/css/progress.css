@@ -1,3 +1,7 @@
+/* =========================================
+   PROGRESS PAGE
+========================================= */
+
 .progress-overview {
   display: grid;
   grid-template-columns: 1.5fr 1fr 1fr;
@@ -7,10 +11,10 @@
 
 .progress-score-card,
 .progress-stat-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
+  background: linear-gradient(145deg, #0d1b2e, #091525);
+  border: 1px solid rgba(87, 119, 166, 0.16);
+  border-radius: 14px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
 }
 
 .progress-score-card {
@@ -21,7 +25,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  color: var(--text-muted);
+  color: #71839d;
   font-size: 12px;
   font-weight: 700;
   text-transform: uppercase;
@@ -35,8 +39,8 @@
   align-items: center;
   justify-content: center;
   border-radius: 8px;
-  background: var(--blue-light);
-  color: var(--blue);
+  background: rgba(63, 115, 255, 0.12);
+  color: #79a5ff;
   font-size: 12px;
   font-weight: 800;
 }
@@ -49,14 +53,14 @@
 }
 
 .overall-score strong {
-  color: var(--text);
+  color: #edf3ff;
   font-size: 40px;
   line-height: 1;
   letter-spacing: -1px;
 }
 
 .overall-score span {
-  color: var(--text-muted);
+  color: #657893;
   font-size: 12px;
 }
 
@@ -66,14 +70,14 @@
   margin-top: 22px;
   overflow: hidden;
   border-radius: 999px;
-  background: var(--bg);
+  background: #07111f;
 }
 
 .overall-progress-fill {
   width: 0;
   height: 100%;
   border-radius: inherit;
-  background: var(--blue);
+  background: linear-gradient(90deg, #3157df, #6e9fff);
   transition: width 0.5s ease;
 }
 
@@ -91,12 +95,12 @@
 }
 
 .score-details span {
-  color: var(--text-muted);
+  color: #60728f;
   font-size: 11px;
 }
 
 .score-details strong {
-  color: var(--text);
+  color: #edf3ff;
   font-size: 14px;
 }
 
@@ -105,6 +109,13 @@
   align-items: flex-start;
   gap: 15px;
   padding: 24px;
+  transition: all 0.2s ease;
+}
+
+.progress-stat-card:hover {
+  border-color: rgba(79, 134, 255, 0.32);
+  transform: translateY(-1px);
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.2);
 }
 
 .progress-stat-icon {
@@ -120,13 +131,13 @@
 }
 
 .progress-stat-icon.blue {
-  background: var(--blue-light);
-  color: var(--blue);
+  background: rgba(63, 115, 255, 0.12);
+  color: #6e9fff;
 }
 
 .progress-stat-icon.green {
-  background: var(--green-light);
-  color: var(--green);
+  background: rgba(53, 201, 138, 0.1);
+  color: #42d69a;
 }
 
 .progress-stat-content {
@@ -136,22 +147,27 @@
 }
 
 .progress-stat-content > span {
-  color: var(--text-muted);
+  color: #71839d;
   font-size: 11px;
   font-weight: 700;
 }
 
 .progress-stat-content strong {
-  color: var(--text);
+  color: #edf3ff;
   font-size: 26px;
   line-height: 1.1;
 }
 
 .progress-stat-content small {
-  color: var(--text-muted);
+  color: #60728f;
   font-size: 10px;
   line-height: 1.4;
 }
+
+
+/* =========================================
+   COURSE PROGRESS
+========================================= */
 
 .course-progress-section {
   margin-bottom: 30px;
@@ -164,7 +180,7 @@
 .section-label {
   display: block;
   margin-bottom: 5px;
-  color: var(--blue);
+  color: #6e9fff;
   font-size: 10px;
   font-weight: 800;
   letter-spacing: 0.8px;
@@ -173,7 +189,7 @@
 
 .section-heading h2 {
   margin: 0;
-  color: var(--text);
+  color: #edf3ff;
   font-size: 19px;
   letter-spacing: -0.2px;
 }
@@ -186,15 +202,16 @@
 
 .course-progress-card {
   padding: 20px 22px;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  transition: var(--transition);
+  background: linear-gradient(145deg, #0d1b2e, #091525);
+  border: 1px solid rgba(87, 119, 166, 0.16);
+  border-radius: 14px;
+  transition: all 0.2s ease;
 }
 
 .course-progress-card:hover {
-  border-color: #d8deea;
-  box-shadow: var(--shadow);
+  border-color: rgba(79, 134, 255, 0.32);
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.18);
+  transform: translateY(-1px);
 }
 
 .course-progress-top {
@@ -210,19 +227,19 @@
 
 .course-progress-name {
   margin: 0;
-  color: var(--text);
+  color: #edf3ff;
   font-size: 14px;
   font-weight: 700;
 }
 
 .course-progress-code {
   margin: 4px 0 0;
-  color: var(--text-muted);
+  color: #60728f;
   font-size: 11px;
 }
 
 .course-progress-percentage {
-  color: var(--blue);
+  color: #6e9fff;
   font-size: 17px;
   font-weight: 800;
 }
@@ -233,14 +250,14 @@
   margin-top: 16px;
   overflow: hidden;
   border-radius: 999px;
-  background: var(--bg);
+  background: #07111f;
 }
 
 .course-progress-fill {
   width: 0;
   height: 100%;
   border-radius: inherit;
-  background: var(--blue);
+  background: linear-gradient(90deg, #3157df, #6e9fff);
   transition: width 0.5s ease;
 }
 
@@ -252,23 +269,24 @@
   margin-top: 10px;
 }
 
-.course-progress-marks {
-  color: var(--text-muted);
+.course-progress-marks,
+.course-progress-assessments {
+  color: #60728f;
   font-size: 11px;
 }
 
-.course-progress-assessments {
-  color: var(--text-muted);
-  font-size: 11px;
-}
+
+/* =========================================
+   LOADING / EMPTY
+========================================= */
 
 .progress-loading,
 .progress-list-empty {
   padding: 45px 24px;
-  background: var(--surface);
-  border: 1px dashed var(--border);
-  border-radius: var(--radius);
-  color: var(--text-muted);
+  background: linear-gradient(145deg, #0d1b2e, #091525);
+  border: 1px dashed rgba(87, 119, 166, 0.2);
+  border-radius: 14px;
+  color: #657893;
   text-align: center;
   font-size: 13px;
 }
@@ -281,9 +299,9 @@
   margin: 60px auto;
   padding: 40px 25px;
   text-align: center;
-  background: var(--surface);
-  border: 1px dashed var(--border);
-  border-radius: var(--radius);
+  background: linear-gradient(145deg, #0d1b2e, #091525);
+  border: 1px dashed rgba(87, 119, 166, 0.2);
+  border-radius: 14px;
 }
 
 .progress-empty.hidden {
@@ -298,25 +316,98 @@
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  background: var(--blue-light);
-  color: var(--blue);
+  background: rgba(63, 115, 255, 0.12);
+  color: #6e9fff;
   font-size: 22px;
   font-weight: 800;
 }
 
 .progress-empty h2 {
   margin: 0;
-  color: var(--text);
+  color: #edf3ff;
   font-size: 19px;
 }
 
 .progress-empty p {
   max-width: 430px;
   margin: 10px 0 22px;
-  color: var(--text-muted);
+  color: #71839d;
   font-size: 13px;
   line-height: 1.6;
 }
+
+
+/* =========================================
+   PAGE BACKGROUND
+========================================= */
+
+body {
+  background: #07111f !important;
+}
+
+.app {
+  background: #07111f;
+}
+
+.main-content {
+  min-height: 100vh;
+  background:
+    radial-gradient(
+      circle at 85% 0%,
+      rgba(42, 92, 180, 0.13),
+      transparent 30%
+    ),
+    #07111f !important;
+}
+
+.sidebar {
+  background: linear-gradient(
+    180deg,
+    #091526 0%,
+    #071221 100%
+  ) !important;
+
+  border-right: 1px solid rgba(89, 123, 173, 0.1);
+}
+
+.nav-item.active {
+  background: linear-gradient(
+    90deg,
+    #3157df,
+    #384de0
+  ) !important;
+
+  box-shadow: 0 7px 20px rgba(49, 87, 223, 0.2);
+}
+
+.nav-item.active .nav-icon {
+  color: #ffffff;
+}
+
+.brand-mark {
+  background: linear-gradient(
+    135deg,
+    #3f73ff,
+    #6e9fff
+  ) !important;
+}
+
+.topbar-copy h1 {
+  color: #f5f7ff;
+}
+
+.topbar-copy p {
+  color: #8190a8;
+}
+
+.eyebrow {
+  color: #6e9fff;
+}
+
+
+/* =========================================
+   RESPONSIVE
+========================================= */
 
 @media (max-width: 1050px) {
   .progress-overview {

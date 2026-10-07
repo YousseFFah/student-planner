@@ -456,6 +456,11 @@ const openAssessmentModal = (
       "obtainedMarks"
     );
 
+  const obtainedMarksGroup =
+    document.getElementById(
+      "obtainedMarksGroup"
+    );
+
   const deadlineInput =
     document.getElementById(
       "assessmentDeadline"
@@ -464,6 +469,11 @@ const openAssessmentModal = (
   const statusInput =
     document.getElementById(
       "assessmentStatus"
+    );
+
+  const statusGroup =
+    document.getElementById(
+      "assessmentStatusGroup"
     );
 
   const modalTitle =
@@ -487,14 +497,51 @@ const openAssessmentModal = (
   typeInput.value = "";
   courseInput.value = "";
   totalMarksInput.value = "";
-  obtainedMarksInput.value = "0";
+  obtainedMarksInput.value = "";
   deadlineInput.value = "";
   statusInput.value = "Pending";
 
   errorBox.textContent = "";
   errorBox.classList.remove("visible");
 
-  if (assessment) {
+  /*
+   * ADD ASSESSMENT
+   */
+  if (!assessment) {
+    editingAssessmentId = null;
+
+    modalTitle.textContent =
+      "Add Assessment";
+
+    saveButton.textContent =
+      "Save Assessment";
+
+    /*
+     * Hide fields that only make sense
+     * after the assessment is graded.
+     */
+    obtainedMarksGroup.classList.add(
+      "hidden"
+    );
+
+    statusGroup.classList.add(
+      "hidden"
+    );
+
+    obtainedMarksInput.required = false;
+    statusInput.required = false;
+
+    /*
+     * Defaults for a new assessment.
+     */
+    obtainedMarksInput.value = "0";
+    statusInput.value = "Pending";
+  }
+
+  /*
+   * EDIT ASSESSMENT
+   */
+  else {
     editingAssessmentId =
       getItemId(assessment);
 
@@ -503,6 +550,20 @@ const openAssessmentModal = (
 
     saveButton.textContent =
       "Save Changes";
+
+    /*
+     * Show fields only in Edit.
+     */
+    obtainedMarksGroup.classList.remove(
+      "hidden"
+    );
+
+    statusGroup.classList.remove(
+      "hidden"
+    );
+
+    obtainedMarksInput.required = true;
+    statusInput.required = true;
 
     titleInput.value =
       assessment.title || "";
@@ -546,17 +607,11 @@ const openAssessmentModal = (
             .slice(0, 16);
       }
     }
-  } else {
-    editingAssessmentId = null;
-
-    modalTitle.textContent =
-      "Add Assessment";
-
-    saveButton.textContent =
-      "Save Assessment";
   }
 
-  modal.classList.remove("hidden");
+  modal.classList.remove(
+    "hidden"
+  );
 
   modal.setAttribute(
     "aria-hidden",
@@ -578,7 +633,9 @@ const closeAssessmentModal = () => {
     return;
   }
 
-  modal.classList.add("hidden");
+  modal.classList.add(
+    "hidden"
+  );
 
   modal.setAttribute(
     "aria-hidden",
@@ -590,9 +647,12 @@ const closeAssessmentModal = () => {
 
 const getFormData = () => {
   const title =
-    document.getElementById(
-      "assessmentTitle"
-    ).value.trim();
+    document
+      .getElementById(
+        "assessmentTitle"
+      )
+      .value
+      .trim();
 
   const type =
     document.getElementById(
@@ -609,19 +669,19 @@ const getFormData = () => {
       "totalMarks"
     ).value;
 
-  const obtainedMarksValue =
+  const obtainedMarksInput =
     document.getElementById(
       "obtainedMarks"
-    ).value;
+    );
+
+  const statusInput =
+    document.getElementById(
+      "assessmentStatus"
+    );
 
   const deadline =
     document.getElementById(
       "assessmentDeadline"
-    ).value;
-
-  const status =
-    document.getElementById(
-      "assessmentStatus"
     ).value;
 
   if (!title) {
@@ -651,27 +711,6 @@ const getFormData = () => {
     );
   }
 
-  if (
-    obtainedMarksValue === "" ||
-    Number(obtainedMarksValue) < 0
-  ) {
-    throw new Error(
-      "Obtained marks cannot be negative."
-    );
-  }
-
-  const totalMarks =
-    Number(totalMarksValue);
-
-  const obtainedMarks =
-    Number(obtainedMarksValue);
-
-  if (obtainedMarks > totalMarks) {
-    throw new Error(
-      "Obtained marks cannot be greater than total marks."
-    );
-  }
-
   if (!deadline) {
     throw new Error(
       "Please select a deadline."
@@ -691,14 +730,55 @@ const getFormData = () => {
     );
   }
 
+  const totalMarks =
+    Number(totalMarksValue);
+
+  /*
+   * ADD
+   */
+  if (!editingAssessmentId) {
+    return {
+      title,
+      type,
+      course,
+      totalMarks,
+      obtainedMarks: 0,
+      deadline: date.toISOString(),
+      status: "Pending",
+    };
+  }
+
+  /*
+   * EDIT
+   */
+  const obtainedMarks =
+    Number(
+      obtainedMarksInput.value
+    );
+
+  if (
+    obtainedMarksInput.value === "" ||
+    obtainedMarks < 0
+  ) {
+    throw new Error(
+      "Obtained marks cannot be negative."
+    );
+  }
+
+  if (obtainedMarks > totalMarks) {
+    throw new Error(
+      "Obtained marks cannot be greater than total marks."
+    );
+  }
+
   return {
     title,
     type,
+    course,
     totalMarks,
     obtainedMarks,
     deadline: date.toISOString(),
-    status,
-    course,
+    status: statusInput.value,
   };
 };
 
@@ -716,6 +796,10 @@ const saveAssessment = async (
     document.getElementById(
       "assessmentFormError"
     );
+
+  if (!saveButton || !errorBox) {
+    return;
+  }
 
   const isEditing =
     Boolean(editingAssessmentId);
@@ -742,6 +826,7 @@ const saveAssessment = async (
         )}`,
         data
       );
+
     } else {
       saveButton.textContent =
         "Adding...";
@@ -839,6 +924,14 @@ const openDeleteModal = (
       "deleteAssessmentName"
     );
 
+  if (!modal || !name) {
+    console.error(
+      "Delete modal elements are missing."
+    );
+
+    return;
+  }
+
   name.textContent =
     assessment.title;
 
@@ -898,6 +991,10 @@ const confirmDeleteAssessment =
       document.getElementById(
         "confirmDeleteBtn"
       );
+
+    if (!button) {
+      return;
+    }
 
     const originalText =
       button.textContent;
@@ -1127,6 +1224,7 @@ const initializeAssessments =
 
         if (action === "edit") {
           openEditAssessment(id);
+
           return;
         }
 

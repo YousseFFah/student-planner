@@ -1,3 +1,7 @@
+/* =========================================
+   ASSESSMENTS PAGE
+========================================= */
+
 .assessment-toolbar {
   display: flex;
   align-items: center;
@@ -13,7 +17,7 @@
 }
 
 .summary-label {
-  color: var(--text-muted);
+  color: #60728f;
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.7px;
@@ -21,7 +25,7 @@
 }
 
 .assessment-summary strong {
-  color: var(--text);
+  color: #edf3ff;
   font-size: 15px;
 }
 
@@ -33,27 +37,29 @@
 }
 
 .filter-btn {
-  border: 1px solid var(--border);
-  background: var(--surface);
-  color: var(--text-light);
+  border: 1px solid rgba(87, 119, 166, 0.22);
+  background: #0b182b;
+  color: #8192aa;
   padding: 9px 15px;
   border-radius: 9px;
   font-family: inherit;
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
-  transition: var(--transition);
+  transition: all 0.2s ease;
 }
 
 .filter-btn:hover {
-  border-color: var(--blue);
-  color: var(--blue);
+  border-color: #4f86ff;
+  color: #79a5ff;
+  background: #0d1d34;
 }
 
 .filter-btn.active {
-  background: var(--blue-light);
-  border-color: var(--blue);
-  color: var(--blue);
+  background: linear-gradient(135deg, #3157df, #3f73ff);
+  border-color: transparent;
+  color: #ffffff;
+  box-shadow: 0 7px 18px rgba(49, 87, 223, 0.2);
 }
 
 .assessments-list {
@@ -68,15 +74,18 @@
   gap: 18px;
   min-height: 100px;
   padding: 20px 22px;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  transition: var(--transition);
+  background: linear-gradient(145deg, #0d1b2e, #091525);
+  border: 1px solid rgba(87, 119, 166, 0.16);
+  border-radius: 14px;
+  transition: all 0.2s ease;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
 }
 
 .assessment-item:hover {
-  border-color: #d8deea;
-  box-shadow: var(--shadow-sm);
+  border-color: rgba(79, 134, 255, 0.38);
+  background: linear-gradient(145deg, #10213a, #0b192d);
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.2);
+  transform: translateY(-1px);
 }
 
 .assessment-status-dot {
@@ -84,15 +93,18 @@
   height: 10px;
   min-width: 10px;
   border-radius: 50%;
-  background: var(--orange);
+  background: #f59e0b;
+  box-shadow: 0 0 10px rgba(245, 158, 11, 0.35);
 }
 
 .assessment-status-dot.in-progress {
-  background: var(--blue);
+  background: #4f86ff;
+  box-shadow: 0 0 10px rgba(79, 134, 255, 0.35);
 }
 
 .assessment-status-dot.completed {
-  background: var(--green);
+  background: #35c98a;
+  box-shadow: 0 0 10px rgba(53, 201, 138, 0.35);
 }
 
 .assessment-main {
@@ -109,7 +121,7 @@
 
 .assessment-title {
   margin: 0;
-  color: var(--text);
+  color: #edf3ff;
   font-size: 15px;
   font-weight: 700;
   line-height: 1.4;
@@ -120,10 +132,11 @@
   align-items: center;
   padding: 4px 9px;
   border-radius: 999px;
-  background: var(--blue-light);
-  color: var(--blue);
+  background: rgba(63, 115, 255, 0.12);
+  color: #79a5ff;
   font-size: 11px;
   font-weight: 700;
+  border: 1px solid rgba(79, 134, 255, 0.12);
 }
 
 .assessment-meta {
@@ -131,12 +144,12 @@
   align-items: center;
   gap: 8px;
   margin-top: 7px;
-  color: var(--text-muted);
+  color: #657893;
   font-size: 12px;
 }
 
 .assessment-meta-separator {
-  color: var(--border);
+  color: #31425b;
 }
 
 .assessment-score {
@@ -146,7 +159,7 @@
 
 .assessment-score strong {
   display: block;
-  color: var(--text);
+  color: #edf3ff;
   font-size: 15px;
   font-weight: 800;
 }
@@ -154,7 +167,7 @@
 .assessment-score span {
   display: block;
   margin-top: 3px;
-  color: var(--text-muted);
+  color: #60728f;
   font-size: 10px;
   font-weight: 600;
 }
@@ -162,7 +175,7 @@
 .assessment-percentage {
   min-width: 58px;
   text-align: center;
-  color: var(--blue);
+  color: #6e9fff;
   font-size: 13px;
   font-weight: 800;
 }
@@ -170,17 +183,17 @@
 .assessment-deadline {
   min-width: 150px;
   text-align: right;
-  color: var(--text-light);
+  color: #9aabc2;
   font-size: 13px;
   font-weight: 600;
 }
 
 .assessment-deadline.today {
-  color: var(--orange);
+  color: #f5a623;
 }
 
 .assessment-deadline.overdue {
-  color: var(--red);
+  color: #ef6461;
 }
 
 .assessment-actions {
@@ -197,15 +210,15 @@
   min-width: 58px;
   height: 34px;
   padding: 0 10px;
-  border: 1px solid var(--border);
+  border: 1px solid rgba(87, 119, 166, 0.22);
   border-radius: 8px;
-  background: var(--surface);
-  color: var(--text-light);
+  background: #0a182a;
+  color: #8192aa;
   font-family: inherit;
   font-size: 12px;
   font-weight: 700;
   cursor: pointer;
-  transition: var(--transition);
+  transition: all 0.2s ease;
 }
 
 .assessment-action-btn:hover {
@@ -213,27 +226,27 @@
 }
 
 .assessment-action-btn.edit:hover {
-  border-color: var(--blue);
-  color: var(--blue);
-  background: var(--blue-light);
+  border-color: #4f86ff;
+  color: #79a5ff;
+  background: rgba(79, 134, 255, 0.1);
 }
 
 .assessment-action-btn.delete:hover {
-  border-color: var(--red);
-  color: var(--red);
-  background: var(--red-light);
+  border-color: #ef6461;
+  color: #ff7773;
+  background: rgba(239, 100, 97, 0.1);
 }
 
 .assessment-item.completed .assessment-title {
-  color: var(--text-muted);
+  color: #60728f;
   text-decoration: line-through;
 }
 
 .assessments-loading,
 .assessments-empty {
-  background: var(--surface);
-  border: 1px dashed var(--border);
-  border-radius: var(--radius-md);
+  background: linear-gradient(145deg, #0d1b2e, #091525);
+  border: 1px dashed rgba(87, 119, 166, 0.2);
+  border-radius: 14px;
   padding: 50px 24px;
   text-align: center;
 }
@@ -245,19 +258,20 @@
 }
 
 .assessments-empty strong {
-  color: var(--text);
+  color: #edf3ff;
   font-size: 16px;
 }
 
 .assessments-empty span,
 .assessments-loading {
-  color: var(--text-muted);
+  color: #657893;
   font-size: 13px;
 }
 
-/* =========================
+
+/* =========================================
    ASSESSMENT MODAL
-========================= */
+========================================= */
 
 .assessment-modal {
   width: 100%;
@@ -277,7 +291,7 @@
 .assessment-modal label {
   display: block;
   margin-bottom: 8px;
-  color: var(--text);
+  color: #9aabc2 !important;
   font-size: 13px;
   font-weight: 700;
 }
@@ -287,24 +301,30 @@
   width: 100%;
   height: 46px;
   padding: 0 13px;
-  border: 1px solid var(--border);
+  border: 1px solid rgba(87, 119, 166, 0.25) !important;
   border-radius: 10px;
-  background: #ffffff;
-  color: var(--text);
+  background: #09182b !important;
+  color: #edf3ff !important;
   font-family: inherit;
   font-size: 13px;
   outline: none;
-  transition: var(--transition);
+  transition: all 0.2s ease;
 }
 
 .assessment-modal input:focus,
 .assessment-modal select:focus {
-  border-color: var(--blue);
-  box-shadow: 0 0 0 3px rgba(79, 140, 255, 0.1);
+  background: #0b1c32 !important;
+  border-color: #4f86ff !important;
+  box-shadow: 0 0 0 3px rgba(79, 134, 255, 0.1);
 }
 
 .assessment-modal input::placeholder {
-  color: var(--text-muted);
+  color: #52657f !important;
+}
+
+.assessment-modal select option {
+  background: #0e1d32;
+  color: #edf3ff;
 }
 
 .assessment-modal .form-row {
@@ -325,9 +345,9 @@
   margin: 0;
   padding: 11px 13px;
   border-radius: 9px;
-  background: var(--red-light);
-  border: 1px solid rgba(239, 91, 91, 0.18);
-  color: var(--red);
+  background: rgba(239, 100, 97, 0.1);
+  border: 1px solid rgba(239, 100, 97, 0.18);
+  color: #ff7773;
   font-size: 12px;
   line-height: 1.5;
 }
@@ -336,14 +356,19 @@
   display: block;
 }
 
-/* =========================
+
+/* =========================================
    DELETE MODAL
-========================= */
+========================================= */
 
 .delete-modal {
   width: 100%;
   max-width: 430px;
   text-align: center;
+  background: linear-gradient(145deg, #0e1d32, #081424) !important;
+  border: 1px solid rgba(87, 119, 166, 0.22) !important;
+  color: #edf3ff;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45) !important;
 }
 
 .delete-icon {
@@ -354,27 +379,27 @@
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  background: var(--red-light);
-  color: var(--red);
+  background: rgba(239, 100, 97, 0.1);
+  color: #ff7773;
   font-size: 20px;
   font-weight: 800;
 }
 
 .delete-modal h2 {
   margin: 0;
-  color: var(--text);
+  color: #edf3ff !important;
   font-size: 21px;
 }
 
 .delete-modal > p {
   margin: 10px 0 0;
-  color: var(--text-muted);
+  color: #71839d !important;
   font-size: 13px;
   line-height: 1.6;
 }
 
 .delete-assessment-name {
-  color: var(--text) !important;
+  color: #edf3ff !important;
   font-weight: 700;
 }
 
@@ -391,17 +416,15 @@
   align-items: center;
   justify-content: center;
   padding: 0 17px;
+  border: none;
   border-radius: 10px;
-  background: var(--red);
+  background: #ef6461;
   color: #ffffff;
   font-family: inherit;
   font-size: 12px;
   font-weight: 700;
   cursor: pointer;
-  transition:
-    background var(--transition),
-    transform var(--transition),
-    box-shadow var(--transition);
+  transition: all 0.2s ease;
 }
 
 .danger-btn:hover {
@@ -417,9 +440,136 @@
   box-shadow: none;
 }
 
-/* =========================
+
+/* =========================================
+   MODAL DARK OVERRIDE
+========================================= */
+
+.modal-overlay {
+  background: rgba(2, 8, 18, 0.78) !important;
+  backdrop-filter: blur(4px);
+}
+
+.assessment-modal {
+  background: linear-gradient(145deg, #0e1d32, #081424) !important;
+  border: 1px solid rgba(87, 119, 166, 0.22) !important;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45) !important;
+  color: #edf3ff;
+}
+
+.assessment-modal .modal-header {
+  border-bottom-color: rgba(87, 119, 166, 0.15);
+}
+
+.assessment-modal .modal-label {
+  color: #60728f;
+}
+
+.assessment-modal h2 {
+  color: #edf3ff !important;
+}
+
+.assessment-modal .modal-close {
+  color: #71839d;
+  background: transparent;
+}
+
+.assessment-modal .modal-close:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: #ffffff;
+}
+
+.assessment-modal .secondary-btn,
+.delete-modal .secondary-btn {
+  background: #0a182a !important;
+  border-color: rgba(87, 119, 166, 0.25) !important;
+  color: #8192aa !important;
+}
+
+.assessment-modal .secondary-btn:hover,
+.delete-modal .secondary-btn:hover {
+  background: #10233d !important;
+  color: #ffffff !important;
+}
+
+.assessment-modal .primary-btn {
+  background: linear-gradient(135deg, #3f73ff, #3157df) !important;
+  border-color: transparent !important;
+  color: #ffffff !important;
+}
+
+
+/* =========================================
+   PAGE BACKGROUND
+========================================= */
+
+body {
+  background: #07111f !important;
+}
+
+.app {
+  background: #07111f;
+}
+
+.main-content {
+  min-height: 100vh;
+  background:
+    radial-gradient(
+      circle at 85% 0%,
+      rgba(42, 92, 180, 0.13),
+      transparent 30%
+    ),
+    #07111f !important;
+}
+
+.sidebar {
+  background: linear-gradient(
+    180deg,
+    #091526 0%,
+    #071221 100%
+  ) !important;
+
+  border-right: 1px solid rgba(89, 123, 173, 0.1);
+}
+
+.nav-item.active {
+  background: linear-gradient(
+    90deg,
+    #3157df,
+    #384de0
+  ) !important;
+
+  box-shadow: 0 7px 20px rgba(49, 87, 223, 0.2);
+}
+
+.nav-item.active .nav-icon {
+  color: #ffffff;
+}
+
+.brand-mark {
+  background: linear-gradient(
+    135deg,
+    #3f73ff,
+    #6e9fff
+  ) !important;
+}
+
+.topbar-copy h1 {
+  color: #f5f7ff;
+}
+
+.topbar-copy p {
+  color: #8190a8;
+}
+
+.eyebrow {
+  color: #6e9fff;
+}
+
+
+/* =========================================
    RESPONSIVE
-========================= */
+========================================= */
 
 @media (max-width: 1050px) {
   .assessment-item {
@@ -505,4 +655,21 @@
   .delete-modal .form-actions button {
     width: 100%;
   }
+}
+
+/* Hide modal scrollbars */
+.task-modal,
+.assessment-modal,
+.modal-content {
+  scrollbar-width: none;
+}
+
+.task-modal::-webkit-scrollbar,
+.assessment-modal::-webkit-scrollbar,
+.modal-content::-webkit-scrollbar {
+  display: none;
+}
+
+.edit-only-field.hidden {
+  display: none !important;
 }

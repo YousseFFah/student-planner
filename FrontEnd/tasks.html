@@ -10,10 +10,13 @@
   <link rel="stylesheet" href="css/tasks.css">
 </head>
 
-<body>
+<body class="tasks-page">
+
   <div class="app">
 
+    <!-- Sidebar -->
     <aside class="sidebar">
+
       <div class="brand">
         <div class="brand-mark">SP</div>
 
@@ -24,6 +27,7 @@
       </div>
 
       <nav class="sidebar-nav">
+
         <a href="index.html" class="nav-item">
           <span class="nav-icon">⌂</span>
           <span>Dashboard</span>
@@ -48,9 +52,11 @@
           <span class="nav-icon">↗</span>
           <span>Progress</span>
         </a>
+
       </nav>
 
       <div class="sidebar-user">
+
         <div class="user-avatar">U</div>
 
         <div class="sidebar-user-info">
@@ -61,19 +67,36 @@
         <button class="logout-btn" type="button">
           Logout
         </button>
+
       </div>
+
     </aside>
 
+
+    <!-- Main Content -->
     <main class="main-content">
 
+      <!-- Topbar -->
       <header class="topbar">
+
         <div class="topbar-copy">
-          <span class="eyebrow">Stay organized</span>
-          <h1>Tasks</h1>
-          <p>Keep track of everything you need to get done.</p>
+
+          <span class="eyebrow">
+            YOUR WORKLOAD
+          </span>
+
+          <h1>
+            Tasks
+          </h1>
+
+          <p>
+            Organize what needs to be done and stay on schedule.
+          </p>
+
         </div>
 
         <div class="topbar-actions">
+
           <button
             id="addTaskBtn"
             class="primary-btn"
@@ -81,17 +104,30 @@
           >
             + Add Task
           </button>
+
         </div>
+
       </header>
 
+
+      <!-- Task Toolbar -->
       <section class="tasks-toolbar">
 
         <div class="task-summary">
-          <span class="summary-label">Your workload</span>
-          <strong id="taskCount">0 Tasks</strong>
+
+          <span class="summary-label">
+            Current workload
+          </span>
+
+          <strong id="taskCount">
+            0 Tasks
+          </strong>
+
         </div>
 
+
         <div class="task-filters">
+
           <button
             class="filter-btn active"
             type="button"
@@ -123,33 +159,54 @@
           >
             Completed
           </button>
+
         </div>
 
       </section>
 
+
+      <!-- Tasks -->
       <section class="tasks-section">
+
         <div id="tasksList" class="tasks-list">
+
           <div class="tasks-loading">
             Loading tasks...
           </div>
+
         </div>
+
       </section>
 
     </main>
+
   </div>
 
-  <!-- Add / Edit Task Modal -->
+
+  <!-- =====================================================
+       ADD / EDIT TASK MODAL
+  ====================================================== -->
+
   <div
     id="taskModal"
     class="modal-overlay hidden"
     aria-hidden="true"
   >
+
     <div class="modal task-modal">
 
       <div class="modal-header">
+
         <div>
-          <span class="modal-label">Task details</span>
-          <h2 id="modalTitle">Add Task</h2>
+
+          <span class="modal-label">
+            TASK DETAILS
+          </span>
+
+          <h2 id="modalTitle">
+            Add Task
+          </h2>
+
         </div>
 
         <button
@@ -160,130 +217,219 @@
         >
           ×
         </button>
+
       </div>
 
-      <form id="taskForm">
 
-        <div class="form-group">
-          <label for="taskTitle">Task Title</label>
+     <form id="taskForm">
 
-          <input
-            id="taskTitle"
-            type="text"
-            placeholder="e.g. Finish operating systems assignment"
-            required
-            maxlength="150"
-          >
-        </div>
+  <div class="form-group">
 
-        <div class="form-row">
+    <label for="taskTitle">
+      Task Title
+    </label>
 
-          <div class="form-group">
-            <label for="taskType">Type</label>
+    <input
+      id="taskTitle"
+      type="text"
+      placeholder="e.g. Finish operating systems assignment"
+      required
+      maxlength="150"
+    >
 
-            <select id="taskType" required>
-              <option value="">Select type</option>
-              <option value="Study">Study</option>
-              <option value="Assignment">Assignment</option>
-              <option value="Lab">Lab</option>
-              <option value="Project">Project</option>
-              <option value="Reading">Reading</option>
-              <option value="Other">Other</option>
-            </select>
-          </div>
-
-          <div class="form-group">
-            <label for="taskCourse">Course</label>
-
-            <select id="taskCourse" required>
-              <option value="">Select course</option>
-            </select>
-          </div>
-
-        </div>
-
-        <div class="form-row">
-
-          <div class="form-group">
-            <label for="taskDeadline">Deadline</label>
-
-            <input
-              id="taskDeadline"
-              type="datetime-local"
-              required
-            >
-          </div>
-
-          <div class="form-group">
-            <label for="taskStatus">Status</label>
-
-            <select id="taskStatus" required>
-              <option value="Pending">Pending</option>
-              <option value="In Progress">In Progress</option>
-              <option value="Completed">Completed</option>
-            </select>
-          </div>
-
-        </div>
-
-        <div class="form-group">
-          <label for="taskDescription">
-            Description
-            <span class="optional-label">Optional</span>
-          </label>
-
-          <textarea
-            id="taskDescription"
-            rows="4"
-            maxlength="1000"
-            placeholder="Add some notes about this task..."
-          ></textarea>
-        </div>
-
-        <p id="taskFormError" class="form-error"></p>
-
-        <div class="form-actions">
-
-          <button
-            id="cancelTaskBtn"
-            class="secondary-btn"
-            type="button"
-          >
-            Cancel
-          </button>
-
-          <button
-            id="saveTaskBtn"
-            class="primary-btn"
-            type="submit"
-          >
-            Save Task
-          </button>
-
-        </div>
-
-      </form>
-
-    </div>
   </div>
 
-  <!-- Delete Modal -->
+
+  <div class="form-row">
+
+    <div class="form-group">
+
+      <label for="taskType">
+        Type
+      </label>
+
+      <select id="taskType" required>
+
+        <option value="">
+          Select type
+        </option>
+
+        <option value="Study">
+          Study
+        </option>
+
+        <option value="Assignment">
+          Assignment
+        </option>
+
+        <option value="Lab">
+          Lab
+        </option>
+
+        <option value="Project">
+          Project
+        </option>
+
+        <option value="Reading">
+          Reading
+        </option>
+
+        <option value="Other">
+          Other
+        </option>
+
+      </select>
+
+    </div>
+
+
+    <div class="form-group">
+
+      <label for="taskCourse">
+        Course
+      </label>
+
+      <select id="taskCourse" required>
+
+        <option value="">
+          Select course
+        </option>
+
+      </select>
+
+    </div>
+
+  </div>
+
+
+  <div class="form-group">
+
+    <label for="taskDeadline">
+      Deadline
+    </label>
+
+    <input
+      id="taskDeadline"
+      type="datetime-local"
+      required
+    >
+
+  </div>
+
+
+  <!-- يظهر فقط في Edit -->
+  <div
+    id="taskStatusGroup"
+    class="form-group edit-only-field hidden"
+  >
+
+    <label for="taskStatus">
+      Status
+    </label>
+
+    <select id="taskStatus">
+
+      <option value="Pending">
+        Pending
+      </option>
+
+      <option value="In Progress">
+        In Progress
+      </option>
+
+      <option value="Completed">
+        Completed
+      </option>
+
+    </select>
+
+  </div>
+
+
+  <div class="form-group">
+
+    <label for="taskDescription">
+
+      Description
+
+      <span class="optional-label">
+        Optional
+      </span>
+
+    </label>
+
+    <textarea
+      id="taskDescription"
+      rows="4"
+      maxlength="1000"
+      placeholder="Add some notes about this task..."
+    ></textarea>
+
+  </div>
+
+
+  <p
+    id="taskFormError"
+    class="form-error"
+  ></p>
+
+
+  <div class="form-actions">
+
+    <button
+      id="cancelTaskBtn"
+      class="secondary-btn"
+      type="button"
+    >
+      Cancel
+    </button>
+
+    <button
+      id="saveTaskBtn"
+      class="primary-btn"
+      type="submit"
+    >
+      Save Task
+    </button>
+
+  </div>
+
+</form>
+
+    </div>
+
+  </div>
+
+
+  <!-- =====================================================
+       DELETE MODAL
+  ====================================================== -->
+
   <div
     id="deleteModal"
     class="modal-overlay hidden"
     aria-hidden="true"
   >
+
     <div class="modal delete-modal">
 
-      <div class="delete-icon">!</div>
+      <div class="delete-icon">
+        !
+      </div>
 
-      <h2>Delete Task?</h2>
+      <h2>
+        Delete Task?
+      </h2>
 
       <p>
         This task will be permanently removed from your planner.
       </p>
 
-      <p id="deleteTaskName" class="delete-task-name"></p>
+      <p
+        id="deleteTaskName"
+        class="delete-task-name"
+      ></p>
+
 
       <div class="form-actions">
 
@@ -306,7 +452,9 @@
       </div>
 
     </div>
+
   </div>
+
 
   <script src="js/api.js"></script>
   <script src="js/auth.js"></script>
@@ -315,5 +463,6 @@
   <script>
     auth.initializeAuth();
   </script>
+
 </body>
 </html>
