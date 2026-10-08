@@ -31,12 +31,14 @@ const register = async (req, res, next) => {
     verificationTokenExpires,
   });
 
-  const verificationUrl = `http://127.0.0.1:5500/frontend/verify-email.html?token=${verificationToken}`;
+  const verificationUrl = `${
+    process.env.FRONTEND_URL
+  }/verify-email.html?token=${verificationToken}`;
 
- await sendEmail(
-  email,
-  "Verify your Student Planner account",
-  `
+  await sendEmail(
+    email,
+    "Verify your Student Planner account",
+    `
     <!DOCTYPE html>
     <html lang="en">
     <head>
@@ -66,7 +68,6 @@ const register = async (req, res, next) => {
         <tr>
           <td align="center">
 
-            <!-- Main Card -->
             <table
               width="100%"
               cellpadding="0"
@@ -81,7 +82,6 @@ const register = async (req, res, next) => {
               "
             >
 
-              <!-- Header -->
               <tr>
                 <td
                   align="center"
@@ -91,7 +91,6 @@ const register = async (req, res, next) => {
                   "
                 >
 
-                  <!-- Logo -->
                   <table
                     cellpadding="0"
                     cellspacing="0"
@@ -135,7 +134,6 @@ const register = async (req, res, next) => {
                 </td>
               </tr>
 
-              <!-- Content -->
               <tr>
                 <td
                   style="
@@ -184,7 +182,6 @@ const register = async (req, res, next) => {
                     account and start using Student Planner.
                   </p>
 
-                  <!-- Button -->
                   <table
                     cellpadding="0"
                     cellspacing="0"
@@ -218,7 +215,6 @@ const register = async (req, res, next) => {
                     </tr>
                   </table>
 
-                  <!-- Expiration -->
                   <div style="
                     padding: 14px 16px;
                     background-color: #09182b;
@@ -247,7 +243,6 @@ const register = async (req, res, next) => {
                 </td>
               </tr>
 
-              <!-- Footer -->
               <tr>
                 <td
                   align="center"
@@ -285,7 +280,7 @@ const register = async (req, res, next) => {
     </body>
     </html>
   `
-);
+  );
 
   res.status(201).json({
     message: "User registered successfully",
