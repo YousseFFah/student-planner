@@ -16,386 +16,384 @@
 <body class="dashboard-page">
   <div class="app">
 
-```
-<aside class="sidebar">
+    <aside class="sidebar">
 
-  <div class="brand">
-    <div class="brand-mark">SP</div>
+      <div class="brand">
+        <div class="brand-mark">SP</div>
 
-    <div class="brand-text">
-      <strong>Student Planner</strong>
-      <span>Stay on track</span>
-    </div>
-  </div>
-
-  <nav class="sidebar-nav">
-
-    <a href="index.html" class="nav-item active">
-      <span class="nav-icon">⌂</span>
-      <span>Dashboard</span>
-    </a>
-
-    <a href="courses.html" class="nav-item">
-      <span class="nav-icon">▣</span>
-      <span>Courses</span>
-    </a>
-
-    <a href="tasks.html" class="nav-item">
-      <span class="nav-icon">✓</span>
-      <span>Tasks</span>
-    </a>
-
-    <a href="assessments.html" class="nav-item">
-      <span class="nav-icon">◫</span>
-      <span>Assessments</span>
-    </a>
-
-    <a href="progress.html" class="nav-item">
-      <span class="nav-icon">↗</span>
-      <span>Progress</span>
-    </a>
-
-  </nav>
-
-  <div class="sidebar-user">
-
-    <div class="user-avatar">U</div>
-
-    <div class="sidebar-user-info">
-      <strong class="user-name">Student</strong>
-      <span>Student account</span>
-    </div>
-
-    <button class="logout-btn" type="button">
-      Logout
-    </button>
-
-  </div>
-
-</aside>
-
-<main class="main-content">
-
-  <!-- TOPBAR -->
-
-  <header class="topbar">
-
-    <div class="topbar-copy">
-
-      <span class="eyebrow">
-        STUDENT PLANNER
-      </span>
-
-      <h1>
-        Good morning,
-        <span class="welcome-name user-name">Student</span>
-        <span class="wave">👋</span>
-      </h1>
-
-      <p>
-        Small steps every day lead to big results.
-      </p>
-
-    </div>
-
-  </header>
-
-
-  <!-- HERO -->
-
-  <section class="dashboard-hero">
-
-    <div class="hero-copy">
-
-      <span class="hero-badge">
-        This Week
-      </span>
-
-      <h2>
-        You're
-        <span>closer</span>
-        than you think.
-      </h2>
-
-      <p>
-        Plan. Study. Achieve.
-      </p>
-
-    </div>
-
-    <div class="hero-decoration">
-      <div class="hero-sun"></div>
-      <div class="hero-mountain mountain-one"></div>
-      <div class="hero-mountain mountain-two"></div>
-      <div class="hero-laptop"></div>
-    </div>
-
-  </section>
-
-
-  <!-- STATS -->
-
-  <section class="stats-grid">
-
-    <!-- COURSES -->
-
-    <article class="stat-card">
-
-      <div class="stat-icon blue">
-        ▣
+        <div class="brand-text">
+          <strong>Student Planner</strong>
+          <span>Stay on track</span>
+        </div>
       </div>
 
-      <div class="stat-content">
+      <nav class="sidebar-nav">
 
-        <span class="stat-label">
-          Courses
-        </span>
+        <a href="index.html" class="nav-item active">
+          <span class="nav-icon">⌂</span>
+          <span>Dashboard</span>
+        </a>
 
-        <strong id="totalCourses">
-          0
-        </strong>
+        <a href="courses.html" class="nav-item">
+          <span class="nav-icon">▣</span>
+          <span>Courses</span>
+        </a>
 
-        <small>
-          Active courses
-        </small>
+        <a href="tasks.html" class="nav-item">
+          <span class="nav-icon">✓</span>
+          <span>Tasks</span>
+        </a>
+
+        <a href="assessments.html" class="nav-item">
+          <span class="nav-icon">◫</span>
+          <span>Assessments</span>
+        </a>
+
+        <a href="progress.html" class="nav-item">
+          <span class="nav-icon">↗</span>
+          <span>Progress</span>
+        </a>
+
+      </nav>
+
+      <div class="sidebar-user">
+
+        <div class="user-avatar">U</div>
+
+        <div class="sidebar-user-info">
+          <strong class="user-name">Student</strong>
+          <span>Student account</span>
+        </div>
+
+        <button class="logout-btn" type="button">
+          Logout
+        </button>
 
       </div>
 
-      <span class="stat-arrow">
-        →
-      </span>
+    </aside>
 
-    </article>
+    <main class="main-content">
 
+      <!-- TOPBAR -->
 
-    <!-- TASKS REMAINING -->
+      <header class="topbar">
 
-    <article class="stat-card">
+        <div class="topbar-copy">
 
-      <div class="stat-icon purple">
-        ✓
-      </div>
+          <span class="eyebrow">
+            STUDENT PLANNER
+          </span>
 
-      <div class="stat-content">
+          <h1>
+            <span id="greeting">Good morning,</span>
+            <span class="welcome-name user-name">Student</span>
+            <span class="wave">👋</span>
+          </h1>
 
-        <span class="stat-label">
-          Tasks
-        </span>
+          <p>
+            Small steps every day lead to big results.
+          </p>
 
-        <strong id="pendingTasks">
-          0
-        </strong>
+        </div>
 
-        <small>
-          Tasks remaining
-        </small>
-
-      </div>
-
-      <span class="stat-arrow">
-        →
-      </span>
-
-    </article>
+      </header>
 
 
-    <!-- ASSESSMENTS REMAINING -->
+      <!-- HERO -->
 
-    <article class="stat-card">
+      <section class="dashboard-hero">
 
-      <div class="stat-icon green">
-        ◫
-      </div>
+        <div class="hero-copy">
 
-      <div class="stat-content">
-
-        <span class="stat-label">
-          Assessments
-        </span>
-
-        <strong id="pendingAssessments">
-          0
-        </strong>
-
-        <small>
-          Assessments remaining
-        </small>
-
-      </div>
-
-      <span class="stat-arrow">
-        →
-      </span>
-
-    </article>
-
-
-    <!-- COMPLETED WORK -->
-
-    <article class="stat-card">
-
-      <div class="stat-icon orange">
-        ✓
-      </div>
-
-      <div class="stat-content">
-
-        <span class="stat-label">
-          Completed
-        </span>
-
-        <strong id="completedWork">
-          0
-        </strong>
-
-        <small>
-          Completed work
-        </small>
-
-      </div>
-
-      <span class="stat-arrow">
-        →
-      </span>
-
-    </article>
-
-  </section>
-
-
-  <!-- MAIN DASHBOARD -->
-
-  <section class="dashboard-grid">
-
-    <!-- UPCOMING TASKS -->
-
-    <div class="panel upcoming-panel">
-
-      <div class="panel-heading">
-
-        <div>
-
-          <span class="section-label">
-            Next up
+          <span class="hero-badge">
+            This Week
           </span>
 
           <h2>
-            Upcoming Tasks
+            You're
+            <span>closer</span>
+            than you think.
           </h2>
 
+          <p>
+            Plan. Study. Achieve.
+          </p>
+
         </div>
 
-        <a
-          href="tasks.html"
-          class="panel-link"
-        >
-          View all →
-        </a>
-
-      </div>
-
-      <div
-        id="upcomingTasks"
-        class="dashboard-list"
-      >
-
-        <div class="loading-state">
-          Loading tasks...
+        <div class="hero-decoration">
+          <div class="hero-sun"></div>
+          <div class="hero-mountain mountain-one"></div>
+          <div class="hero-mountain mountain-two"></div>
+          <div class="hero-laptop"></div>
         </div>
 
-      </div>
-
-    </div>
+      </section>
 
 
-    <!-- UPCOMING ASSESSMENTS -->
+      <!-- STATS -->
 
-    <div class="panel upcoming-panel">
+      <section class="stats-grid">
 
-      <div class="panel-heading">
+        <!-- COURSES -->
 
-        <div>
+        <article class="stat-card">
 
-          <span class="section-label">
-            Deadlines
+          <div class="stat-icon blue">
+            ▣
+          </div>
+
+          <div class="stat-content">
+
+            <span class="stat-label">
+              Courses
+            </span>
+
+            <strong id="totalCourses">
+              0
+            </strong>
+
+            <small>
+              Active courses
+            </small>
+
+          </div>
+
+          <span class="stat-arrow">
+            →
           </span>
 
-          <h2>
-            Upcoming Assessments
-          </h2>
+        </article>
+
+
+        <!-- TASKS REMAINING -->
+
+        <article class="stat-card">
+
+          <div class="stat-icon purple">
+            ✓
+          </div>
+
+          <div class="stat-content">
+
+            <span class="stat-label">
+              Tasks
+            </span>
+
+            <strong id="pendingTasks">
+              0
+            </strong>
+
+            <small>
+              Tasks remaining
+            </small>
+
+          </div>
+
+          <span class="stat-arrow">
+            →
+          </span>
+
+        </article>
+
+
+        <!-- ASSESSMENTS REMAINING -->
+
+        <article class="stat-card">
+
+          <div class="stat-icon green">
+            ◫
+          </div>
+
+          <div class="stat-content">
+
+            <span class="stat-label">
+              Assessments
+            </span>
+
+            <strong id="pendingAssessments">
+              0
+            </strong>
+
+            <small>
+              Assessments remaining
+            </small>
+
+          </div>
+
+          <span class="stat-arrow">
+            →
+          </span>
+
+        </article>
+
+
+        <!-- COMPLETED WORK -->
+
+        <article class="stat-card">
+
+          <div class="stat-icon orange">
+            ✓
+          </div>
+
+          <div class="stat-content">
+
+            <span class="stat-label">
+              Completed
+            </span>
+
+            <strong id="completedWork">
+              0
+            </strong>
+
+            <small>
+              Completed work
+            </small>
+
+          </div>
+
+          <span class="stat-arrow">
+            →
+          </span>
+
+        </article>
+
+      </section>
+
+
+      <!-- MAIN DASHBOARD -->
+
+      <section class="dashboard-grid">
+
+        <!-- UPCOMING TASKS -->
+
+        <div class="panel upcoming-panel">
+
+          <div class="panel-heading">
+
+            <div>
+
+              <span class="section-label">
+                Next up
+              </span>
+
+              <h2>
+                Upcoming Tasks
+              </h2>
+
+            </div>
+
+            <a
+              href="tasks.html"
+              class="panel-link"
+            >
+              View all →
+            </a>
+
+          </div>
+
+          <div
+            id="upcomingTasks"
+            class="dashboard-list"
+          >
+
+            <div class="loading-state">
+              Loading tasks...
+            </div>
+
+          </div>
 
         </div>
 
-        <a
-          href="assessments.html"
-          class="panel-link"
-        >
-          View all →
-        </a>
 
-      </div>
+        <!-- UPCOMING ASSESSMENTS -->
 
-      <div
-        id="upcomingAssessments"
-        class="dashboard-list"
-      >
+        <div class="panel upcoming-panel">
 
-        <div class="loading-state">
-          Loading assessments...
+          <div class="panel-heading">
+
+            <div>
+
+              <span class="section-label">
+                Deadlines
+              </span>
+
+              <h2>
+                Upcoming Assessments
+              </h2>
+
+            </div>
+
+            <a
+              href="assessments.html"
+              class="panel-link"
+            >
+              View all →
+            </a>
+
+          </div>
+
+          <div
+            id="upcomingAssessments"
+            class="dashboard-list"
+          >
+
+            <div class="loading-state">
+              Loading assessments...
+            </div>
+
+          </div>
+
         </div>
 
-      </div>
-
-    </div>
-
-  </section>
+      </section>
 
 
-  <!-- FOCUS -->
+      <!-- FOCUS -->
 
-  <section class="panel focus-panel">
+      <section class="panel focus-panel">
 
-    <div class="panel-heading">
+        <div class="panel-heading">
 
-      <div>
+          <div>
 
-        <span class="section-label">
-          Your workload
-        </span>
+            <span class="section-label">
+              Your workload
+            </span>
 
-        <h2>
-          What do I need to do now?
-        </h2>
+            <h2>
+              What do I need to do now?
+            </h2>
 
-      </div>
+          </div>
 
-    </div>
+        </div>
 
 
-    <div class="focus-content">
+        <div class="focus-content">
 
-      <div class="focus-icon">
-        ✓
-      </div>
+          <div class="focus-icon">
+            ✓
+          </div>
 
-      <div class="focus-copy">
+          <div class="focus-copy">
 
-        <h3 id="focusTitle">
-          Loading your priorities...
-        </h3>
+            <h3 id="focusTitle">
+              Loading your priorities...
+            </h3>
 
-        <p id="focusText">
-          We are checking your upcoming work.
-        </p>
+            <p id="focusText">
+              We are checking your upcoming work.
+            </p>
 
-      </div>
+          </div>
 
-    </div>
+        </div>
 
-  </section>
+      </section>
 
-</main>
-```
+    </main>
 
   </div>
 

@@ -4,6 +4,28 @@ const getDashboardData = async () => {
   return data.dashboard || data;
 };
 
+const updateGreeting = () => {
+  const greetingElement = document.getElementById("greeting");
+
+  if (!greetingElement) {
+    return;
+  }
+
+  const hour = new Date().getHours();
+
+  let greeting = "Good morning,";
+
+  if (hour >= 12 && hour < 17) {
+    greeting = "Good afternoon,";
+  } else if (hour >= 17 && hour < 22) {
+    greeting = "Good evening,";
+  } else if (hour >= 22 || hour < 5) {
+    greeting = "Good night,";
+  }
+
+  greetingElement.textContent = greeting;
+};
+
 const formatDate = (dateValue) => {
   if (!dateValue) {
     return "No deadline";
@@ -282,5 +304,6 @@ const loadDashboard = async () => {
 };
 
 document.addEventListener("DOMContentLoaded", () => {
+  updateGreeting();
   loadDashboard();
 });
