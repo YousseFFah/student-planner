@@ -1,4 +1,4 @@
-const API_BASE_URL = "http://localhost:3000";
+const API_BASE_URL = "https://student-planner-backend.vercel.app";
 
 const getToken = () => {
   return localStorage.getItem("token");
