@@ -1,4 +1,3 @@
-
 let tasks = [];
 let assessments = [];
 
@@ -28,7 +27,7 @@ const parseDate = (value) => {
       const date = new Date(
         Number(match[1]),
         Number(match[2]) - 1,
-        Number(match[3])
+        Number(match[3]),
       );
 
       if (
@@ -49,11 +48,7 @@ const parseDate = (value) => {
 };
 
 const startOfDay = (date) => {
-  return new Date(
-    date.getFullYear(),
-    date.getMonth(),
-    date.getDate()
-  );
+  return new Date(date.getFullYear(), date.getMonth(), date.getDate());
 };
 
 const sameDay = (first, second) => {
@@ -79,14 +74,14 @@ const formatDate = (date) => {
     weekday: "long",
     month: "long",
     day: "numeric",
-    year: "numeric"
+    year: "numeric",
   });
 };
 
 const formatTime = (date) => {
   return date.toLocaleTimeString("en-US", {
     hour: "numeric",
-    minute: "2-digit"
+    minute: "2-digit",
   });
 };
 
@@ -139,11 +134,10 @@ const loadCalendarData = async () => {
   `;
 
   try {
-    const [tasksResponse, assessmentsResponse] =
-      await Promise.all([
-        api.get("/tasks"),
-        api.get("/assessments")
-      ]);
+    const [tasksResponse, assessmentsResponse] = await Promise.all([
+      api.get("/tasks"),
+      api.get("/assessments"),
+    ]);
 
     tasks = Array.isArray(tasksResponse)
       ? tasksResponse
@@ -162,20 +156,18 @@ const loadCalendarData = async () => {
         ...task,
         id: getItemId(task),
         eventType: "Task",
-        date: parseDate(task.deadline)
+        date: parseDate(task.deadline),
       })),
 
       ...assessments.map((assessment) => ({
         ...assessment,
         id: getItemId(assessment),
         eventType: "Assessment",
-        date: parseDate(assessment.deadline)
-      }))
+        date: parseDate(assessment.deadline),
+      })),
     ].filter((event) => event.date !== null);
 
-    calendarEvents.sort(
-      (a, b) => a.date.getTime() - b.date.getTime()
-    );
+    calendarEvents.sort((a, b) => a.date.getTime() - b.date.getTime());
 
     renderCalendar();
     renderSelectedDay();
@@ -199,13 +191,13 @@ const updateMonthSummary = () => {
   const monthStart = new Date(
     currentDate.getFullYear(),
     currentDate.getMonth(),
-    1
+    1,
   );
 
   const monthEnd = new Date(
     currentDate.getFullYear(),
     currentDate.getMonth() + 1,
-    1
+    1,
   );
 
   const monthEvents = calendarEvents.filter((event) => {
@@ -228,7 +220,7 @@ const renderCalendar = () => {
   document.getElementById("calendarMonth").textContent =
     currentDate.toLocaleDateString("en-US", {
       month: "long",
-      year: "numeric"
+      year: "numeric",
     });
 
   grid.innerHTML = "";
@@ -266,33 +258,31 @@ const renderCalendar = () => {
 
     button.setAttribute(
       "aria-label",
-      `${formatDate(date)}, ${dayEvents.length} events`
+      `${formatDate(date)}, ${dayEvents.length} events`,
     );
 
-    button.setAttribute(
-      "aria-pressed",
-      String(sameDay(date, selectedDate))
-    );
+    button.setAttribute("aria-pressed", String(sameDay(date, selectedDate)));
 
-    const visibleDots = dayEvents.slice(0, 4).map((event) => {
-      // Completed events always stay green.
-      if (isCompleted(event)) {
-        return `<i class="event-dot completed-dot"></i>`;
-      }
+    const visibleDots = dayEvents
+      .slice(0, 4)
+      .map((event) => {
+        // Completed events always stay green.
+        if (isCompleted(event)) {
+          return `<i class="event-dot completed-dot"></i>`;
+        }
 
-      // Any unfinished event past its deadline is red.
-      if (isOverdue(event)) {
-        return `<i class="event-dot overdue-dot"></i>`;
-      }
+        // Any unfinished event past its deadline is red.
+        if (isOverdue(event)) {
+          return `<i class="event-dot overdue-dot"></i>`;
+        }
 
-      // Otherwise use the regular task/assessment colors.
-      const dotClass =
-        event.eventType === "Assessment"
-          ? "assessment-dot"
-          : "task-dot";
+        // Otherwise use the regular task/assessment colors.
+        const dotClass =
+          event.eventType === "Assessment" ? "assessment-dot" : "task-dot";
 
-      return `<i class="event-dot ${dotClass}"></i>`;
-    }).join("");
+        return `<i class="event-dot ${dotClass}"></i>`;
+      })
+      .join("");
 
     button.innerHTML = `
       <span class="day-number">${date.getDate()}</span>
@@ -310,11 +300,7 @@ const renderCalendar = () => {
       selectedDate = new Date(date);
 
       if (!inCurrentMonth) {
-        currentDate = new Date(
-          date.getFullYear(),
-          date.getMonth(),
-          1
-        );
+        currentDate = new Date(date.getFullYear(), date.getMonth(), 1);
       }
 
       renderCalendar();
@@ -340,7 +326,7 @@ const renderSelectedDay = () => {
 
   title.textContent = selectedDate.toLocaleDateString("en-US", {
     month: "long",
-    day: "numeric"
+    day: "numeric",
   });
 
   subtitle.textContent = formatDate(selectedDate);
@@ -348,7 +334,7 @@ const renderSelectedDay = () => {
 
   // Count unfinished tasks and assessments.
   dayPending.textContent = events.filter((event) => {
-    return !isCompleted(event);
+    return !isCompleted(event) && !isOverdue(event);
   }).length;
 
   if (events.length === 0) {
@@ -360,24 +346,27 @@ const renderSelectedDay = () => {
     return;
   }
 
-  list.innerHTML = events.map((event) => {
-    const isAssessment = event.eventType === "Assessment";
-    const overdue = isOverdue(event);
+  list.innerHTML = events
+    .map((event) => {
+      const isAssessment = event.eventType === "Assessment";
+      const overdue = isOverdue(event);
 
-    const classes = [
-      "day-event",
-      isAssessment ? "assessment-event" : "",
-      isCompleted(event) ? "completed-event" : "",
-      overdue ? "overdue-event" : ""
-    ].filter(Boolean).join(" ");
+      const classes = [
+        "day-event",
+        isAssessment ? "assessment-event" : "",
+        isCompleted(event) ? "completed-event" : "",
+        overdue ? "overdue-event" : "",
+      ]
+        .filter(Boolean)
+        .join(" ");
 
-    const status = getEventStatus(event);
-    const time = formatTime(event.date);
-    const courseName = getCourseName(event);
+      const status = getEventStatus(event);
+      const time = formatTime(event.date);
+      const courseName = getCourseName(event);
 
-    const details = [courseName, time].filter(Boolean);
+      const details = [courseName, time].filter(Boolean);
 
-    return `
+      return `
       <article class="${classes}">
         <div class="day-event-top">
           <span class="day-event-type">
@@ -394,50 +383,43 @@ const renderSelectedDay = () => {
         <p>${escapeHtml(details.join(" · "))}</p>
       </article>
     `;
-  }).join("");
+    })
+    .join("");
 };
 
 const changeMonth = (amount) => {
   currentDate = new Date(
     currentDate.getFullYear(),
     currentDate.getMonth() + amount,
-    1
+    1,
   );
 
   renderCalendar();
   updateMonthSummary();
 };
 
-document.getElementById("prevMonthBtn").addEventListener(
-  "click",
-  () => changeMonth(-1)
-);
+document
+  .getElementById("prevMonthBtn")
+  .addEventListener("click", () => changeMonth(-1));
 
-document.getElementById("nextMonthBtn").addEventListener(
-  "click",
-  () => changeMonth(1)
-);
+document
+  .getElementById("nextMonthBtn")
+  .addEventListener("click", () => changeMonth(1));
 
-document.getElementById("todayBtn").addEventListener(
-  "click",
-  () => {
-    currentDate = new Date();
-    selectedDate = new Date();
+document.getElementById("todayBtn").addEventListener("click", () => {
+  currentDate = new Date();
+  selectedDate = new Date();
 
-    renderCalendar();
-    renderSelectedDay();
-    updateMonthSummary();
+  renderCalendar();
+  renderSelectedDay();
+  updateMonthSummary();
+});
+
+document.getElementById("calendarGrid").addEventListener("click", (event) => {
+  if (event.target.closest("#retryCalendarBtn")) {
+    loadCalendarData();
   }
-);
-
-document.getElementById("calendarGrid").addEventListener(
-  "click",
-  (event) => {
-    if (event.target.closest("#retryCalendarBtn")) {
-      loadCalendarData();
-    }
-  }
-);
+});
 
 document.addEventListener("DOMContentLoaded", () => {
   loadCalendarData();
