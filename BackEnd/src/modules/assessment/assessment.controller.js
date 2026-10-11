@@ -2,15 +2,18 @@ import { Assessment } from "../../../db/models/assessment.model.js";
 import { Course } from "../../../db/models/course.model.js";
 import AppError from "../../utilities/appError.js";
 
-// add new course
+const isDeadlinePassed = (deadline) => {
+  return deadline && new Date(deadline).getTime() <= Date.now();
+};
+
+// Add new assessment
 const createAssessment = async (req, res, next) => {
   const { title, type, totalMarks, deadline, course } = req.body;
-
   const userId = req.user.userId;
 
   const existingCourse = await Course.findOne({
     _id: course,
-    user: req.user.userId,
+    user: userId,
   });
 
   if (!existingCourse) {
@@ -32,7 +35,7 @@ const createAssessment = async (req, res, next) => {
   });
 };
 
-// get one assessment
+// Get one assessment
 const getAssessment = async (req, res, next) => {
   const existingAssessment = await Assessment.findOne({
     _id: req.params.id,
@@ -49,7 +52,7 @@ const getAssessment = async (req, res, next) => {
   });
 };
 
-// get all assessment
+// Get all assessments
 const getAssessments = async (req, res) => {
   const assessments = await Assessment.find({
     user: req.user.userId,
@@ -61,7 +64,7 @@ const getAssessments = async (req, res) => {
   });
 };
 
-// update assessment
+// Update assessment
 const updateAssessment = async (req, res, next) => {
   const existingAssessment = await Assessment.findOne({
     _id: req.params.id,
@@ -72,7 +75,25 @@ const updateAssessment = async (req, res, next) => {
     return next(new AppError("Assessment not found", 404));
   }
 
-  const { title, type, totalMarks, obtainedMarks, deadline, status } = req.body;
+  // Prevent any changes after the original deadline.
+  // Check the saved deadline before accepting a new one.
+  if (isDeadlinePassed(existingAssessment.deadline)) {
+    return next(
+      new AppError(
+        "This assessment deadline has passed. The assessment can no longer be changed.",
+        403
+      )
+    );
+  }
+
+  const {
+    title,
+    type,
+    totalMarks,
+    obtainedMarks,
+    deadline,
+    status,
+  } = req.body;
 
   if (title !== undefined) {
     existingAssessment.title = title;
@@ -99,7 +120,6 @@ const updateAssessment = async (req, res, next) => {
   }
 
   await existingAssessment.save();
-
   await existingAssessment.populate("course");
 
   res.status(200).json({
@@ -108,7 +128,7 @@ const updateAssessment = async (req, res, next) => {
   });
 };
 
-// delete assessment
+// Delete assessment
 const deleteAssessment = async (req, res, next) => {
   const existingAssessment = await Assessment.findOne({
     _id: req.params.id,

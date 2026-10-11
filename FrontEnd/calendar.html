@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Student Planner - Calendar</title>
+
+    <link rel="icon" type="image/png" href="assets/favicon.png" />
+
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/calendar.css" />
+  </head>
+
+  <body class="calendar-page">
+    <div class="app">
+      <aside class="sidebar">
+        <div class="brand">
+          <div class="brand-mark">SP</div>
+          <div class="brand-text">
+            <strong>Student Planner</strong>
+            <span>Stay on track</span>
+          </div>
+        </div>
+
+        <nav class="sidebar-nav">
+          <a href="index.html" class="nav-item">
+            <span class="nav-icon">⌂</span>
+            <span>Dashboard</span>
+          </a>
+
+          <a href="courses.html" class="nav-item">
+            <span class="nav-icon">▣</span>
+            <span>Courses</span>
+          </a>
+
+          <a href="tasks.html" class="nav-item">
+            <span class="nav-icon">✓</span>
+            <span>Tasks</span>
+          </a>
+
+          <a href="assessments.html" class="nav-item">
+            <span class="nav-icon">◫</span>
+            <span>Assessments</span>
+          </a>
+
+          <a href="progress.html" class="nav-item">
+            <span class="nav-icon">↗</span>
+            <span>Progress</span>
+          </a>
+
+          <a href="calendar.html" class="nav-item active" aria-current="page">
+            <span class="nav-icon">▦</span>
+            <span>Calendar</span>
+          </a>
+        </nav>
+
+        <div class="sidebar-user">
+          <div class="user-avatar">U</div>
+
+          <div class="sidebar-user-info">
+            <strong class="user-name">Student</strong>
+            <span>Student account</span>
+          </div>
+
+          <button class="logout-btn" type="button">Logout</button>
+        </div>
+      </aside>
+
+      <main class="main-content">
+        <header class="topbar">
+          <div class="topbar-copy">
+            <span class="eyebrow">Plan your semester</span>
+            <h1>Calendar</h1>
+            <p>Keep track of your tasks and assessments.</p>
+          </div>
+        </header>
+
+        <section class="calendar-summary">
+          <div>
+            <span class="summary-label">Your schedule</span>
+            <strong id="monthSummary">Loading calendar...</strong>
+          </div>
+
+          <p>Every deadline, organized in one place.</p>
+        </section>
+
+        <section class="calendar-layout">
+          <div class="calendar-panel">
+            <div class="calendar-toolbar">
+              <div class="calendar-month-info">
+                <h2 id="calendarMonth">Calendar</h2>
+                <p>Select a date to see your schedule.</p>
+              </div>
+
+              <div class="calendar-navigation">
+                <button id="todayBtn" class="calendar-today-btn" type="button">
+                  Today
+                </button>
+
+                <button
+                  id="prevMonthBtn"
+                  class="calendar-nav-btn"
+                  type="button"
+                  aria-label="Previous month"
+                >
+                  &#8249;
+                </button>
+
+                <button
+                  id="nextMonthBtn"
+                  class="calendar-nav-btn"
+                  type="button"
+                  aria-label="Next month"
+                >
+                  &#8250;
+                </button>
+              </div>
+            </div>
+
+            <div class="calendar-legend">
+              <span><i class="legend-dot task-dot"></i> Tasks</span>
+              <span><i class="legend-dot assessment-dot"></i> Assessments</span>
+              <span><i class="legend-dot completed-dot"></i> Completed</span>
+            </div>
+
+            <div class="calendar-weekdays">
+              <span>Mon</span>
+              <span>Tue</span>
+              <span>Wed</span>
+              <span>Thu</span>
+              <span>Fri</span>
+              <span>Sat</span>
+              <span>Sun</span>
+            </div>
+
+            <div id="calendarGrid" class="calendar-grid">
+              <div class="calendar-message">Loading calendar...</div>
+            </div>
+          </div>
+
+          <aside class="day-panel">
+            <div class="day-panel-heading">
+              <span class="section-label">Your schedule</span>
+              <h2 id="selectedDateTitle">Select a date</h2>
+              <p id="selectedDateSubtitle">
+                Your tasks and assessments will appear here.
+              </p>
+            </div>
+
+            <div class="day-stats">
+              <div>
+                <span id="dayTotal">0</span>
+                <small>Events</small>
+              </div>
+
+              <div>
+                <span id="dayPending">0</span>
+                <small>Pending</small>
+              </div>
+            </div>
+
+            <div id="selectedDayEvents" class="day-events">
+              <div class="calendar-message">
+                Select a date to view your schedule.
+              </div>
+            </div>
+          </aside>
+        </section>
+      </main>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/calendar.js"></script>
+
+    <script>
+      auth.initializeAuth();
+    </script>
+  </body>
+</html>

@@ -203,6 +203,7 @@
   box-shadow: 0 12px 28px rgba(0, 0, 0, 0.18);
 }
 
+
 /* Status */
 .tasks-page .task-status-dot {
   width: 9px;
@@ -221,6 +222,12 @@
 .tasks-page .task-status-dot.in-progress {
   background: #6fa1ff;
   box-shadow: 0 0 0 4px rgba(111, 161, 255, 0.08);
+}
+
+/* Overdue task: red dot */
+.tasks-page .task-item.overdue .task-status-dot {
+  background: #ff4d4f;
+  box-shadow: 0 0 0 4px rgba(255, 77, 79, 0.12);
 }
 
 /* Main */
@@ -726,4 +733,37 @@
 
 .edit-only-field.hidden {
   display: none !important;
+}
+
+
+.task-item.overdue,
+.assessment-item.overdue {
+  border-color: #ef4444;
+  background: rgba(239, 68, 68, 0.08);
+}
+
+.task-overdue-message,
+.assessment-overdue-message {
+  color: #f87171;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.task-item.locked .task-deadline.overdue,
+.assessment-item.locked .assessment-deadline.overdue {
+  color: #f87171;
+}
+
+.task-action-btn:disabled,
+.assessment-action-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* Make today's deadlines red instead of yellow */
+.task-deadline.today,
+.assessment-deadline.today {
+  color: #ef4444;
+  background: transparent;
+  border-color: transparent;
 }

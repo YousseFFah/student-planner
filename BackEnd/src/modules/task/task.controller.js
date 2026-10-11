@@ -1,9 +1,12 @@
 import { Task } from "../../../db/models/task.model.js";
 import { Course } from "../../../db/models/course.model.js";
-
 import AppError from "../../utilities/appError.js";
 
-// add new task
+const isDeadlinePassed = (deadline) => {
+  return deadline && new Date(deadline).getTime() <= Date.now();
+};
+
+// Add new task
 const createTask = async (req, res, next) => {
   const { title, type, description, deadline, course } = req.body;
 
@@ -31,7 +34,7 @@ const createTask = async (req, res, next) => {
   });
 };
 
-// get one task
+// Get one task
 const getTask = async (req, res, next) => {
   const existingTask = await Task.findOne({
     _id: req.params.id,
@@ -48,7 +51,7 @@ const getTask = async (req, res, next) => {
   });
 };
 
-// get all tasks
+// Get all tasks
 const getTasks = async (req, res) => {
   const tasks = await Task.find({
     user: req.user.userId,
@@ -60,7 +63,7 @@ const getTasks = async (req, res) => {
   });
 };
 
-// update task
+// Update task
 const updateTask = async (req, res, next) => {
   const existingTask = await Task.findOne({
     _id: req.params.id,
@@ -71,13 +74,18 @@ const updateTask = async (req, res, next) => {
     return next(new AppError("Task not found", 404));
   }
 
-  const {
-    title,
-    type,
-    description,
-    deadline,
-    status,
-  } = req.body;
+  // Prevent any changes after the original deadline.
+  // Check the saved deadline before accepting a new one.
+  if (isDeadlinePassed(existingTask.deadline)) {
+    return next(
+      new AppError(
+        "This task deadline has passed. The task can no longer be changed.",
+        403
+      )
+    );
+  }
+
+  const { title, type, description, deadline, status } = req.body;
 
   if (title !== undefined) {
     existingTask.title = title;
@@ -108,7 +116,7 @@ const updateTask = async (req, res, next) => {
   });
 };
 
-// delete task
+// Delete task
 const deleteTask = async (req, res, next) => {
   const existingTask = await Task.findOne({
     _id: req.params.id,
