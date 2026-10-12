@@ -1,12 +1,13 @@
+
 let editingCourseCode = null;
 let deletingCourse = null;
+let currentCourses = [];
 
 const courseModal = document.getElementById("courseModal");
 const deleteModal = document.getElementById("deleteModal");
 
 const courseForm = document.getElementById("courseForm");
 const courseFormError = document.getElementById("courseFormError");
-
 const modalTitle = document.getElementById("modalTitle");
 
 const courseNameInput = document.getElementById("courseName");
@@ -26,11 +27,39 @@ const cancelDeleteBtn = document.getElementById("cancelDeleteBtn");
 const confirmDeleteBtn = document.getElementById("confirmDeleteBtn");
 const deleteCourseName = document.getElementById("deleteCourseName");
 
+const translateKey = (key) => {
+  return typeof window.t === "function" ? window.t(key) : key;
+};
+
+const translate = (key, values = {}) => {
+  let result = translateKey(key);
+
+  Object.entries(values).forEach(([name, value]) => {
+    result = result.replaceAll(`{${name}}`, String(value));
+  });
+
+  return result;
+};
+
+const translateError = (error, fallbackKey) => {
+  const message = String(error?.message || "");
+  const normalizedMessage = message.toLowerCase();
+
+  if (
+    normalizedMessage.includes("course already exists") ||
+    normalizedMessage.includes("course with this code already exists") ||
+    normalizedMessage.includes("duplicate key") ||
+    normalizedMessage.includes("e11000")
+  ) {
+    return translateKey("courseAlreadyExists");
+  }
+
+  return message || translateKey(fallbackKey);
+};
+
 const escapeHtml = (value) => {
   const div = document.createElement("div");
-
   div.textContent = value ?? "";
-
   return div.innerHTML;
 };
 
@@ -44,6 +73,24 @@ const getCourses = async () => {
   return data.courses || [];
 };
 
+const updateCourseModalTexts = () => {
+  modalTitle.textContent = translateKey(
+    editingCourseCode ? "editCourse" : "addCourse"
+  );
+
+  if (!saveCourseBtn.disabled) {
+    saveCourseBtn.textContent = translateKey(
+      editingCourseCode ? "saveChanges" : "saveCourse"
+    );
+  }
+};
+
+const updateDeleteButtonText = () => {
+  if (!confirmDeleteBtn.disabled) {
+    confirmDeleteBtn.textContent = translateKey("deleteCourse");
+  }
+};
+
 const openCourseModal = (course = null) => {
   courseForm.reset();
 
@@ -53,9 +100,6 @@ const openCourseModal = (course = null) => {
   if (course) {
     editingCourseCode = course.code;
 
-    modalTitle.textContent = "Edit Course";
-    saveCourseBtn.textContent = "Save Changes";
-
     courseNameInput.value = course.name || "";
     courseCodeInput.value = course.code || "";
     instructorInput.value = course.instructor || "";
@@ -64,19 +108,15 @@ const openCourseModal = (course = null) => {
     courseCodeInput.disabled = true;
   } else {
     editingCourseCode = null;
-
-    modalTitle.textContent = "Add Course";
-    saveCourseBtn.textContent = "Save Course";
-
     courseCodeInput.disabled = false;
   }
+
+  updateCourseModalTexts();
 
   courseModal.classList.remove("hidden");
   courseModal.setAttribute("aria-hidden", "false");
 
-  setTimeout(() => {
-    courseNameInput.focus();
-  }, 50);
+  setTimeout(() => courseNameInput.focus(), 50);
 };
 
 const closeCourseModal = () => {
@@ -84,9 +124,7 @@ const closeCourseModal = () => {
   courseModal.setAttribute("aria-hidden", "true");
 
   editingCourseCode = null;
-
   courseForm.reset();
-
   courseCodeInput.disabled = false;
 
   courseFormError.textContent = "";
@@ -99,59 +137,62 @@ const showCourseError = (message) => {
 };
 
 const renderCourses = (courses) => {
-  if (!Array.isArray(courses) || courses.length === 0) {
+  currentCourses = Array.isArray(courses) ? courses : [];
+
+  if (currentCourses.length === 0) {
     coursesGrid.innerHTML = `
       <div class="courses-empty">
-        <strong>No courses yet</strong>
-        <span>Add your first course to start planning your semester.</span>
+        <strong>${escapeHtml(translateKey("noCourses"))}</strong>
+        <span>${escapeHtml(translateKey("noCoursesDescription"))}</span>
       </div>
     `;
 
-    courseCount.textContent = "0 Courses";
-
+    courseCount.textContent = translate("courseCount", { count: 0 });
     return;
   }
 
-  courseCount.textContent =
-    courses.length === 1
-      ? "1 Course"
-      : `${courses.length} Courses`;
+  const countKey =
+    currentCourses.length === 1
+      ? "courseCountSingular"
+      : "courseCount";
 
-  coursesGrid.innerHTML = courses
+  courseCount.textContent = translate(countKey, {
+    count: currentCourses.length,
+  });
+
+  coursesGrid.innerHTML = currentCourses
     .map((course) => {
+      const creditHoursLabel =
+        Number(course.creditHours) === 1
+          ? translateKey("creditHour")
+          : translateKey("creditHoursPlural");
+
       return `
         <article class="course-card">
-
           <div class="course-card-top">
-
             <span class="course-code">
               ${escapeHtml(course.code)}
             </span>
 
             <div class="course-actions">
-
               <button
                 class="course-action-btn edit"
                 type="button"
                 data-action="edit"
                 data-code="${escapeHtml(course.code)}"
-                title="Edit course"
-              >
-                ✎
-              </button>
+                title="${escapeHtml(translateKey("editCourseTitle"))}"
+                aria-label="${escapeHtml(translateKey("editCourseTitle"))}"
+              >✎</button>
 
               <button
                 class="course-action-btn delete"
                 type="button"
                 data-action="delete"
                 data-code="${escapeHtml(course.code)}"
-                title="Delete course"
-              >
-                ×
-              </button>
-
+                title="${escapeHtml(translateKey("deleteCourseTitleLabel"))}"
+                aria-label="${escapeHtml(translateKey("deleteCourseTitleLabel"))}"
+              >×</button>
             </div>
-
           </div>
 
           <h3 title="${escapeHtml(course.name)}">
@@ -163,22 +204,15 @@ const renderCourses = (courses) => {
           </p>
 
           <div class="course-card-footer">
-
             <span class="course-credit">
-              <strong>${course.creditHours}</strong>
-              ${
-                Number(course.creditHours) === 1
-                  ? "Credit Hour"
-                  : "Credit Hours"
-              }
+              <strong>${escapeHtml(course.creditHours)}</strong>
+              ${escapeHtml(creditHoursLabel)}
             </span>
 
             <span class="course-open">
-              Course
+              ${escapeHtml(translateKey("course"))}
             </span>
-
           </div>
-
         </article>
       `;
     })
@@ -188,21 +222,22 @@ const renderCourses = (courses) => {
 const loadCourses = async () => {
   coursesGrid.innerHTML = `
     <div class="courses-loading">
-      Loading courses...
+      ${escapeHtml(translateKey("loadingCourses"))}
     </div>
   `;
 
   try {
     const courses = await getCourses();
-
     renderCourses(courses);
   } catch (error) {
     console.error("Courses error:", error);
 
     coursesGrid.innerHTML = `
       <div class="courses-empty">
-        <strong>Unable to load courses</strong>
-        <span>${escapeHtml(error.message)}</span>
+        <strong>${escapeHtml(translateKey("unableToLoadCourses"))}</strong>
+        <span>${escapeHtml(
+          error.message || translateKey("checkBackend")
+        )}</span>
       </div>
     `;
   }
@@ -212,22 +247,22 @@ const getFormData = () => {
   const name = courseNameInput.value.trim();
   const code = courseCodeInput.value.trim();
   const instructor = instructorInput.value.trim();
-  const creditHours = Number(creditHoursInput.value);
+  const creditHoursValue = creditHoursInput.value.trim();
+  const creditHours = Number(creditHoursValue);
 
-  if (!name || !code || !instructor || !creditHours) {
-    throw new Error("Please fill in all course fields.");
+  if (!name || !code || !instructor || !creditHoursValue) {
+    throw new Error(translateKey("fillCourseFields"));
   }
 
-  if (creditHours < 1 || creditHours > 20) {
-    throw new Error("Credit hours must be between 1 and 20.");
+  if (
+    !Number.isInteger(creditHours) ||
+    creditHours < 1 ||
+    creditHours > 20
+  ) {
+    throw new Error(translateKey("invalidCreditHours"));
   }
 
-  return {
-    name,
-    code,
-    instructor,
-    creditHours,
-  };
+  return { name, code, instructor, creditHours };
 };
 
 const saveCourse = async (event) => {
@@ -247,11 +282,9 @@ const saveCourse = async (event) => {
 
   saveCourseBtn.disabled = true;
 
-  const originalText = saveCourseBtn.textContent;
-
-  saveCourseBtn.textContent = editingCourseCode
-    ? "Saving..."
-    : "Adding...";
+  saveCourseBtn.textContent = translateKey(
+    editingCourseCode ? "saving" : "adding"
+  );
 
   try {
     if (editingCourseCode) {
@@ -268,21 +301,19 @@ const saveCourse = async (event) => {
     }
 
     closeCourseModal();
-
     await loadCourses();
   } catch (error) {
     console.error("Save course error:", error);
 
-    showCourseError(error.message);
+    showCourseError(translateError(error, "saveCourseFailed"));
   } finally {
     saveCourseBtn.disabled = false;
-    saveCourseBtn.textContent = originalText;
+    updateCourseModalTexts();
   }
 };
 
 const findCourseByCode = async (code) => {
   const courses = await getCourses();
-
   return courses.find((course) => course.code === code);
 };
 
@@ -291,14 +322,13 @@ const openEditCourse = async (code) => {
     const course = await findCourseByCode(code);
 
     if (!course) {
-      throw new Error("Course not found.");
+      throw new Error(translateKey("courseNotFound"));
     }
 
     openCourseModal(course);
   } catch (error) {
     console.error("Find course error:", error);
-
-    alert(error.message);
+    alert(error.message || translateKey("courseNotFound"));
   }
 };
 
@@ -307,27 +337,25 @@ const openDeleteModal = async (code) => {
     const course = await findCourseByCode(code);
 
     if (!course) {
-      throw new Error("Course not found.");
+      throw new Error(translateKey("courseNotFound"));
     }
 
     deletingCourse = course;
+    deleteCourseName.textContent = `${course.name} (${course.code})`;
 
-    deleteCourseName.textContent =
-      `${course.name} (${course.code})`;
+    updateDeleteButtonText();
 
     deleteModal.classList.remove("hidden");
     deleteModal.setAttribute("aria-hidden", "false");
   } catch (error) {
     console.error("Delete course error:", error);
-
-    alert(error.message);
+    alert(error.message || translateKey("courseNotFound"));
   }
 };
 
 const closeDeleteModal = () => {
   deleteModal.classList.add("hidden");
   deleteModal.setAttribute("aria-hidden", "true");
-
   deletingCourse = null;
 };
 
@@ -337,10 +365,7 @@ const deleteCourse = async () => {
   }
 
   confirmDeleteBtn.disabled = true;
-
-  const originalText = confirmDeleteBtn.textContent;
-
-  confirmDeleteBtn.textContent = "Deleting...";
+  confirmDeleteBtn.textContent = translateKey("deleting");
 
   try {
     await api.delete(
@@ -348,15 +373,13 @@ const deleteCourse = async () => {
     );
 
     closeDeleteModal();
-
     await loadCourses();
   } catch (error) {
     console.error("Delete course error:", error);
-
-    alert(error.message);
+    alert(translateError(error, "deleteCourseFailed"));
   } finally {
     confirmDeleteBtn.disabled = false;
-    confirmDeleteBtn.textContent = originalText;
+    updateDeleteButtonText();
   }
 };
 
@@ -367,8 +390,7 @@ coursesGrid.addEventListener("click", (event) => {
     return;
   }
 
-  const action = button.dataset.action;
-  const code = button.dataset.code;
+  const { action, code } = button.dataset;
 
   if (action === "edit") {
     openEditCourse(code);
@@ -379,18 +401,12 @@ coursesGrid.addEventListener("click", (event) => {
   }
 });
 
-addCourseBtn.addEventListener("click", () => {
-  openCourseModal();
-});
+addCourseBtn.addEventListener("click", () => openCourseModal());
 
 closeModalBtn.addEventListener("click", closeCourseModal);
-
 cancelCourseBtn.addEventListener("click", closeCourseModal);
-
 cancelDeleteBtn.addEventListener("click", closeDeleteModal);
-
 confirmDeleteBtn.addEventListener("click", deleteCourse);
-
 courseForm.addEventListener("submit", saveCourse);
 
 courseModal.addEventListener("click", (event) => {
@@ -416,6 +432,21 @@ document.addEventListener("keydown", (event) => {
 
   if (!deleteModal.classList.contains("hidden")) {
     closeDeleteModal();
+  }
+});
+
+document.addEventListener("languageChanged", () => {
+  renderCourses(currentCourses);
+
+  if (!courseModal.classList.contains("hidden")) {
+    updateCourseModalTexts();
+  }
+
+  updateDeleteButtonText();
+
+  if (deletingCourse) {
+    deleteCourseName.textContent =
+      `${deletingCourse.name} (${deletingCourse.code})`;
   }
 });
 

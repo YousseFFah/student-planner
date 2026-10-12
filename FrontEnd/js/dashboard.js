@@ -1,64 +1,41 @@
+
 const getDashboardData = async () => {
   const data = await api.get("/dashboard");
-
   return data.dashboard || data;
 };
 
-const updateGreeting = () => {
-  const greetingElement = document.getElementById("greeting");
-
-  if (!greetingElement) {
-    return;
-  }
-
-  const hour = new Date().getHours();
-
-  let greeting = "Good morning,";
-
-  if (hour >= 12 && hour < 17) {
-    greeting = "Good afternoon,";
-  } else if (hour >= 17 && hour < 22) {
-    greeting = "Good evening,";
-  } else if (hour >= 22 || hour < 5) {
-    greeting = "Good night,";
-  }
-
-  greetingElement.textContent = greeting;
-};
+const getText = (english, arabic) =>
+  getLanguage() === "ar" ? arabic : english;
 
 const formatDate = (dateValue) => {
   if (!dateValue) {
-    return "No deadline";
+    return getText("No deadline", "بدون موعد نهائي");
   }
 
   const date = new Date(dateValue);
 
   if (Number.isNaN(date.getTime())) {
-    return "Invalid date";
+    return getText("Invalid date", "تاريخ غير صالح");
   }
 
-  return date.toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  });
+  return date.toLocaleDateString(
+    getLanguage() === "ar" ? "ar-EG" : "en-US",
+    {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    },
+  );
 };
 
 const getDateState = (dateValue) => {
-  if (!dateValue) {
-    return "";
-  }
+  if (!dateValue) return "";
 
   const deadline = new Date(dateValue);
   const now = new Date();
 
-  if (Number.isNaN(deadline.getTime())) {
-    return "";
-  }
-
-  if (deadline < now) {
-    return "overdue";
-  }
+  if (Number.isNaN(deadline.getTime())) return "";
+  if (deadline < now) return "overdue";
 
   const today = new Date();
 
@@ -72,30 +49,54 @@ const getDateState = (dateValue) => {
 
 const getCourseName = (item) => {
   if (!item.course) {
-    return "No course";
+    return getText("No course", "بدون مقرر");
   }
 
   if (typeof item.course === "string") {
     return item.course;
   }
 
-  return item.course.name || item.course.code || "No course";
+  return (
+    item.course.name ||
+    item.course.code ||
+    getText("No course", "بدون مقرر")
+  );
 };
+
+function updateGreeting() {
+  const greetingElement = document.getElementById("greeting");
+  if (!greetingElement) return;
+
+  const hour = new Date().getHours();
+
+  let greetingKey;
+
+  if (hour < 12) {
+    greetingKey = "goodMorning";
+  } else if (hour < 17) {
+    greetingKey = "goodAfternoon";
+  } else if (hour < 21) {
+    greetingKey = "goodEvening";
+  } else {
+    greetingKey = "goodNight";
+  }
+
+  greetingElement.textContent = t(greetingKey);
+}
 
 const renderTasks = (tasks) => {
   const container = document.getElementById("upcomingTasks");
-
-  if (!container) {
-    return;
-  }
+  if (!container) return;
 
   if (!Array.isArray(tasks) || tasks.length === 0) {
     container.innerHTML = `
       <div class="dashboard-empty">
-        No upcoming tasks. You're all caught up!
+        ${getText(
+          "No upcoming tasks. You're all caught up!",
+          "مفيش مهام قادمة. أنت خلصت كل مهامك الحالية!",
+        )}
       </div>
     `;
-
     return;
   }
 
@@ -128,18 +129,14 @@ const renderTasks = (tasks) => {
 
 const renderAssessments = (assessments) => {
   const container = document.getElementById("upcomingAssessments");
-
-  if (!container) {
-    return;
-  }
+  if (!container) return;
 
   if (!Array.isArray(assessments) || assessments.length === 0) {
     container.innerHTML = `
       <div class="dashboard-empty">
-        No upcoming assessments.
+        ${getText("No upcoming assessments.", "مفيش تقييمات قادمة.")}
       </div>
     `;
-
     return;
   }
 
@@ -159,7 +156,7 @@ const renderAssessments = (assessments) => {
             <p class="dashboard-item-course">
               ${escapeHtml(
                 `${getCourseName(assessment)} · ${
-                  assessment.type || "Assessment"
+                  assessment.type || getText("Assessment", "تقييم")
                 }`,
               )}
             </p>
@@ -176,12 +173,9 @@ const renderAssessments = (assessments) => {
 
 const updateStats = (dashboard) => {
   const totalCourses = dashboard.totalCourses ?? 0;
-
   const totalAssessments = dashboard.totalAssessments ?? 0;
   const completedAssessments = dashboard.completedAssessments ?? 0;
-
   const completedTasks = dashboard.completedTasks ?? 0;
-
   const pendingTasks = dashboard.pendingTasks ?? 0;
 
   const pendingAssessments = Math.max(
@@ -192,18 +186,17 @@ const updateStats = (dashboard) => {
   const completedWork = completedTasks + completedAssessments;
 
   document.getElementById("totalCourses").textContent = totalCourses;
-
   document.getElementById("pendingTasks").textContent = pendingTasks;
-
   document.getElementById("pendingAssessments").textContent =
     pendingAssessments;
-
   document.getElementById("completedWork").textContent = completedWork;
 };
 
 const updateFocus = (dashboard) => {
   const title = document.getElementById("focusTitle");
   const text = document.getElementById("focusText");
+
+  if (!title || !text) return;
 
   const tasks = Array.isArray(dashboard.upcomingTasks)
     ? dashboard.upcomingTasks
@@ -214,11 +207,15 @@ const updateFocus = (dashboard) => {
     : [];
 
   if (tasks.length === 0 && assessments.length === 0) {
-    title.textContent = "You're all caught up!";
+    title.textContent = getText(
+      "You're all caught up!",
+      "أنت خلصت كل اللي عليك!",
+    );
 
-    text.textContent =
-      "There are no upcoming tasks or assessments. Keep up the good work.";
-
+    text.textContent = getText(
+      "There are no upcoming tasks or assessments. Keep up the good work.",
+      "مفيش مهام أو تقييمات قادمة. استمر بنفس الأداء!",
+    );
     return;
   }
 
@@ -226,20 +223,28 @@ const updateFocus = (dashboard) => {
   const nextAssessment = assessments[0];
 
   if (!nextTask && nextAssessment) {
-    title.textContent = `Your next assessment is "${nextAssessment.title}".`;
+    title.textContent = getText(
+      `Your next assessment is "${nextAssessment.title}".`,
+      `التقييم القادم هو "${nextAssessment.title}".`,
+    );
 
-    text.textContent =
-      `It is due on ${formatDate(nextAssessment.deadline)}.`;
-
+    text.textContent = getText(
+      `It is due on ${formatDate(nextAssessment.deadline)}.`,
+      `موعد التقييم ${formatDate(nextAssessment.deadline)}.`,
+    );
     return;
   }
 
   if (nextTask && !nextAssessment) {
-    title.textContent = `Your next task is "${nextTask.title}".`;
+    title.textContent = getText(
+      `Your next task is "${nextTask.title}".`,
+      `المهمة القادمة هي "${nextTask.title}".`,
+    );
 
-    text.textContent =
-      `It is due on ${formatDate(nextTask.deadline)}.`;
-
+    text.textContent = getText(
+      `It is due on ${formatDate(nextTask.deadline)}.`,
+      `موعد تسليم المهمة ${formatDate(nextTask.deadline)}.`,
+    );
     return;
   }
 
@@ -247,63 +252,111 @@ const updateFocus = (dashboard) => {
   const assessmentDate = new Date(nextAssessment.deadline);
 
   if (taskDate <= assessmentDate) {
-    title.textContent = `Focus on "${nextTask.title}" first.`;
+    title.textContent = getText(
+      `Focus on "${nextTask.title}" first.`,
+      `ركّز على "${nextTask.title}" الأول.`,
+    );
 
-    text.textContent =
-      `Your next task is due on ${formatDate(nextTask.deadline)}.`;
+    text.textContent = getText(
+      `Your next task is due on ${formatDate(nextTask.deadline)}.`,
+      `موعد تسليم المهمة القادمة ${formatDate(nextTask.deadline)}.`,
+    );
   } else {
-    title.textContent = `Focus on "${nextAssessment.title}" first.`;
+    title.textContent = getText(
+      `Focus on "${nextAssessment.title}" first.`,
+      `ركّز على "${nextAssessment.title}" الأول.`,
+    );
 
-    text.textContent =
+    text.textContent = getText(
       `Your next assessment is due on ${formatDate(
         nextAssessment.deadline,
-      )}.`;
+      )}.`,
+      `موعد التقييم القادم ${formatDate(nextAssessment.deadline)}.`,
+    );
   }
 };
 
 const escapeHtml = (value) => {
   const div = document.createElement("div");
-
   div.textContent = value ?? "";
-
   return div.innerHTML;
+};
+
+let dashboardData = null;
+let dashboardError = null;
+
+const renderDashboard = () => {
+  updateGreeting();
+
+  if (dashboardError) {
+    const tasksContainer = document.getElementById("upcomingTasks");
+    const assessmentsContainer = document.getElementById(
+      "upcomingAssessments",
+    );
+    const focusTitle = document.getElementById("focusTitle");
+    const focusText = document.getElementById("focusText");
+
+    if (tasksContainer) {
+      tasksContainer.innerHTML = `
+        <div class="dashboard-empty">
+          ${escapeHtml(dashboardError.message)}
+        </div>
+      `;
+    }
+
+    if (assessmentsContainer) {
+      assessmentsContainer.innerHTML = `
+        <div class="dashboard-empty">
+          ${getText(
+            "Unable to load assessments.",
+            "تعذّر تحميل التقييمات.",
+          )}
+        </div>
+      `;
+    }
+
+    if (focusTitle) {
+      focusTitle.textContent = getText(
+        "Unable to load your priorities.",
+        "تعذّر تحميل أولوياتك.",
+      );
+    }
+
+    if (focusText) {
+      focusText.textContent = getText(
+        "Please make sure the backend server is running.",
+        "تأكد من أن الخادم يعمل بشكل صحيح.",
+      );
+    }
+
+    return;
+  }
+
+  if (!dashboardData) return;
+
+  updateStats(dashboardData);
+  renderTasks(dashboardData.upcomingTasks || []);
+  renderAssessments(dashboardData.upcomingAssessments || []);
+  updateFocus(dashboardData);
 };
 
 const loadDashboard = async () => {
   try {
-    const dashboard = await getDashboardData();
-
-    updateStats(dashboard);
-
-    renderTasks(dashboard.upcomingTasks || []);
-
-    renderAssessments(dashboard.upcomingAssessments || []);
-
-    updateFocus(dashboard);
+    dashboardData = await getDashboardData();
+    dashboardError = null;
   } catch (error) {
     console.error("Dashboard error:", error);
-
-    document.getElementById("upcomingTasks").innerHTML = `
-      <div class="dashboard-empty">
-        ${escapeHtml(error.message)}
-      </div>
-    `;
-
-    document.getElementById("upcomingAssessments").innerHTML = `
-      <div class="dashboard-empty">
-        Unable to load assessments.
-      </div>
-    `;
-
-    document.getElementById("focusTitle").textContent =
-      "Unable to load your priorities.";
-
-    document.getElementById("focusText").textContent =
-      "Please make sure the backend server is running.";
+    dashboardError = error;
   }
+
+  renderDashboard();
 };
 
 document.addEventListener("DOMContentLoaded", () => {
-  updateGreeting();
+  renderDashboard();
   loadDashboard();
+});
+
+document.addEventListener("languageChanged", () => {
+  renderDashboard();
 });

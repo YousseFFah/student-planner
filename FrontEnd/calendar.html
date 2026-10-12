@@ -12,46 +12,50 @@
     <link rel="stylesheet" href="css/calendar.css" />
   </head>
 
-  <body class="calendar-page">
+  <body class="calendar-page" data-title-key="calendarPageTitle">
     <div class="app">
       <aside class="sidebar">
         <div class="brand">
           <div class="brand-mark">SP</div>
           <div class="brand-text">
-            <strong>Student Planner</strong>
-            <span>Stay on track</span>
+            <strong data-i18n="brandName">Student Planner</strong>
+            <span data-i18n="brandTagline">Stay on track</span>
           </div>
         </div>
 
         <nav class="sidebar-nav">
           <a href="index.html" class="nav-item">
             <span class="nav-icon">⌂</span>
-            <span>Dashboard</span>
+            <span data-i18n="dashboard">Dashboard</span>
           </a>
 
           <a href="courses.html" class="nav-item">
             <span class="nav-icon">▣</span>
-            <span>Courses</span>
+            <span data-i18n="courses">Courses</span>
           </a>
 
           <a href="tasks.html" class="nav-item">
             <span class="nav-icon">✓</span>
-            <span>Tasks</span>
+            <span data-i18n="tasks">Tasks</span>
           </a>
 
           <a href="assessments.html" class="nav-item">
             <span class="nav-icon">◫</span>
-            <span>Assessments</span>
+            <span data-i18n="assessments">Assessments</span>
           </a>
 
           <a href="progress.html" class="nav-item">
             <span class="nav-icon">↗</span>
-            <span>Progress</span>
+            <span data-i18n="progress">Progress</span>
           </a>
 
-          <a href="calendar.html" class="nav-item active" aria-current="page">
+          <a
+            href="calendar.html"
+            class="nav-item active"
+            aria-current="page"
+          >
             <span class="nav-icon">▦</span>
-            <span>Calendar</span>
+            <span data-i18n="calendar">Calendar</span>
           </a>
         </nav>
 
@@ -60,41 +64,81 @@
 
           <div class="sidebar-user-info">
             <strong class="user-name">Student</strong>
-            <span>Student account</span>
+            <span data-i18n="studentAccount">Student account</span>
           </div>
 
-          <button class="logout-btn" type="button">Logout</button>
+          <button
+            class="logout-btn"
+            type="button"
+            data-i18n="logout"
+          >
+            Logout
+          </button>
         </div>
       </aside>
 
       <main class="main-content">
         <header class="topbar">
           <div class="topbar-copy">
-            <span class="eyebrow">Plan your semester</span>
-            <h1>Calendar</h1>
-            <p>Keep track of your tasks and assessments.</p>
+            <span class="eyebrow" data-i18n="calendarEyebrow">
+              Plan your semester
+            </span>
+
+            <h1 data-i18n="calendarTitle">Calendar</h1>
+
+            <p data-i18n="calendarDescription">
+              Keep track of your tasks and assessments.
+            </p>
+          </div>
+
+          <div class="topbar-actions">
+            <button
+              class="secondary-btn"
+              type="button"
+              data-language-toggle
+              aria-label="Switch language to Arabic"
+            >
+              العربية
+            </button>
           </div>
         </header>
 
         <section class="calendar-summary">
           <div>
-            <span class="summary-label">Your schedule</span>
-            <strong id="monthSummary">Loading calendar...</strong>
+            <span class="summary-label" data-i18n="yourSchedule">
+              Your schedule
+            </span>
+
+            <strong id="monthSummary" data-i18n="loadingCalendar">
+              Loading calendar...
+            </strong>
           </div>
 
-          <p>Every deadline, organized in one place.</p>
+          <p data-i18n="calendarSummaryDescription">
+            Every deadline, organized in one place.
+          </p>
         </section>
 
         <section class="calendar-layout">
           <div class="calendar-panel">
             <div class="calendar-toolbar">
               <div class="calendar-month-info">
-                <h2 id="calendarMonth">Calendar</h2>
-                <p>Select a date to see your schedule.</p>
+                <h2 id="calendarMonth" data-i18n="calendarTitle">
+                  Calendar
+                </h2>
+
+                <p data-i18n="selectDateDescription">
+                  Select a date to see your schedule.
+                </p>
               </div>
 
               <div class="calendar-navigation">
-                <button id="todayBtn" class="calendar-today-btn" type="button">
+                <button
+                  id="todayBtn"
+                  class="calendar-today-btn"
+                  type="button"
+                  data-i18n="today"
+                >
                   Today
                 </button>
 
@@ -103,6 +147,7 @@
                   class="calendar-nav-btn"
                   type="button"
                   aria-label="Previous month"
+                  data-i18n-aria-label="previousMonth"
                 >
                   &#8249;
                 </button>
@@ -112,38 +157,63 @@
                   class="calendar-nav-btn"
                   type="button"
                   aria-label="Next month"
+                  data-i18n-aria-label="nextMonth"
                 >
                   &#8250;
                 </button>
               </div>
             </div>
-            
+
             <div class="calendar-legend">
-              <span><i class="legend-dot task-dot"></i> Tasks</span>
-              <span><i class="legend-dot assessment-dot"></i> Assessments</span>
-              <span><i class="legend-dot completed-dot"></i> Completed</span>
-              <span><i class="legend-dot overdue-dot"></i> Overdue</span>
+              <span>
+                <i class="legend-dot task-dot"></i>
+                <span data-i18n="tasks">Tasks</span>
+              </span>
+
+              <span>
+                <i class="legend-dot assessment-dot"></i>
+                <span data-i18n="assessments">Assessments</span>
+              </span>
+
+              <span>
+                <i class="legend-dot completed-dot"></i>
+                <span data-i18n="completedStatus">Completed</span>
+              </span>
+
+              <span>
+                <i class="legend-dot overdue-dot"></i>
+                <span data-i18n="overdue">Overdue</span>
+              </span>
             </div>
+
             <div class="calendar-weekdays">
-              <span>Mon</span>
-              <span>Tue</span>
-              <span>Wed</span>
-              <span>Thu</span>
-              <span>Fri</span>
-              <span>Sat</span>
-              <span>Sun</span>
+              <span data-i18n="weekdayMon">Mon</span>
+              <span data-i18n="weekdayTue">Tue</span>
+              <span data-i18n="weekdayWed">Wed</span>
+              <span data-i18n="weekdayThu">Thu</span>
+              <span data-i18n="weekdayFri">Fri</span>
+              <span data-i18n="weekdaySat">Sat</span>
+              <span data-i18n="weekdaySun">Sun</span>
             </div>
 
             <div id="calendarGrid" class="calendar-grid">
-              <div class="calendar-message">Loading calendar...</div>
+              <div class="calendar-message" data-i18n="loadingCalendar">
+                Loading calendar...
+              </div>
             </div>
           </div>
 
           <aside class="day-panel">
             <div class="day-panel-heading">
-              <span class="section-label">Your schedule</span>
-              <h2 id="selectedDateTitle">Select a date</h2>
-              <p id="selectedDateSubtitle">
+              <span class="section-label" data-i18n="yourSchedule">
+                Your schedule
+              </span>
+
+              <h2 id="selectedDateTitle" data-i18n="selectDate">
+                Select a date
+              </h2>
+
+              <p id="selectedDateSubtitle" data-i18n="selectedDayDescription">
                 Your tasks and assessments will appear here.
               </p>
             </div>
@@ -151,17 +221,17 @@
             <div class="day-stats">
               <div>
                 <span id="dayTotal">0</span>
-                <small>Events</small>
+                <small data-i18n="events">Events</small>
               </div>
 
               <div>
                 <span id="dayPending">0</span>
-                <small>Pending</small>
+                <small data-i18n="pending">Pending</small>
               </div>
             </div>
 
             <div id="selectedDayEvents" class="day-events">
-              <div class="calendar-message">
+              <div class="calendar-message" data-i18n="selectDateToView">
                 Select a date to view your schedule.
               </div>
             </div>
@@ -171,6 +241,7 @@
     </div>
 
     <script src="js/api.js"></script>
+    <script src="js/i18n.js"></script>
     <script src="js/auth.js"></script>
     <script src="js/calendar.js"></script>
 

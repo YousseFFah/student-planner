@@ -1,64 +1,45 @@
-const setVerificationState = ({
-  type,
-  title,
-  message,
-  eyebrow,
-  icon,
-  showButton,
-}) => {
-  const card =
-    document.querySelector(".verification-card");
+let currentVerificationState = null;
 
-  const iconElement =
-    document.getElementById("verificationIcon");
+const setVerificationState = (state) => {
+  currentVerificationState = state;
 
-  const eyebrowElement =
-    document.getElementById(
-      "verificationEyebrow"
-    );
+  const card = document.querySelector(".verification-card");
+  const iconElement = document.getElementById("verificationIcon");
+  const eyebrowElement = document.getElementById("verificationEyebrow");
+  const titleElement = document.getElementById("verificationTitle");
+  const messageElement = document.getElementById("verificationMessage");
+  const actionsElement = document.getElementById("verificationActions");
 
-  const titleElement =
-    document.getElementById(
-      "verificationTitle"
-    );
-
-  const messageElement =
-    document.getElementById(
-      "verificationMessage"
-    );
-
-  const actionsElement =
-    document.getElementById(
-      "verificationActions"
-    );
-
-  card.classList.remove(
-    "success",
-    "error"
-  );
-
-  if (type) {
-    card.classList.add(type);
+  if (
+    !card ||
+    !iconElement ||
+    !eyebrowElement ||
+    !titleElement ||
+    !messageElement ||
+    !actionsElement
+  ) {
+    return;
   }
 
-  iconElement.textContent = icon;
-  eyebrowElement.textContent = eyebrow;
-  titleElement.textContent = title;
-  messageElement.textContent = message;
+  card.classList.remove("success", "error");
 
-  if (showButton) {
-    actionsElement.classList.remove("hidden");
-  } else {
-    actionsElement.classList.add("hidden");
+  if (state.type) {
+    card.classList.add(state.type);
   }
+
+  iconElement.textContent = state.icon;
+  eyebrowElement.textContent = t(state.eyebrowKey);
+  titleElement.textContent = t(state.titleKey);
+
+  messageElement.textContent = state.messageKey
+    ? t(state.messageKey)
+    : state.message;
+
+  actionsElement.classList.toggle("hidden", !state.showButton);
 };
 
 const getVerificationToken = () => {
-  const params =
-    new URLSearchParams(
-      window.location.search
-    );
-
+  const params = new URLSearchParams(window.location.search);
   return params.get("token");
 };
 
@@ -68,10 +49,9 @@ const verifyUserEmail = async () => {
   if (!token) {
     setVerificationState({
       type: "error",
-      eyebrow: "Verification failed",
-      title: "Missing verification link",
-      message:
-        "This verification link is missing or incomplete. Please use the link sent to your email.",
+      eyebrowKey: "verificationFailed",
+      titleKey: "missingVerification",
+      messageKey: "missingVerificationMessage",
       icon: "!",
       showButton: true,
     });
@@ -82,10 +62,9 @@ const verifyUserEmail = async () => {
   try {
     setVerificationState({
       type: "",
-      eyebrow: "Email verification",
-      title: "Verifying your email...",
-      message:
-        "Please wait while we verify your email address.",
+      eyebrowKey: "emailVerification",
+      titleKey: "verifyingEmail",
+      messageKey: "waitVerification",
       icon: "✓",
       showButton: false,
     });
@@ -94,33 +73,30 @@ const verifyUserEmail = async () => {
 
     setVerificationState({
       type: "success",
-      eyebrow: "Email verified",
-      title: "Your email is verified!",
-      message:
-        "Your account is ready. You can now sign in and start using Student Planner.",
+      eyebrowKey: "emailVerified",
+      titleKey: "emailVerifiedTitle",
+      messageKey: "emailVerifiedMessage",
       icon: "✓",
       showButton: true,
     });
   } catch (error) {
-    console.error(
-      "Email verification error:",
-      error
-    );
+    console.error("Email verification error:", error);
 
     setVerificationState({
       type: "error",
-      eyebrow: "Verification failed",
-      title: "We couldn't verify your email",
-      message:
-        error.message ||
-        "This verification link may be expired or invalid. Please request a new verification email.",
+      eyebrowKey: "verificationFailed",
+      titleKey: "verificationErrorTitle",
+      messageKey: "invalidVerificationMessage",
       icon: "!",
       showButton: true,
     });
   }
 };
 
-document.addEventListener(
-  "DOMContentLoaded",
-  verifyUserEmail
-);
+document.addEventListener("languageChanged", () => {
+  if (currentVerificationState) {
+    setVerificationState(currentVerificationState);
+  }
+});
+
+document.addEventListener("DOMContentLoaded", verifyUserEmail);

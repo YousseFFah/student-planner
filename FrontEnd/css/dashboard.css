@@ -875,3 +875,131 @@
     padding: 14px;
   }
 }
+
+/* =========================================================
+   LANGUAGE SWITCHER
+========================================================= */
+
+
+.dashboard-language-toggle {
+  position: relative;
+  top: auto;
+  right: auto;
+  left: auto;
+  flex-shrink: 0;
+  white-space: nowrap;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  padding: 8px 12px;
+  color: #dce6f6;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 8px;
+
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* =========================================================
+   RTL SUPPORT
+========================================================= */
+
+[dir="rtl"] .dashboard-page {
+  direction: rtl;
+}
+
+[dir="rtl"] .dashboard-page .sidebar {
+  border-right: none;
+  border-left: 1px solid rgba(89, 123, 173, 0.1);
+}
+
+[dir="rtl"] .dashboard-page .brand-text,
+[dir="rtl"] .dashboard-page .sidebar-user-info,
+[dir="rtl"] .dashboard-page .topbar-copy,
+[dir="rtl"] .dashboard-page .hero-copy,
+[dir="rtl"] .dashboard-page .stat-content,
+[dir="rtl"] .dashboard-page .panel-heading > div,
+[dir="rtl"] .dashboard-page .focus-copy {
+  text-align: right;
+}
+
+[dir="rtl"] .dashboard-page .stat-arrow {
+  margin-left: 0;
+  margin-right: auto;
+  transform: rotate(180deg);
+}
+
+[dir="rtl"] .dashboard-page .dashboard-item-date {
+  text-align: left;
+}
+
+[dir="rtl"] .dashboard-page .hero-decoration {
+  right: auto;
+  left: 0;
+}
+
+[dir="rtl"] .dashboard-page .hero-decoration::after {
+  background: linear-gradient(
+    270deg,
+    #0c203e 0%,
+    transparent 48%
+  );
+}
+
+[dir="rtl"] .dashboard-page .hero-sun {
+  right: auto;
+  left: 20%;
+}
+
+[dir="rtl"] .dashboard-page .mountain-one,
+[dir="rtl"] .dashboard-page .mountain-two,
+[dir="rtl"] .dashboard-page .hero-laptop {
+  right: auto;
+}
+
+[dir="rtl"] .dashboard-page .mountain-one {
+  left: 4%;
+}
+
+[dir="rtl"] .dashboard-page .mountain-two {
+  left: 24%;
+}
+
+[dir="rtl"] .dashboard-page .hero-laptop {
+  left: 31%;
+}
+
+[dir="rtl"] .dashboard-page .wave {
+  margin-left: 0;
+  margin-right: 4px;
+}
+
+[dir="rtl"] .dashboard-page .panel-link {
+  direction: rtl;
+}
+
+[dir="rtl"] .dashboard-page .dashboard-item-title,
+[dir="rtl"] .dashboard-page .dashboard-item-course {
+  text-align: right;
+}
+
+[dir="rtl"] .dashboard-page .sidebar-nav {
+  direction: rtl;
+}
+
+@media (max-width: 800px) {
+  [dir="rtl"] .dashboard-page .sidebar {
+    border-left: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .dashboard-language-toggle {
+    padding: 8px 10px;
+  }
+}

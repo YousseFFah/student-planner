@@ -1,5 +1,6 @@
+
 <!doctype html>
-<html lang="en">
+<html lang="en" dir="ltr">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -7,53 +8,51 @@
     <title>Student Planner - Tasks</title>
 
     <link rel="icon" type="image/png" href="assets/favicon.png" />
-
     <link rel="stylesheet" href="css/style.css" />
     <link rel="stylesheet" href="css/tasks.css" />
   </head>
 
   <body class="tasks-page">
     <div class="app">
-      <!-- Sidebar -->
       <aside class="sidebar">
         <div class="brand">
           <div class="brand-mark">SP</div>
 
           <div class="brand-text">
-            <strong>Student Planner</strong>
-            <span>Stay on track</span>
+            <strong data-i18n="brandName">Student Planner</strong>
+            <span data-i18n="brandTagline">Stay on track</span>
           </div>
         </div>
 
         <nav class="sidebar-nav">
           <a href="index.html" class="nav-item">
             <span class="nav-icon">⌂</span>
-            <span>Dashboard</span>
+            <span data-i18n="dashboard">Dashboard</span>
           </a>
 
           <a href="courses.html" class="nav-item">
             <span class="nav-icon">▣</span>
-            <span>Courses</span>
+            <span data-i18n="courses">Courses</span>
           </a>
 
           <a href="tasks.html" class="nav-item active">
             <span class="nav-icon">✓</span>
-            <span>Tasks</span>
+            <span data-i18n="tasks">Tasks</span>
           </a>
 
           <a href="assessments.html" class="nav-item">
             <span class="nav-icon">◫</span>
-            <span>Assessments</span>
+            <span data-i18n="assessments">Assessments</span>
           </a>
 
           <a href="progress.html" class="nav-item">
             <span class="nav-icon">↗</span>
-            <span>Progress</span>
+            <span data-i18n="progress">Progress</span>
           </a>
 
           <a href="calendar.html" class="nav-item">
             <span class="nav-icon">▦</span>
-            <span>Calendar</span>
+            <span data-i18n="calendar">Calendar</span>
           </a>
         </nav>
 
@@ -62,79 +61,127 @@
 
           <div class="sidebar-user-info">
             <strong class="user-name">Student</strong>
-            <span>Student account</span>
+            <span data-i18n="studentAccount">Student account</span>
           </div>
 
-          <button class="logout-btn" type="button">Logout</button>
+          <button
+            class="logout-btn"
+            type="button"
+            data-i18n="logout"
+          >
+            Logout
+          </button>
         </div>
       </aside>
 
-      <!-- Main Content -->
       <main class="main-content">
-        <!-- Topbar -->
         <header class="topbar">
           <div class="topbar-copy">
-            <span class="eyebrow"> YOUR WORKLOAD </span>
+            <span class="eyebrow" data-i18n="yourWorkload">
+              YOUR WORKLOAD
+            </span>
 
-            <h1>Tasks</h1>
+            <h1 data-i18n="tasksTitle">Tasks</h1>
 
-            <p>Organize what needs to be done and stay on schedule.</p>
+            <p data-i18n="tasksDescription">
+              Organize what needs to be done and stay on schedule.
+            </p>
           </div>
 
           <div class="topbar-actions">
-            <button id="addTaskBtn" class="primary-btn" type="button">
+            <button
+              id="languageToggle"
+              class="secondary-btn"
+              type="button"
+              data-language-toggle
+              aria-label="Change language"
+            >
+              العربية
+            </button>
+
+            <button
+              id="addTaskBtn"
+              class="primary-btn"
+              type="button"
+              data-i18n="addTask"
+            >
               + Add Task
             </button>
           </div>
         </header>
 
-        <!-- Task Toolbar -->
         <section class="tasks-toolbar">
           <div class="task-summary">
-            <span class="summary-label"> Current workload </span>
+            <span class="summary-label" data-i18n="currentWorkload">
+              Current workload
+            </span>
 
-            <strong id="taskCount"> 0 Tasks </strong>
+            <strong id="taskCount">0 Tasks</strong>
           </div>
 
           <div class="task-filters">
-            <button class="filter-btn active" type="button" data-filter="All">
+            <button
+              class="filter-btn active"
+              type="button"
+              data-filter="All"
+              data-i18n="all"
+            >
               All
             </button>
 
-            <button class="filter-btn" type="button" data-filter="Pending">
+            <button
+              class="filter-btn"
+              type="button"
+              data-filter="Pending"
+              data-i18n="pending"
+            >
               Pending
             </button>
 
-            <button class="filter-btn" type="button" data-filter="In Progress">
+            <button
+              class="filter-btn"
+              type="button"
+              data-filter="In Progress"
+              data-i18n="inProgress"
+            >
               In Progress
             </button>
 
-            <button class="filter-btn" type="button" data-filter="Completed">
+            <button
+              class="filter-btn"
+              type="button"
+              data-filter="Completed"
+              data-i18n="completed"
+            >
               Completed
             </button>
           </div>
         </section>
 
-        <!-- Tasks -->
         <section class="tasks-section">
           <div id="tasksList" class="tasks-list">
-            <div class="tasks-loading">Loading tasks...</div>
+            <div class="tasks-loading" data-i18n="loadingTasks">
+              Loading tasks...
+            </div>
           </div>
         </section>
       </main>
     </div>
 
-    <!-- =====================================================
-       ADD / EDIT TASK MODAL
-  ====================================================== -->
-
-    <div id="taskModal" class="modal-overlay hidden" aria-hidden="true">
+    <!-- Add / Edit Task Modal -->
+    <div
+      id="taskModal"
+      class="modal-overlay hidden"
+      aria-hidden="true"
+    >
       <div class="modal task-modal">
         <div class="modal-header">
           <div>
-            <span class="modal-label"> TASK DETAILS </span>
+            <span class="modal-label" data-i18n="taskDetails">
+              TASK DETAILS
+            </span>
 
-            <h2 id="modalTitle">Add Task</h2>
+            <h2 id="modalTitle" data-i18n="addTask">Add Task</h2>
           </div>
 
           <button
@@ -142,6 +189,7 @@
             class="modal-close"
             type="button"
             aria-label="Close"
+            data-i18n-aria-label="close"
           >
             ×
           </button>
@@ -149,12 +197,15 @@
 
         <form id="taskForm">
           <div class="form-group">
-            <label for="taskTitle"> Task Title </label>
+            <label for="taskTitle" data-i18n="taskTitleLabel">
+              Task Title
+            </label>
 
             <input
               id="taskTitle"
               type="text"
               placeholder="e.g. Finish operating systems assignment"
+              data-i18n-placeholder="taskTitlePlaceholder"
               required
               maxlength="150"
             />
@@ -162,58 +213,58 @@
 
           <div class="form-row">
             <div class="form-group">
-              <label for="taskType"> Type </label>
+              <label for="taskType" data-i18n="type">Type</label>
 
               <select id="taskType" required>
-                <option value="">Select type</option>
+                <option value="" data-i18n="selectType">
+                  Select type
+                </option>
 
-                <option value="Study">Study</option>
-
-                <option value="Assignment">Assignment</option>
-
-                <option value="Lab">Lab</option>
-
-                <option value="Project">Project</option>
-
-                <option value="Reading">Reading</option>
-
-                <option value="Other">Other</option>
+                <option value="Study" data-i18n="study">Study</option>
+                <option value="Assignment" data-i18n="assignment">Assignment</option>
+                <option value="Lab" data-i18n="lab">Lab</option>
+                <option value="Project" data-i18n="project">Project</option>
+                <option value="Reading" data-i18n="reading">Reading</option>
+                <option value="Other" data-i18n="other">Other</option>
               </select>
             </div>
 
             <div class="form-group">
-              <label for="taskCourse"> Course </label>
+              <label for="taskCourse" data-i18n="course">Course</label>
 
               <select id="taskCourse" required>
-                <option value="">Select course</option>
+                <option value="" data-i18n="selectCourse">
+                  Select course
+                </option>
               </select>
             </div>
           </div>
 
           <div class="form-group">
-            <label for="taskDeadline"> Deadline </label>
+            <label for="taskDeadline" data-i18n="deadline">
+              Deadline
+            </label>
 
             <input id="taskDeadline" type="datetime-local" required />
           </div>
 
-          <!-- يظهر فقط في Edit -->
-          <div id="taskStatusGroup" class="form-group edit-only-field hidden">
-            <label for="taskStatus"> Status </label>
+          <div
+            id="taskStatusGroup"
+            class="form-group edit-only-field hidden"
+          >
+            <label for="taskStatus" data-i18n="status">Status</label>
 
             <select id="taskStatus">
-              <option value="Pending">Pending</option>
-
-              <option value="In Progress">In Progress</option>
-
-              <option value="Completed">Completed</option>
+              <option value="Pending" data-i18n="pending">Pending</option>
+              <option value="In Progress" data-i18n="inProgress">In Progress</option>
+              <option value="Completed" data-i18n="completed">Completed</option>
             </select>
           </div>
 
           <div class="form-group">
             <label for="taskDescription">
-              Description
-
-              <span class="optional-label"> Optional </span>
+              <span data-i18n="description">Description</span>
+              <span class="optional-label" data-i18n="optional">Optional</span>
             </label>
 
             <textarea
@@ -221,17 +272,28 @@
               rows="4"
               maxlength="1000"
               placeholder="Add some notes about this task..."
+              data-i18n-placeholder="taskDescriptionPlaceholder"
             ></textarea>
           </div>
 
           <p id="taskFormError" class="form-error"></p>
 
           <div class="form-actions">
-            <button id="cancelTaskBtn" class="secondary-btn" type="button">
+            <button
+              id="cancelTaskBtn"
+              class="secondary-btn"
+              type="button"
+              data-i18n="cancel"
+            >
               Cancel
             </button>
 
-            <button id="saveTaskBtn" class="primary-btn" type="submit">
+            <button
+              id="saveTaskBtn"
+              class="primary-btn"
+              type="submit"
+              data-i18n="saveTask"
+            >
               Save Task
             </button>
           </div>
@@ -239,26 +301,39 @@
       </div>
     </div>
 
-    <!-- =====================================================
-       DELETE MODAL
-  ====================================================== -->
-
-    <div id="deleteModal" class="modal-overlay hidden" aria-hidden="true">
+    <!-- Delete Task Modal -->
+    <div
+      id="deleteModal"
+      class="modal-overlay hidden"
+      aria-hidden="true"
+    >
       <div class="modal delete-modal">
         <div class="delete-icon">!</div>
 
-        <h2>Delete Task?</h2>
+        <h2 data-i18n="deleteTaskQuestion">Delete Task?</h2>
 
-        <p>This task will be permanently removed from your planner.</p>
+        <p data-i18n="deleteTaskDescription">
+          This task will be permanently removed from your planner.
+        </p>
 
         <p id="deleteTaskName" class="delete-task-name"></p>
 
         <div class="form-actions">
-          <button id="cancelDeleteBtn" class="secondary-btn" type="button">
+          <button
+            id="cancelDeleteBtn"
+            class="secondary-btn"
+            type="button"
+            data-i18n="cancel"
+          >
             Cancel
           </button>
 
-          <button id="confirmDeleteBtn" class="danger-btn" type="button">
+          <button
+            id="confirmDeleteBtn"
+            class="danger-btn"
+            type="button"
+            data-i18n="deleteTask"
+          >
             Delete Task
           </button>
         </div>
@@ -266,6 +341,7 @@
     </div>
 
     <script src="js/api.js"></script>
+    <script src="js/i18n.js"></script>
     <script src="js/auth.js"></script>
     <script src="js/tasks.js"></script>
 

@@ -7,26 +7,16 @@ const showMessage = (element, message) => {
   element.classList.toggle("visible", Boolean(message));
 };
 
-const setButtonLoading = (
-  button,
-  loading,
-  loadingText,
-  normalText
-) => {
+const setButtonLoading = (button, loading, loadingText, normalText) => {
   if (!button) {
     return;
   }
 
   button.disabled = loading;
-  button.textContent = loading
-    ? loadingText
-    : normalText;
+  button.textContent = loading ? loadingText : normalText;
 };
 
-const setupPasswordToggle = (
-  inputId,
-  buttonId
-) => {
+const setupPasswordToggle = (inputId, buttonId) => {
   const input = document.getElementById(inputId);
   const button = document.getElementById(buttonId);
 
@@ -34,25 +24,21 @@ const setupPasswordToggle = (
     return;
   }
 
+  const updateToggleText = () => {
+    const isVisible = input.type === "text";
+    const key = isVisible ? "hide" : "show";
+
+    button.textContent = t(key);
+    button.setAttribute("aria-label", t(key));
+  };
+
   button.addEventListener("click", () => {
-    const showingPassword =
-      input.type === "text";
-
-    input.type = showingPassword
-      ? "password"
-      : "text";
-
-    button.textContent = showingPassword
-      ? "Show"
-      : "Hide";
-
-    button.setAttribute(
-      "aria-label",
-      showingPassword
-        ? "Show password"
-        : "Hide password"
-    );
+    input.type = input.type === "text" ? "password" : "text";
+    updateToggleText();
   });
+
+  document.addEventListener("languageChanged", updateToggleText);
+  updateToggleText();
 };
 
 const initializeLoginPage = () => {
@@ -62,110 +48,69 @@ const initializeLoginPage = () => {
     return;
   }
 
-  const emailInput =
-    document.getElementById("loginEmail");
+  const emailInput = document.getElementById("loginEmail");
+  const passwordInput = document.getElementById("loginPassword");
+  const button = document.getElementById("loginButton");
+  const errorBox = document.getElementById("loginError");
 
-  const passwordInput =
-    document.getElementById("loginPassword");
-
-  const button =
-    document.getElementById("loginButton");
-
-  const errorBox =
-    document.getElementById("loginError");
-
-  setupPasswordToggle(
-    "loginPassword",
-    "toggleLoginPassword"
-  );
+  setupPasswordToggle("loginPassword", "toggleLoginPassword");
 
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
-
     showMessage(errorBox, "");
 
     const email = emailInput.value.trim();
     const password = passwordInput.value;
 
     if (!email || !password) {
-      showMessage(
-        errorBox,
-        "Please enter your email and password."
-      );
-
+      showMessage(errorBox, t("enterEmailPassword"));
       return;
     }
 
     try {
-      setButtonLoading(
-        button,
-        true,
-        "Signing in...",
-        "Sign In"
-      );
+      setButtonLoading(button, true, t("signingIn"), t("signIn"));
 
-      await auth.login(
-        email,
-        password
-      );
+      await auth.login(email, password);
 
       window.location.href = "index.html";
     } catch (error) {
       console.error("Login error:", error);
+      const message =
+        error.message === "Please verify your email first"
+          ? t("pleaseVerifyEmail")
+          : error.message === "Invalid email or password"
+            ? t("invalidCredentials")
+            : error.message || t("loginFailed");
 
-      showMessage(
-        errorBox,
-        error.message || "Unable to sign in."
-      );
+      showMessage(errorBox, message);
+      setButtonLoading(button, false, t("signingIn"), t("signIn"));
+    }
+  });
 
-      setButtonLoading(
-        button,
-        false,
-        "Signing in...",
-        "Sign In"
-      );
+  document.addEventListener("languageChanged", () => {
+    if (!button.disabled) {
+      button.textContent = t("signIn");
     }
   });
 };
 
 const initializeRegisterPage = () => {
-  const form =
-    document.getElementById("registerForm");
+  const form = document.getElementById("registerForm");
 
   if (!form) {
     return;
   }
 
-  const nameInput =
-    document.getElementById("registerName");
+  const nameInput = document.getElementById("registerName");
+  const emailInput = document.getElementById("registerEmail");
+  const passwordInput = document.getElementById("registerPassword");
+  const confirmPasswordInput = document.getElementById("confirmPassword");
+  const button = document.getElementById("registerButton");
+  const errorBox = document.getElementById("registerError");
+  const successBox = document.getElementById("registerSuccess");
 
-  const emailInput =
-    document.getElementById("registerEmail");
-
-  const passwordInput =
-    document.getElementById("registerPassword");
-
-  const confirmPasswordInput =
-    document.getElementById("confirmPassword");
-
-  const button =
-    document.getElementById("registerButton");
-
-  const errorBox =
-    document.getElementById("registerError");
-
-  const successBox =
-    document.getElementById("registerSuccess");
-
-  setupPasswordToggle(
-    "registerPassword",
-    "toggleRegisterPassword"
-  );
-
-  setupPasswordToggle(
-    "confirmPassword",
-    "toggleConfirmPassword"
-  );
+  setupPasswordToggle("registerPassword", "toggleRegisterPassword");
+  setupPasswordToggle("confirmPassword", "toggleConfirmPassword");
 
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
@@ -176,52 +121,30 @@ const initializeRegisterPage = () => {
     const name = nameInput.value.trim();
     const email = emailInput.value.trim();
     const password = passwordInput.value;
-    const confirmPassword =
-      confirmPasswordInput.value;
+    const confirmPassword = confirmPasswordInput.value;
 
     if (!name) {
-      showMessage(
-        errorBox,
-        "Please enter your name."
-      );
-
+      showMessage(errorBox, t("enterYourName"));
       return;
     }
 
     if (!email) {
-      showMessage(
-        errorBox,
-        "Please enter your email."
-      );
-
+      showMessage(errorBox, t("enterYourEmail"));
       return;
     }
 
     if (password.length < 6) {
-      showMessage(
-        errorBox,
-        "Password must be at least 6 characters."
-      );
-
+      showMessage(errorBox, t("passwordTooShort"));
       return;
     }
 
     if (password !== confirmPassword) {
-      showMessage(
-        errorBox,
-        "Passwords do not match."
-      );
-
+      showMessage(errorBox, t("passwordsMismatch"));
       return;
     }
 
     try {
-      setButtonLoading(
-        button,
-        true,
-        "Creating account...",
-        "Create Account"
-      );
+      setButtonLoading(button, true, t("creatingAccount"), t("createAccount"));
 
       await auth.register({
         name,
@@ -229,10 +152,7 @@ const initializeRegisterPage = () => {
         password,
       });
 
-      showMessage(
-        successBox,
-        "Account created successfully. Please check your email to verify your account."
-      );
+      showMessage(successBox, t("accountCreated"));
 
       form.reset();
 
@@ -240,31 +160,27 @@ const initializeRegisterPage = () => {
         window.location.href = "login.html";
       }, 2500);
     } catch (error) {
-      console.error(
-        "Registration error:",
-        error
-      );
+      console.error("Registration error:", error);
 
-      showMessage(
-        errorBox,
-        error.message ||
-          "Unable to create your account."
-      );
+      const message =
+        error.message === "Email already exists"
+          ? t("emailAlreadyExists")
+          : error.message || t("registerFailed");
 
-      setButtonLoading(
-        button,
-        false,
-        "Creating account...",
-        "Create Account"
-      );
+      showMessage(errorBox, message);
+
+      setButtonLoading(button, false, t("creatingAccount"), t("createAccount"));
+    }
+  });
+
+  document.addEventListener("languageChanged", () => {
+    if (!button.disabled) {
+      button.textContent = t("createAccount");
     }
   });
 };
 
-document.addEventListener(
-  "DOMContentLoaded",
-  () => {
-    initializeLoginPage();
-    initializeRegisterPage();
-  }
-);
+document.addEventListener("DOMContentLoaded", () => {
+  initializeLoginPage();
+  initializeRegisterPage();
+});

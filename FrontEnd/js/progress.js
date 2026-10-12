@@ -1,16 +1,18 @@
+
 let progressData = null;
 
 const escapeHtml = (value) => {
   const div = document.createElement("div");
-
   div.textContent = value ?? "";
-
   return div.innerHTML;
+};
+
+const translate = (key) => {
+  return typeof window.t === "function" ? window.t(key) : key;
 };
 
 const getProgressData = async () => {
   const data = await api.get("/progress");
-
   return data.progress || data;
 };
 
@@ -40,18 +42,14 @@ const formatMarks = (value) => {
 
 const getCourseName = (course) => {
   if (!course) {
-    return "Unknown Course";
+    return translate("unknownCourse");
   }
 
   if (typeof course === "string") {
     return course;
   }
 
-  return (
-    course.name ||
-    course.code ||
-    "Unknown Course"
-  );
+  return course.name || course.code || translate("unknownCourse");
 };
 
 const getCourseCode = (course) => {
@@ -62,282 +60,171 @@ const getCourseCode = (course) => {
   return course.code || "";
 };
 
+const getCourses = (data) => {
+  if (Array.isArray(data?.courses)) {
+    return data.courses;
+  }
+
+  if (Array.isArray(data?.courseProgress)) {
+    return data.courseProgress;
+  }
+
+  return [];
+};
+
 const updateOverview = (data) => {
-  const overallPercentage =
-    getPercentage(
-      data.overallPercentage ?? 0
-    );
+  const overallPercentage = getPercentage(data.overallPercentage ?? 0);
+  const totalMarks = Number(data.totalMarks ?? 0);
+  const obtainedMarks = Number(data.obtainedMarks ?? 0);
 
-  const totalMarks =
-    Number(data.totalMarks ?? 0);
+  const completedAssessments = Number(
+    data.completedAssessments ?? data.assessmentsCount ?? 0
+  );
 
-  const obtainedMarks =
-    Number(data.obtainedMarks ?? 0);
+  const courses = getCourses(data);
 
-  const completedAssessments =
-    Number(
-      data.completedAssessments ??
-      data.assessmentsCount ??
-      0
-    );
+  const percentageElement = document.getElementById("overallPercentage");
+  const labelElement = document.getElementById("overallLabel");
+  const progressBar = document.getElementById("overallProgressBar");
+  const totalMarksElement = document.getElementById("totalMarks");
+  const obtainedMarksElement = document.getElementById("obtainedMarks");
+  const completedElement = document.getElementById("completedAssessments");
+  const coursesElement = document.getElementById("coursesTracked");
 
-  const courseProgress =
-    Array.isArray(data.courses)
-      ? data.courses
-      : Array.isArray(
-          data.courseProgress
-        )
-        ? data.courseProgress
-        : [];
+  percentageElement.textContent = `${overallPercentage.toFixed(2)}%`;
+  totalMarksElement.textContent = formatMarks(totalMarks);
+  obtainedMarksElement.textContent = formatMarks(obtainedMarks);
+  completedElement.textContent = completedAssessments;
+  coursesElement.textContent = courses.length;
 
-  const percentageElement =
-    document.getElementById(
-      "overallPercentage"
-    );
-
-  const labelElement =
-    document.getElementById(
-      "overallLabel"
-    );
-
-  const progressBar =
-    document.getElementById(
-      "overallProgressBar"
-    );
-
-  const totalMarksElement =
-    document.getElementById(
-      "totalMarks"
-    );
-
-  const obtainedMarksElement =
-    document.getElementById(
-      "obtainedMarks"
-    );
-
-  const completedElement =
-    document.getElementById(
-      "completedAssessments"
-    );
-
-  const coursesElement =
-    document.getElementById(
-      "coursesTracked"
-    );
-
-  percentageElement.textContent =
-    `${overallPercentage.toFixed(2)}%`;
-
-  totalMarksElement.textContent =
-    formatMarks(totalMarks);
-
-  obtainedMarksElement.textContent =
-    formatMarks(obtainedMarks);
-
-  completedElement.textContent =
-    completedAssessments;
-
-  coursesElement.textContent =
-    courseProgress.length;
-
-  progressBar.style.width =
-    `${overallPercentage}%`;
+  progressBar.style.width = `${overallPercentage}%`;
 
   if (completedAssessments === 0) {
-    labelElement.textContent =
-      "No completed assessments yet";
+    labelElement.textContent = translate("noCompletedAssessments");
   } else {
+    const count = completedAssessments;
+
     labelElement.textContent =
-      `${completedAssessments} completed assessment${
-        completedAssessments === 1
-          ? ""
-          : "s"
-      }`;
+      `${count} ${translate("completedAssessmentCount")}`;
   }
 };
 
 const renderCourseProgress = (data) => {
-  const container =
-    document.getElementById(
-      "courseProgressList"
-    );
-
-  const emptySection =
-    document.getElementById(
-      "progressEmpty"
-    );
-
-  let courses =
-    Array.isArray(data.courses)
-      ? data.courses
-      : Array.isArray(
-          data.courseProgress
-        )
-        ? data.courseProgress
-        : [];
+  const container = document.getElementById("courseProgressList");
+  const emptySection = document.getElementById("progressEmpty");
 
   if (!container) {
     return;
   }
 
+  let courses = getCourses(data);
+
   if (courses.length === 0) {
     container.innerHTML = `
       <div class="progress-list-empty">
-        Complete an assessment to see your course progress here.
+        ${escapeHtml(translate("completeAssessmentForCourseProgress"))}
       </div>
     `;
 
     if (emptySection) {
-      emptySection.classList.remove(
-        "hidden"
-      );
+      emptySection.classList.remove("hidden");
     }
 
     return;
   }
 
   if (emptySection) {
-    emptySection.classList.add(
-      "hidden"
-    );
+    emptySection.classList.add("hidden");
   }
 
-  courses = courses.map((course) => {
-    const percentage =
-      getPercentage(
+  courses = courses
+    .map((course) => ({
+      ...course,
+      percentage: getPercentage(
         course.percentage ??
         course.progress ??
         course.averagePercentage ??
         0
-      );
+      ),
+    }))
+    .sort((a, b) => b.percentage - a.percentage);
 
-    return {
-      ...course,
-      percentage,
-    };
-  });
+  container.innerHTML = courses
+    .map((course) => {
+      const courseObject = course.course || course;
+      const name = getCourseName(courseObject);
+      const code = getCourseCode(courseObject);
 
-  courses.sort(
-    (a, b) =>
-      b.percentage - a.percentage
-  );
+      const obtained = course.obtainedMarks ?? course.totalObtained ?? 0;
+      const total = course.totalMarks ?? 0;
 
-  container.innerHTML =
-    courses
-      .map((course) => {
-        const courseObject =
-          course.course || course;
+      const assessmentCount =
+        course.assessmentsCount ??
+        course.completedAssessments ??
+        course.count ??
+        0;
 
-        const name =
-          getCourseName(
-            courseObject
-          );
+      const assessmentLabel =
+        Number(assessmentCount) === 1
+          ? translate("completedAssessmentCount")
+          : translate("completedAssessmentsCount");
 
-        const code =
-          getCourseCode(
-            courseObject
-          );
+      return `
+        <article class="course-progress-card">
+          <div class="course-progress-top">
+            <div class="course-progress-info">
+              <p class="course-progress-name">
+                ${escapeHtml(name)}
+              </p>
 
-        const obtained =
-          course.obtainedMarks ??
-          course.totalObtained ??
-          0;
-
-        const total =
-          course.totalMarks ??
-          0;
-
-        const assessmentCount =
-          course.assessmentsCount ??
-          course.completedAssessments ??
-          course.count ??
-          0;
-
-        return `
-          <article class="course-progress-card">
-
-            <div class="course-progress-top">
-
-              <div class="course-progress-info">
-
-                <p class="course-progress-name">
-                  ${escapeHtml(name)}
-                </p>
-
-                ${
-                  code
-                    ? `
-                      <p class="course-progress-code">
-                        ${escapeHtml(code)}
-                      </p>
-                    `
-                    : ""
-                }
-
-              </div>
-
-              <strong class="course-progress-percentage">
-                ${course.percentage.toFixed(2)}%
-              </strong>
-
+              ${
+                code
+                  ? `
+                    <p class="course-progress-code">
+                      ${escapeHtml(code)}
+                    </p>
+                  `
+                  : ""
+              }
             </div>
 
-            <div class="course-progress-track">
+            <strong class="course-progress-percentage">
+              ${course.percentage.toFixed(2)}%
+            </strong>
+          </div>
 
-              <div
-                class="course-progress-fill"
-                style="width: ${course.percentage}%"
-              ></div>
+          <div class="course-progress-track">
+            <div
+              class="course-progress-fill"
+              style="width: ${course.percentage}%"
+            ></div>
+          </div>
 
-            </div>
+          <div class="course-progress-bottom">
+            <span class="course-progress-marks">
+              ${escapeHtml(formatMarks(obtained))}
+              /
+              ${escapeHtml(formatMarks(total))}
+              ${escapeHtml(translate("marks"))}
+            </span>
 
-            <div class="course-progress-bottom">
-
-              <span class="course-progress-marks">
-                ${escapeHtml(
-                  formatMarks(obtained)
-                )}
-                /
-                ${escapeHtml(
-                  formatMarks(total)
-                )}
-                marks
-              </span>
-
-              <span class="course-progress-assessments">
-                ${assessmentCount}
-                completed assessment${
-                  Number(
-                    assessmentCount
-                  ) === 1
-                    ? ""
-                    : "s"
-                }
-              </span>
-
-            </div>
-
-          </article>
-        `;
-      })
-      .join("");
+            <span class="course-progress-assessments">
+              ${escapeHtml(assessmentCount)}
+              ${escapeHtml(assessmentLabel)}
+            </span>
+          </div>
+        </article>
+      `;
+    })
+    .join("");
 };
 
 const showProgressError = (message) => {
-  const container =
-    document.getElementById(
-      "courseProgressList"
-    );
-
-  const emptySection =
-    document.getElementById(
-      "progressEmpty"
-    );
+  const container = document.getElementById("courseProgressList");
+  const emptySection = document.getElementById("progressEmpty");
 
   if (emptySection) {
-    emptySection.classList.add(
-      "hidden"
-    );
+    emptySection.classList.add("hidden");
   }
 
   if (!container) {
@@ -346,56 +233,43 @@ const showProgressError = (message) => {
 
   container.innerHTML = `
     <div class="progress-list-empty">
-      ${escapeHtml(
-        message ||
-          "Unable to load your progress."
-      )}
+      ${escapeHtml(message || translate("unableToLoadProgress"))}
     </div>
   `;
 
-  const percentage =
-    document.getElementById(
-      "overallPercentage"
-    );
-
-  const label =
-    document.getElementById(
-      "overallLabel"
-    );
+  const percentage = document.getElementById("overallPercentage");
+  const label = document.getElementById("overallLabel");
 
   if (percentage) {
     percentage.textContent = "—";
   }
 
   if (label) {
-    label.textContent =
-      "Unable to load progress";
+    label.textContent = translate("unableToLoadProgress");
   }
 };
 
 const loadProgress = async () => {
   try {
-    const data =
-      await getProgressData();
+    const data = await getProgressData();
 
     progressData = data;
-
     updateOverview(data);
-
     renderCourseProgress(data);
   } catch (error) {
-    console.error(
-      "Progress loading error:",
-      error
-    );
-
-    showProgressError(
-      error.message
-    );
+    console.error("Progress loading error:", error);
+    showProgressError(error.message);
   }
 };
 
-document.addEventListener(
-  "DOMContentLoaded",
-  loadProgress
-);
+const refreshProgressLanguage = () => {
+  if (!progressData) {
+    return;
+  }
+
+  updateOverview(progressData);
+  renderCourseProgress(progressData);
+};
+
+document.addEventListener("languageChanged", refreshProgressLanguage);
+document.addEventListener("DOMContentLoaded", loadProgress);

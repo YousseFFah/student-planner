@@ -5,6 +5,20 @@ let currentDate = new Date();
 let selectedDate = new Date();
 
 let calendarEvents = [];
+let isCalendarLoading = false;
+let calendarError = null;
+
+const translate = (key) => {
+  return typeof window.t === "function" ? window.t(key) : key;
+};
+
+const getCalendarLanguage = () => {
+  return typeof window.getLanguage === "function" ? window.getLanguage() : "en";
+};
+
+const getLocale = () => {
+  return getCalendarLanguage() === "ar" ? "ar-EG" : "en-US";
+};
 
 const escapeHtml = (value) => {
   const div = document.createElement("div");
@@ -60,17 +74,17 @@ const sameDay = (first, second) => {
 };
 
 const getCourseName = (item) => {
-  if (!item?.course) return "No course";
+  if (!item?.course) return translate("noCourse");
 
   if (typeof item.course === "string") {
-    return "Course";
+    return translate("course");
   }
 
-  return item.course.name || item.course.code || "No course";
+  return item.course.name || item.course.code || translate("noCourse");
 };
 
 const formatDate = (date) => {
-  return date.toLocaleDateString("en-US", {
+  return date.toLocaleDateString(getLocale(), {
     weekday: "long",
     month: "long",
     day: "numeric",
@@ -78,8 +92,22 @@ const formatDate = (date) => {
   });
 };
 
+const formatShortDate = (date) => {
+  return date.toLocaleDateString(getLocale(), {
+    month: "long",
+    day: "numeric",
+  });
+};
+
+const formatMonth = (date) => {
+  return date.toLocaleDateString(getLocale(), {
+    month: "long",
+    year: "numeric",
+  });
+};
+
 const formatTime = (date) => {
-  return date.toLocaleTimeString("en-US", {
+  return date.toLocaleTimeString(getLocale(), {
     hour: "numeric",
     minute: "2-digit",
   });
@@ -89,7 +117,6 @@ const isCompleted = (event) => {
   return event.status === "Completed";
 };
 
-// Check whether the actual deadline has passed.
 // Date-only deadlines are considered overdue after that day ends.
 const isOverdue = (event) => {
   if (isCompleted(event) || !event.date) {
@@ -108,30 +135,70 @@ const isOverdue = (event) => {
   return event.date.getTime() < Date.now();
 };
 
-const getEventStatus = (event) => {
+const getEventStatusKey = (event) => {
   if (isCompleted(event)) {
-    return "Completed";
+    return "completedStatus";
   }
 
   if (isOverdue(event)) {
-    return "Overdue";
+    return "overdue";
   }
 
   if (event.date && sameDay(event.date, new Date())) {
-    return "Due today";
+    return "dueToday";
   }
 
-  return event.status || "Pending";
+  switch (event.status) {
+    case "In Progress":
+      return "inProgress";
+    case "Pending":
+      return "pending";
+    case "Completed":
+      return "completedStatus";
+    default:
+      return null;
+  }
 };
 
-const loadCalendarData = async () => {
+const getEventStatus = (event) => {
+  const key = getEventStatusKey(event);
+
+  return key ? translate(key) : event.status || translate("pending");
+};
+
+const getEventTypeLabel = (event) => {
+  return event.eventType === "Assessment"
+    ? translate("assessments")
+    : translate("tasks");
+};
+
+const renderLoadingMessage = () => {
+  document.getElementById("calendarGrid").innerHTML = `
+    <div class="calendar-message">
+      ${escapeHtml(translate("loadingCalendar"))}
+    </div>
+  `;
+};
+
+const renderCalendarError = () => {
   const grid = document.getElementById("calendarGrid");
 
   grid.innerHTML = `
     <div class="calendar-message">
-      Loading your schedule...
+      ${escapeHtml(translate("unableToLoadSchedule"))}<br>
+      <button id="retryCalendarBtn" type="button">
+        ${escapeHtml(translate("retry"))}
+      </button>
     </div>
   `;
+};
+
+const loadCalendarData = async () => {
+  if (isCalendarLoading) return;
+
+  isCalendarLoading = true;
+  calendarError = null;
+  renderLoadingMessage();
 
   try {
     const [tasksResponse, assessmentsResponse] = await Promise.all([
@@ -141,13 +208,13 @@ const loadCalendarData = async () => {
 
     tasks = Array.isArray(tasksResponse)
       ? tasksResponse
-      : Array.isArray(tasksResponse.tasks)
+      : Array.isArray(tasksResponse?.tasks)
         ? tasksResponse.tasks
         : [];
 
     assessments = Array.isArray(assessmentsResponse)
       ? assessmentsResponse
-      : Array.isArray(assessmentsResponse.assessments)
+      : Array.isArray(assessmentsResponse?.assessments)
         ? assessmentsResponse.assessments
         : [];
 
@@ -175,15 +242,10 @@ const loadCalendarData = async () => {
   } catch (error) {
     console.error("Calendar error:", error);
 
-    grid.innerHTML = `
-      <div class="calendar-message">
-        Unable to load your schedule.<br>
-        ${escapeHtml(error.message)}<br>
-        <button id="retryCalendarBtn" type="button">
-          Try again
-        </button>
-      </div>
-    `;
+    calendarError = error;
+    renderCalendarError();
+  } finally {
+    isCalendarLoading = false;
   }
 };
 
@@ -204,11 +266,15 @@ const updateMonthSummary = () => {
     return event.date >= monthStart && event.date < monthEnd;
   });
 
-  const summary = document.getElementById("monthSummary");
+  const key =
+    monthEvents.length === 1
+      ? "scheduledEventSingular"
+      : "scheduledEventPlural";
 
-  summary.textContent =
-    `${monthEvents.length} scheduled event` +
-    `${monthEvents.length === 1 ? "" : "s"} this month`;
+  document.getElementById("monthSummary").textContent = translate(key).replace(
+    "{count}",
+    String(monthEvents.length),
+  );
 };
 
 const renderCalendar = () => {
@@ -218,10 +284,7 @@ const renderCalendar = () => {
   const month = currentDate.getMonth();
 
   document.getElementById("calendarMonth").textContent =
-    currentDate.toLocaleDateString("en-US", {
-      month: "long",
-      year: "numeric",
-    });
+    formatMonth(currentDate);
 
   grid.innerHTML = "";
 
@@ -256,9 +319,13 @@ const renderCalendar = () => {
       button.classList.add("selected");
     }
 
+    const eventCountLabel = translate(
+      dayEvents.length === 1 ? "eventCountSingular" : "eventCountPlural",
+    ).replace("{count}", String(dayEvents.length));
+
     button.setAttribute(
       "aria-label",
-      `${formatDate(date)}, ${dayEvents.length} events`,
+      `${formatDate(date)}, ${eventCountLabel}`,
     );
 
     button.setAttribute("aria-pressed", String(sameDay(date, selectedDate)));
@@ -266,23 +333,22 @@ const renderCalendar = () => {
     const visibleDots = dayEvents
       .slice(0, 4)
       .map((event) => {
-        // Completed events always stay green.
         if (isCompleted(event)) {
-          return `<i class="event-dot completed-dot"></i>`;
+          return '<i class="event-dot completed-dot"></i>';
         }
 
-        // Any unfinished event past its deadline is red.
         if (isOverdue(event)) {
-          return `<i class="event-dot overdue-dot"></i>`;
+          return '<i class="event-dot overdue-dot"></i>';
         }
 
-        // Otherwise use the regular task/assessment colors.
         const dotClass =
           event.eventType === "Assessment" ? "assessment-dot" : "task-dot";
 
         return `<i class="event-dot ${dotClass}"></i>`;
       })
       .join("");
+
+    const extraEvents = dayEvents.length > 4 ? `+${dayEvents.length - 4}` : "";
 
     button.innerHTML = `
       <span class="day-number">${date.getDate()}</span>
@@ -292,7 +358,7 @@ const renderCalendar = () => {
       </span>
 
       <span class="day-event-count">
-        ${dayEvents.length > 4 ? `+${dayEvents.length - 4}` : ""}
+        ${extraEvents}
       </span>
     `;
 
@@ -324,15 +390,11 @@ const renderSelectedDay = () => {
     return sameDay(event.date, selectedDate);
   });
 
-  title.textContent = selectedDate.toLocaleDateString("en-US", {
-    month: "long",
-    day: "numeric",
-  });
-
+  title.textContent = formatShortDate(selectedDate);
   subtitle.textContent = formatDate(selectedDate);
   dayTotal.textContent = events.length;
 
-  // Count unfinished tasks and assessments.
+  // Count unfinished tasks and assessments that are not overdue.
   dayPending.textContent = events.filter((event) => {
     return !isCompleted(event) && !isOverdue(event);
   }).length;
@@ -340,7 +402,7 @@ const renderSelectedDay = () => {
   if (events.length === 0) {
     list.innerHTML = `
       <div class="calendar-message">
-        No tasks or assessments scheduled for this day.
+        ${escapeHtml(translate("noEventsForDay"))}
       </div>
     `;
     return;
@@ -361,28 +423,28 @@ const renderSelectedDay = () => {
         .join(" ");
 
       const status = getEventStatus(event);
+      const typeLabel = getEventTypeLabel(event);
       const time = formatTime(event.date);
       const courseName = getCourseName(event);
-
       const details = [courseName, time].filter(Boolean);
 
       return `
-      <article class="${classes}">
-        <div class="day-event-top">
-          <span class="day-event-type">
-            ${event.eventType}
-          </span>
+        <article class="${classes}">
+          <div class="day-event-top">
+            <span class="day-event-type">
+              ${escapeHtml(typeLabel)}
+            </span>
 
-          <span class="day-event-status">
-            ${escapeHtml(status)}
-          </span>
-        </div>
+            <span class="day-event-status">
+              ${escapeHtml(status)}
+            </span>
+          </div>
 
-        <h3>${escapeHtml(event.title || "Untitled")}</h3>
+          <h3>${escapeHtml(event.title || translate("untitled"))}</h3>
 
-        <p>${escapeHtml(details.join(" · "))}</p>
-      </article>
-    `;
+          <p>${escapeHtml(details.join(" · "))}</p>
+        </article>
+      `;
     })
     .join("");
 };
@@ -419,6 +481,23 @@ document.getElementById("calendarGrid").addEventListener("click", (event) => {
   if (event.target.closest("#retryCalendarBtn")) {
     loadCalendarData();
   }
+});
+
+// Re-render translated content without fetching data again.
+document.addEventListener("languageChanged", () => {
+  if (isCalendarLoading) {
+    renderLoadingMessage();
+    return;
+  }
+
+  if (calendarError) {
+    renderCalendarError();
+    return;
+  }
+
+  renderCalendar();
+  renderSelectedDay();
+  updateMonthSummary();
 });
 
 document.addEventListener("DOMContentLoaded", () => {

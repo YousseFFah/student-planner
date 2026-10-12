@@ -5,6 +5,42 @@ let editingTaskId = null;
 let deletingTask = null;
 let currentFilter = "All";
 
+const taskText = (key) =>
+  typeof window.t === "function" ? window.t(key) : key;
+
+const taskTranslate = (key, values = {}) => {
+  let result = taskText(key);
+
+  Object.entries(values).forEach(([name, value]) => {
+    result = result.replaceAll(`{${name}}`, String(value));
+  });
+
+  return result;
+};
+
+const translateTaskError = (error, fallbackKey) => {
+  const message = String(error?.message || "");
+  const normalized = message.toLowerCase();
+
+  if (
+    normalized.includes("task not found") ||
+    normalized.includes("no task found")
+  ) {
+    return taskText("taskNotFound");
+  }
+
+  if (
+    normalized.includes("deadline") &&
+    (normalized.includes("passed") ||
+      normalized.includes("future") ||
+      normalized.includes("expired"))
+  ) {
+    return taskText("taskDeadlineError");
+  }
+
+  return message || taskText(fallbackKey);
+};
+
 const escapeHtml = (value) => {
   const div = document.createElement("div");
   div.textContent = value ?? "";
@@ -18,28 +54,32 @@ const getItemId = (item) => {
 
 const getCourses = async () => {
   const data = await api.get("/courses");
+
   if (Array.isArray(data)) return data;
   return Array.isArray(data.courses) ? data.courses : [];
 };
 
 const getTasks = async () => {
   const data = await api.get("/tasks");
+
   if (Array.isArray(data)) return data;
   return Array.isArray(data.tasks) ? data.tasks : [];
 };
 
 const getCourseName = (task) => {
-  if (!task?.course) return "No course";
+  if (!task?.course) return taskText("noCourse");
 
   if (typeof task.course === "string") {
     const course = courses.find(
       (item) => String(getItemId(item)) === String(task.course)
     );
 
-    return course ? `${course.name} (${course.code})` : "No course";
+    return course
+      ? `${course.name} (${course.code})`
+      : taskText("noCourse");
   }
 
-  return task.course.name || task.course.code || "No course";
+  return task.course.name || task.course.code || taskText("noCourse");
 };
 
 const getCourseId = (task) => {
@@ -48,29 +88,73 @@ const getCourseId = (task) => {
   return getItemId(task.course);
 };
 
+const translateTaskStatus = (status) => {
+  const statusKeys = {
+    Pending: "pending",
+    "In Progress": "inProgress",
+    Completed: "completed",
+  };
+
+  return taskText(statusKeys[status] || status);
+};
+
+const translateTaskType = (type) => {
+  const typeKeys = {
+    Assignment: "assignment",
+    Homework: "homework",
+    Project: "project",
+    Study: "study",
+    Exam: "exam",
+    Quiz: "quiz",
+    Other: "other",
+  };
+
+  return taskText(typeKeys[type] || type || "other");
+};
+
 const formatDate = (value) => {
-  if (!value) return "No deadline";
+  if (!value) return taskText("noDeadline");
 
   const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return "Invalid date";
 
-  return date.toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  });
+  if (Number.isNaN(date.getTime())) {
+    return taskText("invalidDate");
+  }
+
+  const language =
+    typeof window.getLanguage === "function"
+      ? window.getLanguage()
+      : "en";
+
+  return date.toLocaleDateString(
+    language === "ar" ? "ar-EG" : "en-US",
+    {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    }
+  );
 };
 
 const formatTime = (value) => {
   if (!value) return "";
 
   const date = new Date(value);
+
   if (Number.isNaN(date.getTime())) return "";
 
-  return date.toLocaleTimeString("en-US", {
-    hour: "numeric",
-    minute: "2-digit",
-  });
+  const language =
+    typeof window.getLanguage === "function"
+      ? window.getLanguage()
+      : "en";
+
+  return date.toLocaleTimeString(
+    language === "ar" ? "ar-EG" : "en-US",
+    {
+      hour: "numeric",
+      minute: "2-digit",
+    }
+  );
 };
 
 const isDeadlinePassed = (deadline) => {
@@ -78,16 +162,14 @@ const isDeadlinePassed = (deadline) => {
 
   const date = new Date(deadline);
 
-  return (
-    !Number.isNaN(date.getTime()) &&
-    date.getTime() <= Date.now()
-  );
+  return !Number.isNaN(date.getTime()) && date.getTime() <= Date.now();
 };
 
 const getDeadlineState = (deadline, status) => {
   if (!deadline || status === "Completed") return "";
 
   const date = new Date(deadline);
+
   if (Number.isNaN(date.getTime())) return "";
 
   if (isDeadlinePassed(deadline)) return "overdue";
@@ -105,6 +187,7 @@ const getDeadlineState = (deadline, status) => {
 const getDeadlineText = (task) => {
   const date = formatDate(task.deadline);
   const time = formatTime(task.deadline);
+
   return time ? `${date} · ${time}` : date;
 };
 
@@ -116,19 +199,33 @@ const getStatusClass = (status) => {
 
 const populateCourses = () => {
   const courseSelect = document.getElementById("taskCourse");
+
   if (!courseSelect) return;
 
-  courseSelect.innerHTML = '<option value="">Select course</option>';
+  const selectedValue = courseSelect.value;
+
+  courseSelect.innerHTML = "";
+
+  const defaultOption = document.createElement("option");
+  defaultOption.value = "";
+  defaultOption.textContent = taskText("selectCourse");
+  courseSelect.appendChild(defaultOption);
 
   courses.forEach((course) => {
     const id = getItemId(course);
+
     if (!id) return;
 
     const option = document.createElement("option");
     option.value = id;
     option.textContent = `${course.name} (${course.code})`;
+
     courseSelect.appendChild(option);
   });
+
+  if ([...courseSelect.options].some((option) => option.value === selectedValue)) {
+    courseSelect.value = selectedValue;
+  }
 };
 
 const renderTasks = () => {
@@ -148,33 +245,38 @@ const renderTasks = () => {
   visibleTasks.sort((a, b) => {
     const dateA = a.deadline ? new Date(a.deadline).getTime() : Infinity;
     const dateB = b.deadline ? new Date(b.deadline).getTime() : Infinity;
+
     return dateA - dateB;
   });
 
   if (taskCount) {
-    taskCount.textContent =
-      tasks.length === 1 ? "1 Task" : `${tasks.length} Tasks`;
+    const countKey = tasks.length === 1 ? "taskCountSingular" : "taskCount";
+
+    taskCount.textContent = taskTranslate(countKey, {
+      count: tasks.length,
+    });
   }
 
   if (visibleTasks.length === 0) {
+    const title =
+      currentFilter === "All"
+        ? taskText("noTasks")
+        : taskTranslate("noTasksInCategory", {
+            status: translateTaskStatus(currentFilter),
+          });
+
+    const description =
+      currentFilter === "All"
+        ? taskText("noTasksDescription")
+        : taskText("noTasksInCategoryDescription");
+
     tasksList.innerHTML = `
       <div class="tasks-empty">
-        <strong>
-          ${
-            currentFilter === "All"
-              ? "No tasks yet"
-              : `No ${escapeHtml(currentFilter.toLowerCase())} tasks`
-          }
-        </strong>
-        <span>
-          ${
-            currentFilter === "All"
-              ? "Add your first task to start organizing your workload."
-              : "There are no tasks in this category."
-          }
-        </span>
+        <strong>${escapeHtml(title)}</strong>
+        <span>${escapeHtml(description)}</span>
       </div>
     `;
+
     return;
   }
 
@@ -200,13 +302,15 @@ const renderTasks = () => {
         <div class="task-main">
           <div class="task-title-row">
             <p class="task-title">${escapeHtml(task.title)}</p>
-            <span class="task-type">${escapeHtml(task.type)}</span>
+            <span class="task-type">${escapeHtml(
+              translateTaskType(task.type)
+            )}</span>
           </div>
 
           <div class="task-meta">
             <span>${escapeHtml(getCourseName(task))}</span>
             <span class="task-meta-separator">•</span>
-            <span>${escapeHtml(task.status)}</span>
+            <span>${escapeHtml(translateTaskStatus(task.status))}</span>
           </div>
 
           ${
@@ -218,7 +322,7 @@ const renderTasks = () => {
           ${
             overdue
               ? `<p class="task-overdue-message">
-                  Deadline passed — this task is locked.
+                  ${escapeHtml(taskText("taskDeadlinePassedLocked"))}
                 </p>`
               : ""
           }
@@ -235,9 +339,11 @@ const renderTasks = () => {
             data-action="edit"
             data-task-id="${escapeHtml(id)}"
             ${locked ? "disabled" : ""}
-            title="${locked ? "The deadline has passed" : "Edit task"}"
+            title="${escapeHtml(
+              locked ? taskText("deadlinePassed") : taskText("editTask")
+            )}"
           >
-            ${locked ? "Locked" : "Edit"}
+            ${escapeHtml(locked ? taskText("locked") : taskText("edit"))}
           </button>
 
           <button
@@ -246,7 +352,7 @@ const renderTasks = () => {
             data-action="delete"
             data-task-id="${escapeHtml(id)}"
           >
-            Delete
+            ${escapeHtml(taskText("delete"))}
           </button>
         </div>
       </article>
@@ -277,7 +383,7 @@ const openTaskModal = (task = null) => {
   }
 
   if (task && isDeadlinePassed(task.deadline)) {
-    alert("This task's deadline has passed. It can no longer be edited.");
+    alert(taskText("taskDeadlineError"));
     return;
   }
 
@@ -295,15 +401,18 @@ const openTaskModal = (task = null) => {
 
   if (!task) {
     editingTaskId = null;
-    modalTitle.textContent = "Add Task";
-    saveButton.textContent = "Save Task";
+    modalTitle.textContent = taskText("addTask");
+    saveButton.textContent = taskText("saveTask");
+
     statusGroup.classList.add("hidden");
     statusInput.required = false;
     statusInput.value = "Pending";
   } else {
     editingTaskId = getItemId(task);
-    modalTitle.textContent = "Edit Task";
-    saveButton.textContent = "Save Changes";
+
+    modalTitle.textContent = taskText("editTask");
+    saveButton.textContent = taskText("saveChanges");
+
     statusGroup.classList.remove("hidden");
     statusInput.required = true;
 
@@ -320,6 +429,7 @@ const openTaskModal = (task = null) => {
         const localDate = new Date(
           date.getTime() - date.getTimezoneOffset() * 60000
         );
+
         deadlineInput.value = localDate.toISOString().slice(0, 16);
       }
     }
@@ -333,10 +443,12 @@ const openTaskModal = (task = null) => {
 
 const closeTaskModal = () => {
   const modal = document.getElementById("taskModal");
+
   if (!modal) return;
 
   modal.classList.add("hidden");
   modal.setAttribute("aria-hidden", "true");
+
   editingTaskId = null;
 };
 
@@ -349,19 +461,19 @@ const getFormData = () => {
   const status = statusInput ? statusInput.value : "Pending";
   const description = document.getElementById("taskDescription").value.trim();
 
-  if (!title) throw new Error("Please enter a task title.");
-  if (!type) throw new Error("Please select a task type.");
-  if (!course) throw new Error("Please select a course.");
-  if (!deadline) throw new Error("Please select a deadline.");
+  if (!title) throw new Error(taskText("enterTaskTitle"));
+  if (!type) throw new Error(taskText("selectTaskType"));
+  if (!course) throw new Error(taskText("selectCourseError"));
+  if (!deadline) throw new Error(taskText("selectDeadline"));
 
   const date = new Date(deadline);
 
   if (Number.isNaN(date.getTime())) {
-    throw new Error("Please enter a valid deadline.");
+    throw new Error(taskText("invalidDeadline"));
   }
 
   if (date.getTime() <= Date.now()) {
-    throw new Error("The deadline must be in the future.");
+    throw new Error(taskText("taskDeadlineError"));
   }
 
   return {
@@ -389,7 +501,7 @@ const saveTask = async (event) => {
       const currentTask = findTaskById(editingTaskId);
 
       if (!currentTask || isDeadlinePassed(currentTask.deadline)) {
-        throw new Error("This task's deadline has passed. It can no longer be changed.");
+        throw new Error(taskText("taskDeadlineError"));
       }
     }
 
@@ -397,13 +509,13 @@ const saveTask = async (event) => {
 
     errorBox.textContent = "";
     errorBox.classList.remove("visible");
+
     saveButton.disabled = true;
+    saveButton.textContent = taskText(isEditing ? "saving" : "adding");
 
     if (isEditing) {
-      saveButton.textContent = "Saving...";
       await api.patch(`/tasks/${encodeURIComponent(editingTaskId)}`, data);
     } else {
-      saveButton.textContent = "Adding...";
       await api.post("/tasks", data);
     }
 
@@ -411,11 +523,12 @@ const saveTask = async (event) => {
     await loadData();
   } catch (error) {
     console.error("Save task error:", error);
-    errorBox.textContent = error.message || "Unable to save task.";
+
+    errorBox.textContent = translateTaskError(error, "saveTaskFailed");
     errorBox.classList.add("visible");
   } finally {
     saveButton.disabled = false;
-    saveButton.textContent = isEditing ? "Save Changes" : "Save Task";
+    saveButton.textContent = taskText(isEditing ? "saveChanges" : "saveTask");
   }
 };
 
@@ -430,11 +543,12 @@ const openEditTask = (id) => {
 
   if (!task) {
     console.error("Task not found:", id, tasks);
+    alert(taskText("taskNotFound"));
     return;
   }
 
   if (isDeadlinePassed(task.deadline)) {
-    alert("This task's deadline has passed. It can no longer be edited.");
+    alert(taskText("taskDeadlineError"));
     return;
   }
 
@@ -446,6 +560,7 @@ const openDeleteModal = (id) => {
 
   if (!task) {
     console.error("Task not found:", id, tasks);
+    alert(taskText("taskNotFound"));
     return;
   }
 
@@ -459,16 +574,19 @@ const openDeleteModal = (id) => {
 
   deletingTask = task;
   taskName.textContent = task.title;
+
   modal.classList.remove("hidden");
   modal.setAttribute("aria-hidden", "false");
 };
 
 const closeDeleteModal = () => {
   const modal = document.getElementById("deleteModal");
+
   if (!modal) return;
 
   modal.classList.add("hidden");
   modal.setAttribute("aria-hidden", "true");
+
   deletingTask = null;
 };
 
@@ -478,18 +596,17 @@ const confirmDeleteTask = async () => {
   const id = getItemId(deletingTask);
 
   if (!id) {
-    alert("Unable to identify this task.");
+    alert(taskText("identifyTaskError"));
     return;
   }
 
   const button = document.getElementById("confirmDeleteBtn");
-  if (!button) return;
 
-  const originalText = button.textContent;
+  if (!button) return;
 
   try {
     button.disabled = true;
-    button.textContent = "Deleting...";
+    button.textContent = taskText("deleting");
 
     await api.delete(`/tasks/${encodeURIComponent(id)}`);
 
@@ -497,18 +614,22 @@ const confirmDeleteTask = async () => {
     await loadData();
   } catch (error) {
     console.error("Delete task error:", error);
-    alert(error.message || "Unable to delete task.");
+
+    alert(translateTaskError(error, "deleteTaskFailed"));
   } finally {
     button.disabled = false;
-    button.textContent = originalText;
+    button.textContent = taskText("delete");
   }
 };
 
 const loadData = async () => {
   const tasksList = document.getElementById("tasksList");
+
   if (!tasksList) return;
 
-  tasksList.innerHTML = `<div class="tasks-loading">Loading tasks...</div>`;
+  tasksList.innerHTML = `
+    <div class="tasks-loading">${escapeHtml(taskText("loadingTasks"))}</div>
+  `;
 
   try {
     const [loadedCourses, loadedTasks] = await Promise.all([
@@ -526,11 +647,34 @@ const loadData = async () => {
 
     tasksList.innerHTML = `
       <div class="tasks-empty">
-        <strong>Unable to load tasks</strong>
-        <span>${escapeHtml(error.message || "Please make sure the backend server is running.")}</span>
+        <strong>${escapeHtml(taskText("unableToLoadTasks"))}</strong>
+        <span>${escapeHtml(
+          error.message || taskText("checkBackend")
+        )}</span>
       </div>
     `;
   }
+};
+
+const updateTaskModalTexts = () => {
+  const modal = document.getElementById("taskModal");
+
+  if (!modal || modal.classList.contains("hidden")) return;
+
+  const modalTitle = document.getElementById("modalTitle");
+  const saveButton = document.getElementById("saveTaskBtn");
+
+  if (modalTitle) {
+    modalTitle.textContent = taskText(editingTaskId ? "editTask" : "addTask");
+  }
+
+  if (saveButton && !saveButton.disabled) {
+    saveButton.textContent = taskText(
+      editingTaskId ? "saveChanges" : "saveTask"
+    );
+  }
+
+  populateCourses();
 };
 
 const initializeTasks = () => {
@@ -554,19 +698,31 @@ const initializeTasks = () => {
       return;
     }
 
-    const editButton = event.target.closest('[data-action="edit"][data-task-id]');
+    const editButton = event.target.closest(
+      '[data-action="edit"][data-task-id]'
+    );
 
     if (editButton) {
       event.preventDefault();
-      if (editButton.dataset.taskId) openEditTask(editButton.dataset.taskId);
+
+      if (editButton.dataset.taskId) {
+        openEditTask(editButton.dataset.taskId);
+      }
+
       return;
     }
 
-    const deleteButton = event.target.closest('[data-action="delete"][data-task-id]');
+    const deleteButton = event.target.closest(
+      '[data-action="delete"][data-task-id]'
+    );
 
     if (deleteButton) {
       event.preventDefault();
-      if (deleteButton.dataset.taskId) openDeleteModal(deleteButton.dataset.taskId);
+
+      if (deleteButton.dataset.taskId) {
+        openDeleteModal(deleteButton.dataset.taskId);
+      }
+
       return;
     }
 
@@ -605,6 +761,7 @@ const initializeTasks = () => {
 
       filterButton.classList.add("active");
       currentFilter = filterButton.dataset.filter || "All";
+
       renderTasks();
     }
   });
@@ -619,8 +776,21 @@ const initializeTasks = () => {
 
   document.addEventListener("keydown", (event) => {
     if (event.key !== "Escape") return;
+
     closeTaskModal();
     closeDeleteModal();
+  });
+
+  document.addEventListener("languageChanged", () => {
+    renderTasks();
+    populateCourses();
+    updateTaskModalTexts();
+
+    const deleteButton = document.getElementById("confirmDeleteBtn");
+
+    if (deleteButton && !deleteButton.disabled) {
+      deleteButton.textContent = taskText("delete");
+    }
   });
 
   loadData();

@@ -1,5 +1,4 @@
 <!doctype html>
-
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -8,52 +7,51 @@
     <title>Student Planner - Dashboard</title>
 
     <link rel="icon" type="image/png" href="assets/favicon.png" />
-
     <link rel="stylesheet" href="css/style.css" />
     <link rel="stylesheet" href="css/dashboard.css" />
   </head>
 
-  <body class="dashboard-page">
+  <body class="dashboard-page" data-title-key="dashboardTitle">
     <div class="app">
       <aside class="sidebar">
         <div class="brand">
           <div class="brand-mark">SP</div>
 
           <div class="brand-text">
-            <strong>Student Planner</strong>
-            <span>Stay on track</span>
+            <strong data-i18n="brandName">Student Planner</strong>
+            <span data-i18n="brandTagline">Stay on track</span>
           </div>
         </div>
 
         <nav class="sidebar-nav">
           <a href="index.html" class="nav-item active">
             <span class="nav-icon">⌂</span>
-            <span>Dashboard</span>
+            <span data-i18n="dashboard">Dashboard</span>
           </a>
 
           <a href="courses.html" class="nav-item">
             <span class="nav-icon">▣</span>
-            <span>Courses</span>
+            <span data-i18n="courses">Courses</span>
           </a>
 
           <a href="tasks.html" class="nav-item">
             <span class="nav-icon">✓</span>
-            <span>Tasks</span>
+            <span data-i18n="tasks">Tasks</span>
           </a>
 
           <a href="assessments.html" class="nav-item">
-            <span class="nav-icon">◫</span>
-            <span>Assessments</span>
+            <span class="nav-icon">◉</span>
+            <span data-i18n="assessments">Assessments</span>
           </a>
 
           <a href="progress.html" class="nav-item">
             <span class="nav-icon">↗</span>
-            <span>Progress</span>
+            <span data-i18n="progress">Progress</span>
           </a>
 
           <a href="calendar.html" class="nav-item">
             <span class="nav-icon">▦</span>
-            <span>Calendar</span>
+            <span data-i18n="calendar">Calendar</span>
           </a>
         </nav>
 
@@ -62,19 +60,19 @@
 
           <div class="sidebar-user-info">
             <strong class="user-name">Student</strong>
-            <span>Student account</span>
+            <span data-i18n="studentAccount">Student account</span>
           </div>
 
-          <button class="logout-btn" type="button">Logout</button>
+          <button class="logout-btn" type="button" data-i18n="logout">
+            Logout
+          </button>
         </div>
       </aside>
 
       <main class="main-content">
-        <!-- TOPBAR -->
-
         <header class="topbar">
           <div class="topbar-copy">
-            <span class="eyebrow"> STUDENT PLANNER </span>
+            <strong data-i18n="brandName">STUDENT PLANNER</strong>
 
             <h1>
               <span id="greeting">Good morning,</span>
@@ -82,26 +80,37 @@
               <span class="wave">👋</span>
             </h1>
 
-            <p>Small steps every day lead to big results.</p>
+            <p data-i18n="dashboardDescription">
+              Small steps every day lead to big results.
+            </p>
+          </div>
+
+          <div class="topbar-actions">
+            <button
+              class="language-toggle dashboard-language-toggle"
+              type="button"
+              data-language-toggle
+              aria-label="Change language"
+            >
+              العربية
+            </button>
           </div>
         </header>
 
-        <!-- HERO -->
-
         <section class="dashboard-hero">
           <div class="hero-copy">
-            <span class="hero-badge"> This Week </span>
+            <span class="hero-badge" data-i18n="thisWeek">This Week</span>
 
             <h2>
-              You're
-              <span>closer</span>
-              than you think.
+              <span data-i18n="youAre">You're</span>
+              <span data-i18n="closer">closer</span>
+              <span data-i18n="thanYouThink">than you think.</span>
             </h2>
 
-            <p>Plan. Study. Achieve.</p>
+            <p data-i18n="planStudyAchieve">Plan. Study. Achieve.</p>
           </div>
 
-          <div class="hero-decoration">
+          <div class="hero-decoration" aria-hidden="true">
             <div class="hero-sun"></div>
             <div class="hero-mountain mountain-one"></div>
             <div class="hero-mountain mountain-two"></div>
@@ -109,122 +118,101 @@
           </div>
         </section>
 
-        <!-- STATS -->
-
         <section class="stats-grid">
-          <!-- COURSES -->
-
           <article class="stat-card">
             <div class="stat-icon blue">▣</div>
-
             <div class="stat-content">
-              <span class="stat-label"> Courses </span>
-
-              <strong id="totalCourses"> 0 </strong>
-
-              <small> Active courses </small>
+              <span class="stat-label" data-i18n="courses">Courses</span>
+              <strong id="totalCourses">0</strong>
+              <small data-i18n="activeCourses">Active courses</small>
             </div>
-
-            <span class="stat-arrow"> → </span>
+            <span class="stat-arrow">→</span>
           </article>
-
-          <!-- TASKS REMAINING -->
 
           <article class="stat-card">
             <div class="stat-icon purple">✓</div>
-
             <div class="stat-content">
-              <span class="stat-label"> Tasks </span>
-
-              <strong id="pendingTasks"> 0 </strong>
-
-              <small> Tasks remaining </small>
+              <span class="stat-label" data-i18n="tasks">Tasks</span>
+              <strong id="pendingTasks">0</strong>
+              <small data-i18n="tasksRemaining">Tasks remaining</small>
             </div>
-
-            <span class="stat-arrow"> → </span>
+            <span class="stat-arrow">→</span>
           </article>
-
-          <!-- ASSESSMENTS REMAINING -->
 
           <article class="stat-card">
-            <div class="stat-icon green">◫</div>
-
+            <div class="stat-icon green">◉</div>
             <div class="stat-content">
-              <span class="stat-label"> Assessments </span>
-
-              <strong id="pendingAssessments"> 0 </strong>
-
-              <small> Assessments remaining </small>
+              <span class="stat-label" data-i18n="assessments"
+                >Assessments</span
+              >
+              <strong id="pendingAssessments">0</strong>
+              <small data-i18n="assessmentsRemaining">
+                Assessments remaining
+              </small>
             </div>
-
-            <span class="stat-arrow"> → </span>
+            <span class="stat-arrow">→</span>
           </article>
-
-          <!-- COMPLETED WORK -->
 
           <article class="stat-card">
             <div class="stat-icon orange">✓</div>
-
             <div class="stat-content">
-              <span class="stat-label"> Completed </span>
-
-              <strong id="completedWork"> 0 </strong>
-
-              <small> Completed work </small>
+              <span class="stat-label" data-i18n="completed">Completed</span>
+              <strong id="completedWork">0</strong>
+              <small data-i18n="completedWork">Completed work</small>
             </div>
-
-            <span class="stat-arrow"> → </span>
+            <span class="stat-arrow">→</span>
           </article>
         </section>
 
-        <!-- MAIN DASHBOARD -->
-
         <section class="dashboard-grid">
-          <!-- UPCOMING TASKS -->
-
           <div class="panel upcoming-panel">
             <div class="panel-heading">
               <div>
-                <span class="section-label"> Next up </span>
-
-                <h2>Upcoming Tasks</h2>
+                <span class="section-label" data-i18n="nextUp">Next up</span>
+                <h2 data-i18n="upcomingTasks">Upcoming Tasks</h2>
               </div>
 
-              <a href="tasks.html" class="panel-link"> View all → </a>
+              <a href="tasks.html" class="panel-link">
+                <span data-i18n="viewAll">View all</span> →
+              </a>
             </div>
 
             <div id="upcomingTasks" class="dashboard-list">
-              <div class="loading-state">Loading tasks...</div>
+              <div class="loading-state" data-i18n="loadingTasks">
+                Loading tasks...
+              </div>
             </div>
           </div>
-
-          <!-- UPCOMING ASSESSMENTS -->
 
           <div class="panel upcoming-panel">
             <div class="panel-heading">
               <div>
-                <span class="section-label"> Deadlines </span>
-
-                <h2>Upcoming Assessments</h2>
+                <span class="section-label" data-i18n="deadlines">
+                  Deadlines
+                </span>
+                <h2 data-i18n="upcomingAssessments">Upcoming Assessments</h2>
               </div>
 
-              <a href="assessments.html" class="panel-link"> View all → </a>
+              <a href="assessments.html" class="panel-link">
+                <span data-i18n="viewAll">View all</span> →
+              </a>
             </div>
 
             <div id="upcomingAssessments" class="dashboard-list">
-              <div class="loading-state">Loading assessments...</div>
+              <div class="loading-state" data-i18n="loadingAssessments">
+                Loading assessments...
+              </div>
             </div>
           </div>
         </section>
-
-        <!-- FOCUS -->
 
         <section class="panel focus-panel">
           <div class="panel-heading">
             <div>
-              <span class="section-label"> Your workload </span>
-
-              <h2>What do I need to do now?</h2>
+              <span class="section-label" data-i18n="yourWorkload">
+                Your workload
+              </span>
+              <h2 data-i18n="currentPriorities">What do I need to do now?</h2>
             </div>
           </div>
 
@@ -232,9 +220,13 @@
             <div class="focus-icon">✓</div>
 
             <div class="focus-copy">
-              <h3 id="focusTitle">Loading your priorities...</h3>
+              <h3 id="focusTitle" data-i18n="loadingPriorities">
+                Loading your priorities...
+              </h3>
 
-              <p id="focusText">We are checking your upcoming work.</p>
+              <p id="focusText" data-i18n="checkingUpcomingWork">
+                We are checking your upcoming work.
+              </p>
             </div>
           </div>
         </section>
@@ -242,9 +234,8 @@
     </div>
 
     <script src="js/api.js"></script>
-
+    <script src="js/i18n.js"></script>
     <script src="js/auth.js"></script>
-
     <script src="js/dashboard.js"></script>
 
     <script>

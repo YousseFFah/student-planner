@@ -7,52 +7,51 @@
     <title>Student Planner - Progress</title>
 
     <link rel="icon" type="image/png" href="assets/favicon.png" />
-
     <link rel="stylesheet" href="css/style.css" />
     <link rel="stylesheet" href="css/progress.css" />
   </head>
 
-  <body>
+  <body data-title-key="progressPageTitle">
     <div class="app">
       <aside class="sidebar">
         <div class="brand">
           <div class="brand-mark">SP</div>
 
           <div class="brand-text">
-            <strong>Student Planner</strong>
-            <span>Stay on track</span>
+            <strong data-i18n="brandName">Student Planner</strong>
+            <span data-i18n="brandTagline">Stay on track</span>
           </div>
         </div>
 
         <nav class="sidebar-nav">
           <a href="index.html" class="nav-item">
             <span class="nav-icon">⌂</span>
-            <span>Dashboard</span>
+            <span data-i18n="dashboard">Dashboard</span>
           </a>
 
           <a href="courses.html" class="nav-item">
             <span class="nav-icon">▣</span>
-            <span>Courses</span>
+            <span data-i18n="courses">Courses</span>
           </a>
 
           <a href="tasks.html" class="nav-item">
             <span class="nav-icon">✓</span>
-            <span>Tasks</span>
+            <span data-i18n="tasks">Tasks</span>
           </a>
 
           <a href="assessments.html" class="nav-item">
             <span class="nav-icon">◫</span>
-            <span>Assessments</span>
+            <span data-i18n="assessments">Assessments</span>
           </a>
 
           <a href="progress.html" class="nav-item active">
             <span class="nav-icon">↗</span>
-            <span>Progress</span>
+            <span data-i18n="progress">Progress</span>
           </a>
 
           <a href="calendar.html" class="nav-item">
             <span class="nav-icon">▦</span>
-            <span>Calendar</span>
+            <span data-i18n="calendar">Calendar</span>
           </a>
         </nav>
 
@@ -61,35 +60,52 @@
 
           <div class="sidebar-user-info">
             <strong class="user-name">Student</strong>
-            <span>Student account</span>
+            <span data-i18n="studentAccount">Student account</span>
           </div>
 
-          <button class="logout-btn" type="button">Logout</button>
+          <button class="logout-btn" type="button" data-i18n="logout">
+            Logout
+          </button>
         </div>
       </aside>
 
       <main class="main-content">
         <header class="topbar">
           <div class="topbar-copy">
-            <span class="eyebrow">Track your performance</span>
+            <span class="eyebrow" data-i18n="progressEyebrow">
+              Track your performance
+            </span>
 
-            <h1>Progress</h1>
+            <h1 data-i18n="progressTitle">Progress</h1>
 
-            <p>See how you're performing across your completed assessments.</p>
+            <p data-i18n="progressDescription">
+              See how you're performing across your completed assessments.
+            </p>
+          </div>
+
+          <div class="topbar-actions">
+            <button
+              class="secondary-btn"
+              type="button"
+              data-language-toggle
+              aria-label="Switch language to Arabic"
+            >
+              العربية
+            </button>
           </div>
         </header>
-
         <section class="progress-overview">
           <div class="progress-score-card">
             <div class="progress-card-heading">
-              <span>Overall Performance</span>
+              <span data-i18n="overallPerformance">Overall Performance</span>
               <span class="progress-card-icon">%</span>
             </div>
 
             <div class="overall-score">
               <strong id="overallPercentage">0%</strong>
-
-              <span id="overallLabel"> No completed assessments yet </span>
+              <span id="overallLabel" data-i18n="noCompletedAssessments">
+                No completed assessments yet
+              </span>
             </div>
 
             <div class="overall-progress-track">
@@ -98,12 +114,12 @@
 
             <div class="score-details">
               <div>
-                <span>Obtained</span>
+                <span data-i18n="obtained">Obtained</span>
                 <strong id="obtainedMarks">0</strong>
               </div>
 
               <div>
-                <span>Total</span>
+                <span data-i18n="total">Total</span>
                 <strong id="totalMarks">0</strong>
               </div>
             </div>
@@ -113,11 +129,15 @@
             <div class="progress-stat-icon blue">✓</div>
 
             <div class="progress-stat-content">
-              <span>Completed Assessments</span>
+              <span data-i18n="completedAssessments">
+                Completed Assessments
+              </span>
 
-              <strong id="completedAssessments"> 0 </strong>
+              <strong id="completedAssessments">0</strong>
 
-              <small> Included in your overall score </small>
+              <small data-i18n="includedInOverallScore">
+                Included in your overall score
+              </small>
             </div>
           </div>
 
@@ -125,11 +145,13 @@
             <div class="progress-stat-icon green">↗</div>
 
             <div class="progress-stat-content">
-              <span>Courses Tracked</span>
+              <span data-i18n="coursesTracked">Courses Tracked</span>
 
-              <strong id="coursesTracked"> 0 </strong>
+              <strong id="coursesTracked">0</strong>
 
-              <small> With completed assessments </small>
+              <small data-i18n="withCompletedAssessments">
+                With completed assessments
+              </small>
             </div>
           </div>
         </section>
@@ -137,33 +159,44 @@
         <section class="course-progress-section">
           <div class="section-heading">
             <div>
-              <span class="section-label"> Course breakdown </span>
+              <span class="section-label" data-i18n="courseBreakdown">
+                Course breakdown
+              </span>
 
-              <h2>Progress by Course</h2>
+              <h2 data-i18n="progressByCourse">Progress by Course</h2>
             </div>
           </div>
 
           <div id="courseProgressList" class="course-progress-list">
-            <div class="progress-loading">Loading progress...</div>
+            <div class="progress-loading" data-i18n="loadingProgress">
+              Loading progress...
+            </div>
           </div>
         </section>
 
         <section id="progressEmpty" class="progress-empty hidden">
           <div class="empty-icon">↗</div>
 
-          <h2>No progress to show yet</h2>
+          <h2 data-i18n="noProgressYet">No progress to show yet</h2>
 
-          <p>
+          <p data-i18n="noProgressDescription">
             Complete an assessment and add your obtained marks to start tracking
             your academic progress.
           </p>
 
-          <a href="assessments.html" class="primary-btn"> Go to Assessments </a>
+          <a
+            href="assessments.html"
+            class="primary-btn"
+            data-i18n="goToAssessments"
+          >
+            Go to Assessments
+          </a>
         </section>
       </main>
     </div>
 
     <script src="js/api.js"></script>
+    <script src="js/i18n.js"></script>
     <script src="js/auth.js"></script>
     <script src="js/progress.js"></script>
 

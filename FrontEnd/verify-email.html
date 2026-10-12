@@ -6,14 +6,20 @@
 
   <title>Student Planner - Verify Email</title>
 
+  <link rel="icon" type="image/png" href="assets/favicon.png">
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/auth.css">
   <link rel="stylesheet" href="css/verify-email.css">
 </head>
 
-<body class="auth-page">
-
+<body class="auth-page" data-title-key="verifyTitle">
   <main class="auth-container">
+
+    <button
+      class="language-toggle"
+      type="button"
+      data-language-toggle
+    >العربية</button>
 
     <section class="auth-card verification-card">
 
@@ -42,18 +48,16 @@
         <a
           href="login.html"
           class="primary-btn verification-button"
-        >
-          Go to Login
-        </a>
+          data-i18n="goToLogin"
+        >Go to Login</a>
       </div>
 
     </section>
-
   </main>
 
   <script src="js/api.js"></script>
+  <script src="js/i18n.js"></script>
   <script src="js/auth.js"></script>
   <script src="js/verify-email.js"></script>
-
 </body>
 </html>

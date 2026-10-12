@@ -6,15 +6,19 @@
 
   <title>Student Planner - Login</title>
 
-  <link rel="icon" type="image/png" href="assets/favicon.png" />
-
+  <link rel="icon" type="image/png" href="assets/favicon.png">
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/auth.css">
 </head>
 
-<body class="auth-page">
-
+<body class="auth-page" data-title-key="loginTitle">
   <main class="auth-container">
+
+    <button
+      class="language-toggle"
+      type="button"
+      data-language-toggle
+    >العربية</button>
 
     <section class="auth-card">
 
@@ -23,16 +27,20 @@
 
         <div>
           <strong>Student Planner</strong>
-          <span>Stay on track</span>
+          <span data-i18n="brandTagline">Stay on track</span>
         </div>
       </div>
 
       <div class="auth-heading">
-        <span class="eyebrow">Welcome back</span>
+        <span class="eyebrow" data-i18n="welcomeBack">
+          Welcome back
+        </span>
 
-        <h1>Sign in to your account</h1>
+        <h1 data-i18n="signInHeading">
+          Sign in to your account
+        </h1>
 
-        <p>
+        <p data-i18n="loginDescription">
           Keep track of your courses, tasks, assessments, and progress.
         </p>
       </div>
@@ -40,11 +48,12 @@
       <form id="loginForm" class="auth-form">
 
         <div class="form-group">
-          <label for="loginEmail">Email</label>
+          <label for="loginEmail" data-i18n="email">Email</label>
 
           <input
             id="loginEmail"
             type="email"
+            data-i18n-placeholder="enterEmail"
             placeholder="Enter your email"
             autocomplete="email"
             required
@@ -52,12 +61,15 @@
         </div>
 
         <div class="form-group">
-          <label for="loginPassword">Password</label>
+          <label for="loginPassword" data-i18n="password">
+            Password
+          </label>
 
           <div class="password-field">
             <input
               id="loginPassword"
               type="password"
+              data-i18n-placeholder="enterPassword"
               placeholder="Enter your password"
               autocomplete="current-password"
               required
@@ -67,10 +79,9 @@
               id="toggleLoginPassword"
               class="password-toggle"
               type="button"
+              data-i18n-aria-label="show"
               aria-label="Show password"
-            >
-              Show
-            </button>
+            >Show</button>
           </div>
         </div>
 
@@ -84,27 +95,25 @@
           id="loginButton"
           class="primary-btn auth-submit"
           type="submit"
-        >
-          Sign In
-        </button>
+          data-i18n="signIn"
+        >Sign In</button>
 
       </form>
 
       <div class="auth-footer">
-        <span>Don't have an account?</span>
+        <span data-i18n="noAccount">Don't have an account?</span>
 
-        <a href="register.html">
+        <a href="register.html" data-i18n="createOne">
           Create one
         </a>
       </div>
 
     </section>
-
   </main>
 
   <script src="js/api.js"></script>
+  <script src="js/i18n.js"></script>
   <script src="js/auth.js"></script>
   <script src="js/auth-pages.js"></script>
-
 </body>
 </html>

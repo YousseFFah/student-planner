@@ -6,56 +6,66 @@ let editingAssessmentId = null;
 let deletingAssessment = null;
 let currentFilter = "All";
 
+const translate = (key) =>
+  typeof window.t === "function" ? window.t(key) : key;
+
 const escapeHtml = (value) => {
-  const div = document.createElement("div");
-  div.textContent = value ?? "";
-  return div.innerHTML;
+  const element = document.createElement("div");
+  element.textContent = value ?? "";
+  return element.innerHTML;
 };
 
-const getItemId = (item) => {
-  if (!item) return "";
-  return item._id || item.id || "";
-};
+const getItemId = (item) => item?._id || item?.id || "";
 
 const getCourses = async () => {
   const data = await api.get("/courses");
   if (Array.isArray(data)) return data;
-  return Array.isArray(data.courses) ? data.courses : [];
+  return Array.isArray(data?.courses) ? data.courses : [];
 };
 
 const getAssessments = async () => {
   const data = await api.get("/assessments");
   if (Array.isArray(data)) return data;
-  return Array.isArray(data.assessments) ? data.assessments : [];
-};
-
-const getCourseName = (assessment) => {
-  if (!assessment?.course) return "No course";
-
-  if (typeof assessment.course === "string") {
-    const course = courses.find(
-      (item) => String(getItemId(item)) === String(assessment.course)
-    );
-
-    return course ? `${course.name} (${course.code})` : "No course";
-  }
-
-  return assessment.course.name || assessment.course.code || "No course";
+  return Array.isArray(data?.assessments) ? data.assessments : [];
 };
 
 const getCourseId = (assessment) => {
   if (!assessment?.course) return "";
-  if (typeof assessment.course === "string") return assessment.course;
-  return getItemId(assessment.course);
+  return typeof assessment.course === "string"
+    ? assessment.course
+    : getItemId(assessment.course);
 };
 
+const getCourseName = (assessment) => {
+  if (!assessment?.course) return translate("noCourse");
+
+  if (typeof assessment.course !== "string") {
+    return (
+      assessment.course.name ||
+      assessment.course.code ||
+      translate("noCourse")
+    );
+  }
+
+  const course = courses.find(
+    (item) => String(getItemId(item)) === String(assessment.course)
+  );
+
+  return course
+    ? `${course.name}${course.code ? ` (${course.code})` : ""}`
+    : translate("noCourse");
+};
+
+const getLocale = () =>
+  window.getLanguage?.() === "ar" ? "ar-EG" : "en-US";
+
 const formatDate = (value) => {
-  if (!value) return "No deadline";
+  if (!value) return translate("noDeadline");
 
   const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return "Invalid date";
+  if (Number.isNaN(date.getTime())) return translate("invalidDate");
 
-  return date.toLocaleDateString("en-US", {
+  return date.toLocaleDateString(getLocale(), {
     month: "short",
     day: "numeric",
     year: "numeric",
@@ -68,7 +78,7 @@ const formatTime = (value) => {
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return "";
 
-  return date.toLocaleTimeString("en-US", {
+  return date.toLocaleTimeString(getLocale(), {
     hour: "numeric",
     minute: "2-digit",
   });
@@ -78,11 +88,7 @@ const isDeadlinePassed = (deadline) => {
   if (!deadline) return false;
 
   const date = new Date(deadline);
-
-  return (
-    !Number.isNaN(date.getTime()) &&
-    date.getTime() <= Date.now()
-  );
+  return !Number.isNaN(date.getTime()) && date.getTime() <= Date.now();
 };
 
 const getDeadlineState = (deadline, status) => {
@@ -94,7 +100,6 @@ const getDeadlineState = (deadline, status) => {
   if (isDeadlinePassed(deadline)) return "overdue";
 
   const today = new Date();
-
   const isToday =
     date.getFullYear() === today.getFullYear() &&
     date.getMonth() === today.getMonth() &&
@@ -115,20 +120,51 @@ const getStatusClass = (status) => {
   return "";
 };
 
+const getStatusLabel = (status) => {
+  const keys = {
+    Pending: "pending",
+    "In Progress": "inProgress",
+    Completed: "completedStatus",
+  };
+
+  return translate(keys[status] || "other");
+};
+
+const getAssessmentTypeLabel = (type) => {
+  const keys = {
+    Quiz: "assessmentTypeQuiz",
+    Assignment: "assessmentTypeAssignment",
+    Lab: "assessmentTypeLab",
+    Midterm: "assessmentTypeMidterm",
+    Final: "assessmentTypeFinal",
+    Project: "assessmentTypeProject",
+    Other: "assessmentTypeOther",
+  };
+
+  return translate(keys[type] || "assessmentTypeOther");
+};
+
 const getPercentage = (obtainedMarks, totalMarks) => {
   const total = Number(totalMarks);
   const obtained = Number(obtainedMarks);
 
-  if (!total || total <= 0) return 0;
+  if (!Number.isFinite(total) || total <= 0) return 0;
+  if (!Number.isFinite(obtained) || obtained < 0) return 0;
 
   return Math.round((obtained / total) * 100);
 };
 
 const populateCourses = () => {
-  const courseSelect = document.getElementById("assessmentCourse");
-  if (!courseSelect) return;
+  const select = document.getElementById("assessmentCourse");
+  if (!select) return;
 
-  courseSelect.innerHTML = '<option value="">Select course</option>';
+  const selectedValue = select.value;
+  select.replaceChildren();
+
+  const placeholder = document.createElement("option");
+  placeholder.value = "";
+  placeholder.textContent = translate("selectCourse");
+  select.appendChild(placeholder);
 
   courses.forEach((course) => {
     const id = getItemId(course);
@@ -136,168 +172,219 @@ const populateCourses = () => {
 
     const option = document.createElement("option");
     option.value = id;
-    option.textContent = `${course.name} (${course.code})`;
-    courseSelect.appendChild(option);
+    option.textContent = course.code
+      ? `${course.name} (${course.code})`
+      : course.name;
+
+    select.appendChild(option);
+  });
+
+  if (selectedValue) select.value = selectedValue;
+};
+
+const updateAssessmentFilters = () => {
+  const keys = {
+    All: "all",
+    Pending: "pending",
+    "In Progress": "inProgress",
+    Completed: "completedStatus",
+  };
+
+  document.querySelectorAll(".filter-btn").forEach((button) => {
+    const key = keys[button.dataset.filter || "All"];
+    if (key) button.textContent = translate(key);
   });
 };
 
 const renderAssessments = () => {
   const list = document.getElementById("assessmentsList");
   const count = document.getElementById("assessmentCount");
-
   if (!list) return;
 
-  let visibleAssessments = [...assessments];
+  let visible = [...assessments];
 
   if (currentFilter !== "All") {
-    visibleAssessments = visibleAssessments.filter(
+    visible = visible.filter(
       (assessment) => assessment.status === currentFilter
     );
   }
 
-  visibleAssessments.sort((a, b) => {
+  visible.sort((a, b) => {
     const dateA = a.deadline ? new Date(a.deadline).getTime() : Infinity;
     const dateB = b.deadline ? new Date(b.deadline).getTime() : Infinity;
     return dateA - dateB;
   });
 
   if (count) {
-    count.textContent =
+    const key =
       assessments.length === 1
-        ? "1 Assessment"
-        : `${assessments.length} Assessments`;
+        ? "assessmentCountSingular"
+        : "assessmentCount";
+
+    count.textContent = translate(key).replace(
+      "{count}",
+      String(assessments.length)
+    );
   }
 
-  if (visibleAssessments.length === 0) {
+  if (visible.length === 0) {
+    const title =
+      currentFilter === "All"
+        ? translate("noAssessments")
+        : translate("noAssessmentsInCategory").replace(
+            "{status}",
+            getStatusLabel(currentFilter)
+          );
+
+    const description =
+      currentFilter === "All"
+        ? translate("noAssessmentsDescription")
+        : translate("noAssessmentsInCategoryDescription");
+
     list.innerHTML = `
       <div class="assessments-empty">
-        <strong>
-          ${
-            currentFilter === "All"
-              ? "No assessments yet"
-              : `No ${escapeHtml(currentFilter.toLowerCase())} assessments`
-          }
-        </strong>
-        <span>
-          ${
-            currentFilter === "All"
-              ? "Add your first assessment to start tracking your grades."
-              : "There are no assessments in this category."
-          }
-        </span>
+        <strong>${escapeHtml(title)}</strong>
+        <span>${escapeHtml(description)}</span>
       </div>
     `;
     return;
   }
 
-  list.innerHTML = visibleAssessments.map((assessment) => {
-    const id = getItemId(assessment);
-    const statusClass = getStatusClass(assessment.status);
-    const deadlineState = getDeadlineState(assessment.deadline, assessment.status);
-    const locked = isDeadlinePassed(assessment.deadline);
-    const overdue = locked && assessment.status !== "Completed";
+  list.innerHTML = visible
+    .map((assessment) => {
+      const id = getItemId(assessment);
+      const statusClass = getStatusClass(assessment.status);
+      const deadlineState = getDeadlineState(
+        assessment.deadline,
+        assessment.status
+      );
+      const locked = isDeadlinePassed(assessment.deadline);
+      const overdue = locked && assessment.status !== "Completed";
+      const percentage = getPercentage(
+        assessment.obtainedMarks,
+        assessment.totalMarks
+      );
 
-    const percentage = getPercentage(
-      assessment.obtainedMarks,
-      assessment.totalMarks
-    );
+      return `
+        <article
+          class="assessment-item ${statusClass} ${overdue ? "overdue" : ""} ${locked ? "locked" : ""}"
+          data-assessment-id="${escapeHtml(id)}"
+        >
+          <div class="assessment-status-dot ${statusClass}"></div>
 
-    return `
-      <article
-        class="assessment-item ${statusClass} ${overdue ? "overdue" : ""} ${locked ? "locked" : ""}"
-        data-assessment-id="${escapeHtml(id)}"
-      >
-        <div class="assessment-status-dot ${statusClass}"></div>
+          <div class="assessment-main">
+            <div class="assessment-title-row">
+              <p class="assessment-title">${escapeHtml(assessment.title)}</p>
+              <span class="assessment-type">
+                ${escapeHtml(getAssessmentTypeLabel(assessment.type))}
+              </span>
+            </div>
 
-        <div class="assessment-main">
-          <div class="assessment-title-row">
-            <p class="assessment-title">${escapeHtml(assessment.title)}</p>
-            <span class="assessment-type">${escapeHtml(assessment.type)}</span>
+            <div class="assessment-meta">
+              <span>${escapeHtml(getCourseName(assessment))}</span>
+              <span class="assessment-meta-separator">•</span>
+              <span>${escapeHtml(getStatusLabel(assessment.status))}</span>
+            </div>
+
+            ${
+              overdue
+                ? `<p class="assessment-overdue-message">${escapeHtml(
+                    translate("assessmentDeadlinePassedLocked")
+                  )}</p>`
+                : ""
+            }
           </div>
 
-          <div class="assessment-meta">
-            <span>${escapeHtml(getCourseName(assessment))}</span>
-            <span class="assessment-meta-separator">•</span>
-            <span>${escapeHtml(assessment.status)}</span>
+          <div class="assessment-score">
+            <strong>
+              ${escapeHtml(String(assessment.obtainedMarks ?? 0))}
+              /
+              ${escapeHtml(String(assessment.totalMarks ?? 0))}
+            </strong>
+            <span>${escapeHtml(translate("marks"))}</span>
           </div>
 
-          ${
-            overdue
-              ? `<p class="assessment-overdue-message">
-                  Deadline passed — this assessment is locked.
-                </p>`
-              : ""
-          }
-        </div>
+          <div class="assessment-percentage">${percentage}%</div>
 
-        <div class="assessment-score">
-          <strong>
-            ${escapeHtml(String(assessment.obtainedMarks ?? 0))}
-            /
-            ${escapeHtml(String(assessment.totalMarks ?? 0))}
-          </strong>
-          <span>Marks</span>
-        </div>
+          <div class="assessment-deadline ${deadlineState}">
+            ${escapeHtml(getDeadlineText(assessment))}
+          </div>
 
-        <div class="assessment-percentage">${percentage.toFixed(2)}%</div>
+          <div class="assessment-actions">
+            <button
+              type="button"
+              class="assessment-action-btn edit"
+              data-action="edit"
+              data-assessment-id="${escapeHtml(id)}"
+              ${locked ? "disabled" : ""}
+              title="${escapeHtml(
+                translate(locked ? "deadlinePassed" : "editAssessment")
+              )}"
+            >
+              ${escapeHtml(translate(locked ? "locked" : "edit"))}
+            </button>
 
-        <div class="assessment-deadline ${deadlineState}">
-          ${escapeHtml(getDeadlineText(assessment))}
-        </div>
-
-        <div class="assessment-actions">
-          <button
-            type="button"
-            class="assessment-action-btn edit"
-            data-action="edit"
-            data-assessment-id="${escapeHtml(id)}"
-            ${locked ? "disabled" : ""}
-            title="${locked ? "The deadline has passed" : "Edit assessment"}"
-          >
-            ${locked ? "Locked" : "Edit"}
-          </button>
-
-          <button
-            type="button"
-            class="assessment-action-btn delete"
-            data-action="delete"
-            data-assessment-id="${escapeHtml(id)}"
-          >
-            Delete
-          </button>
-        </div>
-      </article>
-    `;
-  }).join("");
+            <button
+              type="button"
+              class="assessment-action-btn delete"
+              data-action="delete"
+              data-assessment-id="${escapeHtml(id)}"
+            >
+              ${escapeHtml(translate("delete"))}
+            </button>
+          </div>
+        </article>
+      `;
+    })
+    .join("");
 };
+
+const showAssessmentFormError = (message) => {
+  const box = document.getElementById("assessmentFormError");
+  if (!box) return;
+
+  box.textContent = message;
+  box.classList.add("visible");
+};
+
+const clearAssessmentFormError = () => {
+  const box = document.getElementById("assessmentFormError");
+  if (!box) return;
+
+  box.textContent = "";
+  box.classList.remove("visible");
+};
+
+const findAssessmentById = (id) =>
+  assessments.find(
+    (assessment) => String(getItemId(assessment)) === String(id)
+  );
 
 const openAssessmentModal = (assessment = null) => {
   const modal = document.getElementById("assessmentModal");
   const titleInput = document.getElementById("assessmentTitle");
   const typeInput = document.getElementById("assessmentType");
   const courseInput = document.getElementById("assessmentCourse");
-  const totalMarksInput = document.getElementById("totalMarks");
-  const obtainedMarksInput = document.getElementById("obtainedMarks");
-  const obtainedMarksGroup = document.getElementById("obtainedMarksGroup");
+  const totalInput = document.getElementById("totalMarks");
+  const obtainedInput = document.getElementById("obtainedMarks");
+  const obtainedGroup = document.getElementById("obtainedMarksGroup");
   const deadlineInput = document.getElementById("assessmentDeadline");
   const statusInput = document.getElementById("assessmentStatus");
   const statusGroup = document.getElementById("assessmentStatusGroup");
   const modalTitle = document.getElementById("modalTitle");
   const saveButton = document.getElementById("saveAssessmentBtn");
-  const errorBox = document.getElementById("assessmentFormError");
 
   if (
-    !modal || !titleInput || !typeInput || !courseInput ||
-    !totalMarksInput || !obtainedMarksInput || !obtainedMarksGroup ||
-    !deadlineInput || !statusInput || !statusGroup ||
-    !modalTitle || !saveButton || !errorBox
+    !modal || !titleInput || !typeInput || !courseInput || !totalInput ||
+    !obtainedInput || !obtainedGroup || !deadlineInput || !statusInput ||
+    !statusGroup || !modalTitle || !saveButton
   ) {
     console.error("Assessment modal elements are missing.");
     return;
   }
 
   if (assessment && isDeadlinePassed(assessment.deadline)) {
-    alert("This assessment's deadline has passed. It can no longer be edited.");
+    alert(translate("assessmentDeadlinePassedLocked"));
     return;
   }
 
@@ -306,43 +393,37 @@ const openAssessmentModal = (assessment = null) => {
   titleInput.value = "";
   typeInput.value = "";
   courseInput.value = "";
-  totalMarksInput.value = "";
-  obtainedMarksInput.value = "";
+  totalInput.value = "";
+  obtainedInput.value = "0";
   deadlineInput.value = "";
   statusInput.value = "Pending";
 
-  errorBox.textContent = "";
-  errorBox.classList.remove("visible");
+  clearAssessmentFormError();
 
   if (!assessment) {
     editingAssessmentId = null;
-    modalTitle.textContent = "Add Assessment";
-    saveButton.textContent = "Save Assessment";
+    modalTitle.textContent = translate("addAssessment");
+    saveButton.textContent = translate("saveAssessment");
 
-    obtainedMarksGroup.classList.add("hidden");
+    obtainedGroup.classList.add("hidden");
     statusGroup.classList.add("hidden");
-
-    obtainedMarksInput.required = false;
+    obtainedInput.required = false;
     statusInput.required = false;
-
-    obtainedMarksInput.value = "0";
-    statusInput.value = "Pending";
   } else {
     editingAssessmentId = getItemId(assessment);
-    modalTitle.textContent = "Edit Assessment";
-    saveButton.textContent = "Save Changes";
+    modalTitle.textContent = translate("editAssessment");
+    saveButton.textContent = translate("saveChanges");
 
-    obtainedMarksGroup.classList.remove("hidden");
+    obtainedGroup.classList.remove("hidden");
     statusGroup.classList.remove("hidden");
-
-    obtainedMarksInput.required = true;
+    obtainedInput.required = true;
     statusInput.required = true;
 
     titleInput.value = assessment.title || "";
     typeInput.value = assessment.type || "";
     courseInput.value = getCourseId(assessment);
-    totalMarksInput.value = assessment.totalMarks ?? "";
-    obtainedMarksInput.value = assessment.obtainedMarks ?? 0;
+    totalInput.value = assessment.totalMarks ?? "";
+    obtainedInput.value = assessment.obtainedMarks ?? 0;
     statusInput.value = assessment.status || "Pending";
 
     if (assessment.deadline) {
@@ -359,7 +440,6 @@ const openAssessmentModal = (assessment = null) => {
 
   modal.classList.remove("hidden");
   modal.setAttribute("aria-hidden", "false");
-
   setTimeout(() => titleInput.focus(), 50);
 };
 
@@ -370,38 +450,42 @@ const closeAssessmentModal = () => {
   modal.classList.add("hidden");
   modal.setAttribute("aria-hidden", "true");
   editingAssessmentId = null;
+  clearAssessmentFormError();
 };
 
 const getFormData = () => {
   const title = document.getElementById("assessmentTitle").value.trim();
   const type = document.getElementById("assessmentType").value;
   const course = document.getElementById("assessmentCourse").value;
-  const totalMarksValue = document.getElementById("totalMarks").value;
-  const obtainedMarksInput = document.getElementById("obtainedMarks");
+  const totalValue = document.getElementById("totalMarks").value;
+  const obtainedInput = document.getElementById("obtainedMarks");
   const statusInput = document.getElementById("assessmentStatus");
   const deadline = document.getElementById("assessmentDeadline").value;
 
-  if (!title) throw new Error("Please enter an assessment title.");
-  if (!type) throw new Error("Please select an assessment type.");
-  if (!course) throw new Error("Please select a course.");
+  if (!title) throw new Error(translate("enterAssessmentTitle"));
+  if (!type) throw new Error(translate("selectAssessmentType"));
+  if (!course) throw new Error(translate("selectAssessmentCourse"));
 
-  if (totalMarksValue === "" || Number(totalMarksValue) <= 0) {
-    throw new Error("Total marks must be greater than 0.");
+  if (
+    totalValue === "" ||
+    !Number.isFinite(Number(totalValue)) ||
+    Number(totalValue) <= 0
+  ) {
+    throw new Error(translate("invalidTotalMarks"));
   }
 
-  if (!deadline) throw new Error("Please select a deadline.");
+  if (!deadline) throw new Error(translate("selectAssessmentDeadline"));
 
   const date = new Date(deadline);
-
   if (Number.isNaN(date.getTime())) {
-    throw new Error("Please enter a valid deadline.");
+    throw new Error(translate("invalidAssessmentDeadline"));
   }
 
   if (date.getTime() <= Date.now()) {
-    throw new Error("The deadline must be in the future.");
+    throw new Error(translate("assessmentDeadlineError"));
   }
 
-  const totalMarks = Number(totalMarksValue);
+  const totalMarks = Number(totalValue);
 
   if (!editingAssessmentId) {
     return {
@@ -415,14 +499,17 @@ const getFormData = () => {
     };
   }
 
-  const obtainedMarks = Number(obtainedMarksInput.value);
-
-  if (obtainedMarksInput.value === "" || obtainedMarks < 0) {
-    throw new Error("Obtained marks cannot be negative.");
+  if (
+    obtainedInput.value === "" ||
+    !Number.isFinite(Number(obtainedInput.value))
+  ) {
+    throw new Error(translate("invalidObtainedMarks"));
   }
 
-  if (obtainedMarks > totalMarks) {
-    throw new Error("Obtained marks cannot be greater than total marks.");
+  const obtainedMarks = Number(obtainedInput.value);
+
+  if (obtainedMarks < 0 || obtainedMarks > totalMarks) {
+    throw new Error(translate("invalidObtainedMarks"));
   }
 
   return {
@@ -440,40 +527,33 @@ const saveAssessment = async (event) => {
   event.preventDefault();
 
   const saveButton = document.getElementById("saveAssessmentBtn");
-  const errorBox = document.getElementById("assessmentFormError");
+  if (!saveButton) return;
 
-  if (!saveButton || !errorBox) return;
-
+  // Preserve this value because closing the modal clears editingAssessmentId.
   const isEditing = Boolean(editingAssessmentId);
+  const assessmentId = editingAssessmentId;
 
   try {
     if (isEditing) {
-      const currentAssessment = findAssessmentById(editingAssessmentId);
+      const current = findAssessmentById(assessmentId);
 
-      if (
-        !currentAssessment ||
-        isDeadlinePassed(currentAssessment.deadline)
-      ) {
-        throw new Error(
-          "This assessment's deadline has passed. It can no longer be changed."
-        );
+      if (!current || isDeadlinePassed(current.deadline)) {
+        throw new Error(translate("assessmentDeadlinePassedLocked"));
       }
     }
 
     const data = getFormData();
+    clearAssessmentFormError();
 
-    errorBox.textContent = "";
-    errorBox.classList.remove("visible");
     saveButton.disabled = true;
+    saveButton.textContent = translate(isEditing ? "saving" : "adding");
 
     if (isEditing) {
-      saveButton.textContent = "Saving...";
       await api.patch(
-        `/assessments/${encodeURIComponent(editingAssessmentId)}`,
+        `/assessments/${encodeURIComponent(assessmentId)}`,
         data
       );
     } else {
-      saveButton.textContent = "Adding...";
       await api.post("/assessments", data);
     }
 
@@ -481,18 +561,15 @@ const saveAssessment = async (event) => {
     await loadData();
   } catch (error) {
     console.error("Save assessment error:", error);
-    errorBox.textContent = error.message || "Unable to save assessment.";
-    errorBox.classList.add("visible");
+    showAssessmentFormError(
+      error.message || translate("saveAssessmentFailed")
+    );
   } finally {
     saveButton.disabled = false;
-    saveButton.textContent = isEditing ? "Save Changes" : "Save Assessment";
+    saveButton.textContent = translate(
+      isEditing ? "saveChanges" : "saveAssessment"
+    );
   }
-};
-
-const findAssessmentById = (id) => {
-  return assessments.find(
-    (assessment) => String(getItemId(assessment)) === String(id)
-  );
 };
 
 const openEditAssessment = (id) => {
@@ -504,7 +581,7 @@ const openEditAssessment = (id) => {
   }
 
   if (isDeadlinePassed(assessment.deadline)) {
-    alert("This assessment's deadline has passed. It can no longer be edited.");
+    alert(translate("assessmentDeadlinePassedLocked"));
     return;
   }
 
@@ -528,7 +605,7 @@ const openDeleteModal = (id) => {
   }
 
   deletingAssessment = assessment;
-  name.textContent = assessment.title;
+  name.textContent = assessment.title || "";
   modal.classList.remove("hidden");
   modal.setAttribute("aria-hidden", "false");
 };
@@ -548,18 +625,16 @@ const confirmDeleteAssessment = async () => {
   const id = getItemId(deletingAssessment);
 
   if (!id) {
-    alert("Unable to identify this assessment.");
+    alert(translate("assessmentUnableToIdentify"));
     return;
   }
 
   const button = document.getElementById("confirmDeleteBtn");
   if (!button) return;
 
-  const originalText = button.textContent;
-
   try {
     button.disabled = true;
-    button.textContent = "Deleting...";
+    button.textContent = translate("deleting");
 
     await api.delete(`/assessments/${encodeURIComponent(id)}`);
 
@@ -567,10 +642,10 @@ const confirmDeleteAssessment = async () => {
     await loadData();
   } catch (error) {
     console.error("Delete assessment error:", error);
-    alert(error.message || "Unable to delete assessment.");
+    alert(error.message || translate("deleteAssessmentFailed"));
   } finally {
     button.disabled = false;
-    button.textContent = originalText;
+    button.textContent = translate("deleteAssessment");
   }
 };
 
@@ -578,7 +653,11 @@ const loadData = async () => {
   const list = document.getElementById("assessmentsList");
   if (!list) return;
 
-  list.innerHTML = `<div class="assessments-loading">Loading assessments...</div>`;
+  list.innerHTML = `
+    <div class="assessments-loading">
+      ${escapeHtml(translate("loadingAssessments"))}
+    </div>
+  `;
 
   try {
     const [loadedCourses, loadedAssessments] = await Promise.all([
@@ -596,10 +675,43 @@ const loadData = async () => {
 
     list.innerHTML = `
       <div class="assessments-empty">
-        <strong>Unable to load assessments</strong>
-        <span>${escapeHtml(error.message || "Please make sure the backend server is running.")}</span>
+        <strong>${escapeHtml(translate("unableToLoadAssessments"))}</strong>
+        <span>${escapeHtml(
+          error.message || translate("checkBackend")
+        )}</span>
       </div>
     `;
+  }
+};
+
+const refreshAssessmentTranslations = () => {
+  updateAssessmentFilters();
+  populateCourses();
+  renderAssessments();
+
+  const modal = document.getElementById("assessmentModal");
+
+  if (modal && !modal.classList.contains("hidden")) {
+    const title = document.getElementById("modalTitle");
+    const saveButton = document.getElementById("saveAssessmentBtn");
+
+    if (title) {
+      title.textContent = translate(
+        editingAssessmentId ? "editAssessment" : "addAssessment"
+      );
+    }
+
+    if (saveButton && !saveButton.disabled) {
+      saveButton.textContent = translate(
+        editingAssessmentId ? "saveChanges" : "saveAssessment"
+      );
+    }
+  }
+
+  const deleteButton = document.getElementById("confirmDeleteBtn");
+
+  if (deleteButton && !deleteButton.disabled) {
+    deleteButton.textContent = translate("deleteAssessment");
   }
 };
 
@@ -616,8 +728,8 @@ const initializeAssessments = () => {
 
   if (
     !addButton || !closeButton || !cancelButton ||
-    !confirmDeleteButton || !cancelDeleteButton ||
-    !form || !list || !assessmentModal || !deleteModal
+    !confirmDeleteButton || !cancelDeleteButton || !form ||
+    !list || !assessmentModal || !deleteModal
   ) {
     console.error("Assessment page elements are missing.");
     return;
@@ -631,28 +743,17 @@ const initializeAssessments = () => {
   form.addEventListener("submit", saveAssessment);
 
   list.addEventListener("click", (event) => {
-    const button = event.target.closest("[data-action][data-assessment-id]");
-    if (!button) return;
+    const button = event.target.closest(
+      "[data-action][data-assessment-id]"
+    );
 
-    event.preventDefault();
-    event.stopPropagation();
+    if (!button || button.disabled) return;
 
-    const action = button.dataset.action;
-    const id = button.dataset.assessmentId;
+    const { action, assessmentId: id } = button.dataset;
+    if (!id) return;
 
-    if (!id) {
-      console.error("Assessment button has no ID.");
-      return;
-    }
-
-    if (action === "edit") {
-      openEditAssessment(id);
-      return;
-    }
-
-    if (action === "delete") {
-      openDeleteModal(id);
-    }
+    if (action === "edit") openEditAssessment(id);
+    if (action === "delete") openDeleteModal(id);
   });
 
   document.querySelectorAll(".filter-btn").forEach((button) => {
@@ -676,11 +777,18 @@ const initializeAssessments = () => {
   });
 
   document.addEventListener("keydown", (event) => {
-    if (event.key !== "Escape") return;
-    closeAssessmentModal();
-    closeDeleteModal();
+    if (event.key === "Escape") {
+      closeAssessmentModal();
+      closeDeleteModal();
+    }
   });
 
+  document.addEventListener(
+    "languageChanged",
+    refreshAssessmentTranslations
+  );
+
+  updateAssessmentFilters();
   loadData();
 };
 

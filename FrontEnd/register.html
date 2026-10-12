@@ -6,15 +6,19 @@
 
   <title>Student Planner - Register</title>
 
-  <link rel="icon" type="image/png" href="assets/favicon.png" />
-
+  <link rel="icon" type="image/png" href="assets/favicon.png">
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/auth.css">
 </head>
 
-<body class="auth-page">
-
+<body class="auth-page" data-title-key="registerTitle">
   <main class="auth-container">
+
+    <button
+      class="language-toggle"
+      type="button"
+      data-language-toggle
+    >العربية</button>
 
     <section class="auth-card register-card">
 
@@ -23,16 +27,20 @@
 
         <div>
           <strong>Student Planner</strong>
-          <span>Stay on track</span>
+          <span data-i18n="brandTagline">Stay on track</span>
         </div>
       </div>
 
       <div class="auth-heading">
-        <span class="eyebrow">Get started</span>
+        <span class="eyebrow" data-i18n="getStarted">
+          Get started
+        </span>
 
-        <h1>Create your account</h1>
+        <h1 data-i18n="createAccountHeading">
+          Create your account
+        </h1>
 
-        <p>
+        <p data-i18n="registerDescription">
           Start organizing your university life in one place.
         </p>
       </div>
@@ -40,11 +48,14 @@
       <form id="registerForm" class="auth-form">
 
         <div class="form-group">
-          <label for="registerName">Full Name</label>
+          <label for="registerName" data-i18n="fullName">
+            Full Name
+          </label>
 
           <input
             id="registerName"
             type="text"
+            data-i18n-placeholder="enterName"
             placeholder="Enter your name"
             autocomplete="name"
             maxlength="100"
@@ -53,11 +64,14 @@
         </div>
 
         <div class="form-group">
-          <label for="registerEmail">Email</label>
+          <label for="registerEmail" data-i18n="email">
+            Email
+          </label>
 
           <input
             id="registerEmail"
             type="email"
+            data-i18n-placeholder="enterEmail"
             placeholder="Enter your email"
             autocomplete="email"
             required
@@ -65,12 +79,15 @@
         </div>
 
         <div class="form-group">
-          <label for="registerPassword">Password</label>
+          <label for="registerPassword" data-i18n="password">
+            Password
+          </label>
 
           <div class="password-field">
             <input
               id="registerPassword"
               type="password"
+              data-i18n-placeholder="createPassword"
               placeholder="Create a password"
               autocomplete="new-password"
               minlength="6"
@@ -81,24 +98,26 @@
               id="toggleRegisterPassword"
               class="password-toggle"
               type="button"
+              data-i18n-aria-label="show"
               aria-label="Show password"
-            >
-              Show
-            </button>
+            >Show</button>
           </div>
 
-          <span class="input-hint">
+          <span class="input-hint" data-i18n="useSixCharacters">
             Use at least 6 characters.
           </span>
         </div>
 
         <div class="form-group">
-          <label for="confirmPassword">Confirm Password</label>
+          <label for="confirmPassword" data-i18n="confirmPassword">
+            Confirm Password
+          </label>
 
           <div class="password-field">
             <input
               id="confirmPassword"
               type="password"
+              data-i18n-placeholder="confirmPassword"
               placeholder="Confirm your password"
               autocomplete="new-password"
               minlength="6"
@@ -109,10 +128,9 @@
               id="toggleConfirmPassword"
               class="password-toggle"
               type="button"
+              data-i18n-aria-label="show"
               aria-label="Show password"
-            >
-              Show
-            </button>
+            >Show</button>
           </div>
         </div>
 
@@ -132,27 +150,27 @@
           id="registerButton"
           class="primary-btn auth-submit"
           type="submit"
-        >
-          Create Account
-        </button>
+          data-i18n="createAccount"
+        >Create Account</button>
 
       </form>
 
       <div class="auth-footer">
-        <span>Already have an account?</span>
+        <span data-i18n="haveAccount">
+          Already have an account?
+        </span>
 
-        <a href="login.html">
+        <a href="login.html" data-i18n="signIn">
           Sign in
         </a>
       </div>
 
     </section>
-
   </main>
 
   <script src="js/api.js"></script>
+  <script src="js/i18n.js"></script>
   <script src="js/auth.js"></script>
   <script src="js/auth-pages.js"></script>
-
 </body>
 </html>

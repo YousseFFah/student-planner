@@ -7,52 +7,51 @@
     <title>Student Planner - Courses</title>
 
     <link rel="icon" type="image/png" href="assets/favicon.png" />
-
     <link rel="stylesheet" href="css/style.css" />
     <link rel="stylesheet" href="css/courses.css" />
   </head>
 
-  <body>
+  <body data-title-key="coursesTitle">
     <div class="app">
       <aside class="sidebar">
         <div class="brand">
           <div class="brand-mark">SP</div>
 
           <div class="brand-text">
-            <strong>Student Planner</strong>
-            <span>Stay on track</span>
+            <strong data-i18n="brandName">Student Planner</strong>
+            <span data-i18n="brandTagline">Stay on track</span>
           </div>
         </div>
 
         <nav class="sidebar-nav">
           <a href="index.html" class="nav-item">
             <span class="nav-icon">⌂</span>
-            <span>Dashboard</span>
+            <span data-i18n="dashboard">Dashboard</span>
           </a>
 
           <a href="courses.html" class="nav-item active">
             <span class="nav-icon">▣</span>
-            <span>Courses</span>
+            <span data-i18n="courses">Courses</span>
           </a>
 
           <a href="tasks.html" class="nav-item">
             <span class="nav-icon">✓</span>
-            <span>Tasks</span>
+            <span data-i18n="tasks">Tasks</span>
           </a>
 
           <a href="assessments.html" class="nav-item">
             <span class="nav-icon">◫</span>
-            <span>Assessments</span>
+            <span data-i18n="assessments">Assessments</span>
           </a>
 
           <a href="progress.html" class="nav-item">
             <span class="nav-icon">↗</span>
-            <span>Progress</span>
+            <span data-i18n="progress">Progress</span>
           </a>
-          
+
           <a href="calendar.html" class="nav-item">
             <span class="nav-icon">▦</span>
-            <span>Calendar</span>
+            <span data-i18n="calendar">Calendar</span>
           </a>
         </nav>
 
@@ -61,42 +60,59 @@
 
           <div class="sidebar-user-info">
             <strong class="user-name">Student</strong>
-            <span>Student account</span>
+            <span data-i18n="studentAccount">Student account</span>
           </div>
 
-          <button class="logout-btn" type="button">Logout</button>
+          <button class="logout-btn" type="button" data-i18n="logout">
+            Logout
+          </button>
         </div>
       </aside>
 
       <main class="main-content">
         <header class="topbar">
           <div class="topbar-copy">
-            <span class="eyebrow">Academic setup</span>
-            <h1>Courses</h1>
-            <p>Manage the courses you are taking this semester.</p>
+            <span class="eyebrow" data-i18n="academicSetup">
+              Academic setup
+            </span>
+
+            <h1 data-i18n="courses">Courses</h1>
+
+            <p data-i18n="coursesDescription">
+              Manage the courses you are taking this semester.
+            </p>
           </div>
 
           <div class="topbar-actions">
+            <button class="secondary-btn" type="button" data-language-toggle>
+              العربية
+            </button>
+
             <button id="addCourseBtn" class="primary-btn" type="button">
-              + Add Course
+              + <span data-i18n="addCourse">Add Course</span>
             </button>
           </div>
         </header>
 
         <section class="course-summary">
           <div>
-            <span class="summary-label">Your semester</span>
+            <span class="summary-label" data-i18n="yourSemester">
+              Your semester
+            </span>
+
             <strong id="courseCount">0 Courses</strong>
           </div>
 
-          <p>
+          <p data-i18n="coursesHint">
             Add your courses first, then connect tasks and assessments to them.
           </p>
         </section>
 
         <section class="courses-section">
           <div id="coursesGrid" class="courses-grid">
-            <div class="courses-loading">Loading courses...</div>
+            <div class="courses-loading" data-i18n="loadingCourses">
+              Loading courses...
+            </div>
           </div>
         </section>
       </main>
@@ -106,8 +122,11 @@
       <div class="modal course-modal">
         <div class="modal-header">
           <div>
-            <span class="modal-label">Course details</span>
-            <h2 id="modalTitle">Add Course</h2>
+            <span class="modal-label" data-i18n="courseDetails">
+              Course details
+            </span>
+
+            <h2 id="modalTitle" data-i18n="addCourse">Add Course</h2>
           </div>
 
           <button
@@ -115,6 +134,7 @@
             class="modal-close"
             type="button"
             aria-label="Close"
+            data-i18n-aria-label="close"
           >
             ×
           </button>
@@ -122,13 +142,14 @@
 
         <form id="courseForm">
           <div class="form-group">
-            <label for="courseName">Course Name</label>
+            <label for="courseName" data-i18n="courseName"> Course Name </label>
 
             <input
               id="courseName"
               name="name"
               type="text"
               placeholder="e.g. Computer Architecture"
+              data-i18n-placeholder="courseNamePlaceholder"
               required
               maxlength="100"
             />
@@ -136,19 +157,24 @@
 
           <div class="form-row">
             <div class="form-group">
-              <label for="courseCode">Course Code</label>
+              <label for="courseCode" data-i18n="courseCode">
+                Course Code
+              </label>
 
               <input
                 id="courseCode"
                 name="code"
                 type="text"
                 placeholder="e.g. CS304"
+                data-i18n-placeholder="courseCodePlaceholder"
                 required
               />
             </div>
 
             <div class="form-group">
-              <label for="creditHours">Credit Hours</label>
+              <label for="creditHours" data-i18n="creditHours">
+                Credit Hours
+              </label>
 
               <input
                 id="creditHours"
@@ -164,13 +190,14 @@
           </div>
 
           <div class="form-group">
-            <label for="instructor">Instructor</label>
+            <label for="instructor" data-i18n="instructor"> Instructor </label>
 
             <input
               id="instructor"
               name="instructor"
               type="text"
               placeholder="e.g. Dr. Ahmed Ali"
+              data-i18n-placeholder="instructorPlaceholder"
               required
               maxlength="100"
             />
@@ -179,12 +206,17 @@
           <p id="courseFormError" class="form-error"></p>
 
           <div class="form-actions">
-            <button id="cancelCourseBtn" class="secondary-btn" type="button">
+            <button
+              id="cancelCourseBtn"
+              class="secondary-btn"
+              type="button"
+              data-i18n="cancel"
+            >
               Cancel
             </button>
 
             <button id="saveCourseBtn" class="primary-btn" type="submit">
-              Save Course
+              <span data-i18n="saveCourse">Save Course</span>
             </button>
           </div>
         </form>
@@ -195,9 +227,9 @@
       <div class="modal delete-modal">
         <div class="delete-icon">!</div>
 
-        <h2>Delete Course?</h2>
+        <h2 data-i18n="deleteCourseTitle">Delete Course?</h2>
 
-        <p>
+        <p data-i18n="deleteCourseDescription">
           This will permanently delete the course. Any tasks or assessments
           connected to it may also be affected.
         </p>
@@ -205,18 +237,24 @@
         <p id="deleteCourseName" class="delete-course-name"></p>
 
         <div class="form-actions">
-          <button id="cancelDeleteBtn" class="secondary-btn" type="button">
+          <button
+            id="cancelDeleteBtn"
+            class="secondary-btn"
+            type="button"
+            data-i18n="cancel"
+          >
             Cancel
           </button>
 
           <button id="confirmDeleteBtn" class="danger-btn" type="button">
-            Delete Course
+            <span data-i18n="deleteCourse">Delete Course</span>
           </button>
         </div>
       </div>
     </div>
 
     <script src="js/api.js"></script>
+    <script src="js/i18n.js"></script>
     <script src="js/auth.js"></script>
     <script src="js/courses.js"></script>
 
